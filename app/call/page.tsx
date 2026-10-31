@@ -1,12 +1,12 @@
 "use client";
 
 import { ConversationProvider } from "@elevenlabs/react";
-import { Spike } from "./Spike";
+import { CallScreen } from "./CallScreen";
 
 export default function CallPage() {
   return (
     <ConversationProvider>
-      <Spike />
+      <CallScreen />
     </ConversationProvider>
   );
 }

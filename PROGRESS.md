@@ -14,7 +14,7 @@ PRD.md is the source of truth. This file tracks where the build is.
 
 Runs A and B were skipped, so the cut in after a contextual update is unproven. The PRD fallback still applies: if it doesn't work, the long answer rule stops at checkWatch and she asks for the result after I finish.
 
-Still to test when this comes back:
+The spike page moved to `/spike`, so these can still be run there. Still to test when this comes back:
 
 - The cut in itself
 - Whether she holds through a breath on Patient. The one recorded run was on Normal, where she took her turn at a 1 second breath
@@ -36,11 +36,15 @@ Live agent checked against the PRD on Oct 31, 2026: Patient, take turn after sil
 - 6 second silence rule for leanIn: she now leans in when she checks in at 10 seconds
 - 3 second resume window: replaced by the addition and restart rules, split at 15 seconds
 
+## Deployment
+
+Production: https://jobbuddy-app.vercel.app. Deployed with the Vercel CLI from this folder, so each update needs `vercel deploy --prod`. Keys are stored as Vercel secrets for production only.
+
 ## Day 1: Meera on a call
 
 - [ ] Style exploration, concept image, auto vectorise, vector parts (Vishnu)
 - [ ] RML rig script and build, once the vector parts arrive
-- [ ] Call screen
+- [ ] Call screen: built at `/call` from the "Call, interview" artboard in the Paper file "JobBuddy screens". Mute, camera, hang up and audio passed on my phone. One full call on the Vercel link is still to do, blocked until ElevenLabs credits are added. The placeholder figure stays until the rig exists. Attach is disabled until Day 2. The progress label arrives with nextQuestion wiring. Call dropped and Reconnect are not built yet
 - [ ] Lip sync from alignment
 - [ ] react, setPhase, setSetup and nextQuestion wired to the rig and the app
 - [ ] Intake works by voice end to end
