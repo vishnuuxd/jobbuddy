@@ -6,9 +6,9 @@ import { createCallSession, totalQuestions } from "../lib/call/session.ts";
 
 function setup(mode = "short") {
   const vm = createInterviewVM();
-  const session = createCallSession(vm);
+  const session = createCallSession(vm, { writingHoldMs: 5, readingHoldMs: 5 });
   const tools = createClientTools(session);
-  session.start();
+  session.start("call-1");
   const fired = [];
   vm.onTrigger((name) => fired.push(name));
   return { vm, session, tools, fired, setupArgs: { role: "Designer", seniority: "Senior", mode, hasJd: false, hasCv: "true" } };
@@ -76,4 +76,17 @@ test("mouthOpen stays between 0 and 100", () => {
   const vm = createInterviewVM();
   vm.set({ mouthOpen: 400 });
   assert.equal(vm.values().mouthOpen, 100);
+});
+
+test("flag is ignored outside the interview and plays the writing mood inside it", async () => {
+  const { vm, session, tools } = setup();
+  assert.equal(tools.flag({ type: "rambling", quote: "x" }), "ignored");
+  tools.setPhase({ name: "interview" });
+  session.setSpeaking(true);
+  assert.equal(tools.flag({ type: "nope", quote: "x" }), "ignored");
+  assert.equal(tools.flag({ type: "rambling", quote: "and then" }), "ok");
+  assert.equal(vm.values().mood, "writing");
+  assert.equal(session.get().flags[0].source, "agent");
+  await new Promise((done) => setTimeout(done, 15));
+  assert.equal(vm.values().mood, "talking");
 });

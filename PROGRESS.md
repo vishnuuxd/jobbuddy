@@ -56,3 +56,22 @@ Changed Nov 2, 2026: Meera's design, the rig and lip sync moved to after v1. The
 Deployed to production Nov 2, 2026. Check passed Nov 2, 2026 on Vishnu's phone: one full intake by voice, with the orb moving with her voice and reactions firing.
 
 Settled Nov 2, 2026: the orb shows every reaction, as in the "V1 placeholder: the orb" table. There is no loading state: connecting shows idle with "Connecting" on the button.
+
+## Day 2 morning: the interview
+
+Built Nov 2, 2026. Tested with unit tests and in Chrome, not yet on a live call.
+
+- [x] Live rules in `lib/live/rules.ts`, every number from `lib/live/config.ts`: the long answer ladder, filler and hedge bursts, expectant, addition and restart
+- [x] flag tool, writing mood, flags ignored outside the interview phase. The rules also log client flags for filler, hedging and rambling
+- [x] Full and short mode, "Question 2 of 5"
+- [x] Attach: PDF and text extraction, context update, glanceDown and reading mood, held until the answer ends. Tapping attach asks CV or job description first
+- [x] Profile: saved CV upload, replace, delete, at `/profile`. Sent at call start. Not designed in Paper. Reached by a temporary "Your CV" link until the bottom tabs exist
+- [x] Dexie store saves the call record every second and at hang up. Status stays incomplete until the scorecard step sets it
+
+Check, not passed yet: a short mode interview where a 2 minute answer gets the full ladder and the CV shapes one question. This is also the first real test of the deferred cut in.
+
+Decisions to confirm:
+
+- Starting again counts only on an `interruption` event. The PRD also counts "speech once she's back to listening", but that can't be told apart from answering her next question
+- Writing and reading moods show over talking, because she usually calls flag while speaking. Her voice still moves the orb
+- Call.lateAdditions and Metric.words are added to the PRD data model

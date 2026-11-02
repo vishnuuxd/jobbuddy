@@ -26,8 +26,7 @@ export function createClientTools(session: CallSession) {
 
   return {
     react: logged("react", ({ name }) => session.react(String(name))),
-    // Wired in the Day 2 interview block.
-    flag: logged("flag", () => true),
+    flag: logged("flag", ({ type, quote }) => session.flag(String(type), String(quote ?? ""))),
     setPhase: logged("setPhase", ({ name }) => session.setPhase(String(name))),
     setSetup: logged("setSetup", (parameters) => {
       const setup = parseSetup(parameters);

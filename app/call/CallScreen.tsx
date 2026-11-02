@@ -1,27 +1,38 @@
 "use client";
 
 import { useConversation } from "@elevenlabs/react";
+import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { CallControls } from "@/components/CallControls";
 import { MeeraStage } from "@/components/MeeraStage";
 import { SelfView } from "@/components/SelfView";
 import { createClientTools } from "@/lib/agent/clientTools";
 import { createInterviewVM } from "@/lib/avatar/interviewVM";
-import { createCallSession, totalQuestions } from "@/lib/call/session";
+import { AttachError, extractText } from "@/lib/attach/extract";
+import { createCallSession, toCallRecord, totalQuestions } from "@/lib/call/session";
 import { useSelfView } from "@/lib/call/useSelfView";
 import { useVoiceVolume } from "@/lib/call/useVoiceVolume";
 import { liveConfig } from "@/lib/live/config";
+import { createLiveRules } from "@/lib/live/rules";
+import { getSavedCv, saveCall } from "@/lib/store/db";
 
 type StartError = "mic" | "failed" | null;
 
+type AttachKind = "cv" | "jd";
+const attachNames = { cv: "CV", jd: "job description" };
+
+const saveEveryMs = 1_000;
+
 function createCall() {
   const vm = createInterviewVM();
-  const session = createCallSession(vm);
-  return { vm, session, clientTools: createClientTools(session) };
+  const session = createCallSession(vm, liveConfig);
+  const sendRef: { current: (text: string) => void } = { current: () => {} };
+  const rules = createLiveRules(session, (text) => sendRef.current(text), liveConfig);
+  return { vm, session, rules, sendRef, clientTools: createClientTools(session) };
 }
 
 export function CallScreen() {
-  const [{ vm, session, clientTools }] = useState(createCall);
+  const [{ vm, session, rules, sendRef, clientTools }] = useState(createCall);
   const call = useSyncExternalStore(session.subscribe, session.get, session.get);
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<StartError>(null);
@@ -30,6 +41,12 @@ export function CallScreen() {
   const [inCall, setInCall] = useState(false);
   const inCallRef = useRef(false);
   const selfView = useSelfView();
+  const [attachKind, setAttachKind] = useState<AttachKind | null>(null);
+  const [choosingAttach, setChoosingAttach] = useState(false);
+  const [attachMessage, setAttachMessage] = useState<string | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const heldAttachment = useRef<{ kind: AttachKind; text: string } | null>(null);
+  const herTurnStartedAt = useRef(0);
 
   function setSessionOpen(open: boolean) {
     inCallRef.current = open;
@@ -39,18 +56,38 @@ export function CallScreen() {
   const conversation = useConversation({
     clientTools,
     onConnect: () => {
-      session.start();
+      session.start(crypto.randomUUID());
       setSessionOpen(true);
+      void sendSavedCv();
     },
     onDisconnect: () => {
+      rules.finish();
+      heldAttachment.current = null;
+      if (session.get().id) void saveCall(toCallRecord(session.get(), new Date().toISOString()));
       session.end();
       setSessionOpen(false);
+      setChoosingAttach(false);
+      setAttachMessage(null);
       selfView.stop();
       conversation.setMuted(false);
     },
-    onModeChange: ({ mode }) => session.setSpeaking(mode === "speaking"),
-    onMessage: ({ role }) => {
-      if (role === "user") session.noteUserMessage();
+    onModeChange: ({ mode }) => {
+      if (mode === "speaking") {
+        herTurnStartedAt.current = Date.now();
+        rules.herTurn();
+      }
+      session.setSpeaking(mode === "speaking");
+    },
+    onVadScore: ({ vadScore }) => rules.vad(vadScore),
+    onInterruption: () => rules.interruption(),
+    onMessage: ({ role, message }) => {
+      if (role === "user") {
+        session.noteUserMessage();
+        session.addTranscript("user", message, Date.now());
+        rules.userMessage(message);
+      } else {
+        session.addTranscript("agent", message, herTurnStartedAt.current || Date.now());
+      }
     },
     onError: (message) => {
       console.warn("Call error", message);
@@ -59,6 +96,56 @@ export function CallScreen() {
   });
 
   useVoiceVolume(vm, conversation.getOutputVolume, inCall);
+  sendRef.current = conversation.sendContextualUpdate;
+
+  async function sendSavedCv() {
+    const cv = await getSavedCv();
+    if (!cv || !inCallRef.current) return;
+    session.setCvText(cv.text);
+    conversation.sendContextualUpdate(`The candidate's saved CV, ${cv.fileName}:\n${cv.text}`);
+  }
+
+  function deliverAttachment(kind: AttachKind, text: string) {
+    session.attach(kind, text);
+    session.react("glanceDown");
+    conversation.sendContextualUpdate(`The candidate attached their ${attachNames[kind]}:\n${text}`);
+  }
+
+  // The rules run on a timer, and the record saves as the call goes.
+  useEffect(() => {
+    if (!inCall) return;
+    rules.setOnAnswerEnd(() => {
+      const held = heldAttachment.current;
+      heldAttachment.current = null;
+      if (held) deliverAttachment(held.kind, held.text);
+    });
+    const rulesTimer = setInterval(rules.tick, 200);
+    const saveTimer = setInterval(() => void saveCall(toCallRecord(session.get())), saveEveryMs);
+    return () => {
+      clearInterval(rulesTimer);
+      clearInterval(saveTimer);
+    };
+    // sendContextualUpdate stays valid for the whole call.
+  }, [inCall]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function pickAttachment(kind: AttachKind) {
+    setAttachKind(kind);
+    setChoosingAttach(false);
+    fileInput.current?.click();
+  }
+
+  async function onFileChosen(file: File | undefined) {
+    if (fileInput.current) fileInput.current.value = "";
+    if (!file || !attachKind) return;
+    try {
+      const text = await extractText(file);
+      setAttachMessage(null);
+      if (rules.answering()) heldAttachment.current = { kind: attachKind, text };
+      else deliverAttachment(attachKind, text);
+    } catch (error) {
+      setAttachMessage(error instanceof AttachError ? error.message : "I can't read that one.");
+    }
+  }
 
   const callEnding = inCall && call.phase === "done";
   useEffect(() => {
@@ -118,11 +205,31 @@ export function CallScreen() {
       )}
       <SelfView stream={selfView.stream} />
 
+      <input
+        ref={fileInput}
+        type="file"
+        hidden
+        accept=".pdf,.txt,.md,application/pdf,text/plain"
+        onChange={(event) => void onFileChosen(event.target.files?.[0])}
+      />
+      {inCall && attachMessage && (
+        <p className="attach-message" role="alert">
+          {attachMessage}
+        </p>
+      )}
+      {inCall && choosingAttach && (
+        <div className="attach-choice">
+          <button onClick={() => pickAttachment("cv")}>CV</button>
+          <button onClick={() => pickAttachment("jd")}>Job description</button>
+        </div>
+      )}
+
       {inCall ? (
         <CallControls
           muted={conversation.isMuted}
           cameraOn={selfView.isOn}
           onToggleMute={() => conversation.setMuted(!conversation.isMuted)}
+          onAttach={() => setChoosingAttach(!choosingAttach)}
           onToggleCamera={selfView.toggle}
           onHangUp={() => conversation.endSession()}
         />
@@ -138,6 +245,9 @@ export function CallScreen() {
           <button className="call-start-button" onClick={startCall} disabled={connecting}>
             {connecting ? "Connecting" : startError ? "Try again" : "Call Meera"}
           </button>
+          <Link className="call-start-link" href="/profile">
+            Your CV
+          </Link>
         </div>
       )}
     </main>

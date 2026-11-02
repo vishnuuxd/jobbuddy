@@ -2,6 +2,7 @@ type Props = {
   muted: boolean;
   cameraOn: boolean;
   onToggleMute: () => void;
+  onAttach: () => void;
   onToggleCamera: () => void;
   onHangUp: () => void;
 };
@@ -17,7 +18,14 @@ const iconProps = {
   strokeLinejoin: "round",
 } as const;
 
-export function CallControls({ muted, cameraOn, onToggleMute, onToggleCamera, onHangUp }: Props) {
+export function CallControls({
+  muted,
+  cameraOn,
+  onToggleMute,
+  onAttach,
+  onToggleCamera,
+  onHangUp,
+}: Props) {
   return (
     <div className="controls">
       <button
@@ -33,7 +41,7 @@ export function CallControls({ muted, cameraOn, onToggleMute, onToggleCamera, on
         </svg>
       </button>
 
-      <button className="control" aria-label="Attach a CV or job description" disabled>
+      <button className="control" aria-label="Attach a CV or job description" onClick={onAttach}>
         <svg {...iconProps} aria-hidden="true">
           <path d="M20 11.5l-8.1 8.1a5 5 0 0 1-7-7l8.4-8.4a3.3 3.3 0 0 1 4.7 4.7l-8.4 8.4a1.7 1.7 0 0 1-2.3-2.3l7.7-7.7" />
         </svg>
