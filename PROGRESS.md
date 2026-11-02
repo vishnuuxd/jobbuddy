@@ -50,9 +50,9 @@ Changed Nov 2, 2026: Meera's design, the rig and lip sync moved to after v1. The
 - [x] react, setPhase, setSetup and nextQuestion wired through `lib/call/session.ts`, with unit tests (`npm test`). Not yet tried on a live call. flag still only logs, and is wired in Day 2
 - [x] "Question 2 of 5" label, from the "Call, interview" artboard
 - [x] setPhase("done") waits for her to finish speaking before it hangs up. For now the call just returns to the start screen, because the scorecard comes in Day 2
-- [ ] Call screen: one full call on the Vercel link is still to do, blocked until ElevenLabs credits are added. Attach is disabled until Day 2. Call dropped and Reconnect are not built yet
+- [ ] Call screen: one full call on the Vercel link is still to do, credits are now added. Attach is disabled until Day 2. Call dropped and Reconnect are not built yet
 - [ ] Intake works by voice end to end
 
-Check, not passed yet: one full intake by voice, with the orb moving with her voice and at least three reactions firing.
+Deployed to production Nov 2, 2026 for this check. Check, not passed yet: one full intake by voice, with the orb moving with her voice and at least three reactions firing.
 
 Settled Nov 2, 2026: the orb shows every reaction, as in the "V1 placeholder: the orb" table. There is no loading state: connecting shows idle with "Connecting" on the button.
