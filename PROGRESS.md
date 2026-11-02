@@ -55,4 +55,4 @@ Changed Nov 2, 2026: Meera's design, the rig and lip sync moved to after v1. The
 
 Check, not passed yet: one full intake by voice, with the orb moving with her voice and at least three reactions firing.
 
-Open question: the first orb paragraph in the PRD says three states only, with reactions not shown. The "V1 placeholder: the orb" table says every signal is shown. Built to the table, as asked on Nov 2. The first paragraph's "loading" state isn't in InterviewVM, so connecting shows idle with "Connecting" on the button.
+Settled Nov 2, 2026: the orb shows every reaction, as in the "V1 placeholder: the orb" table. There is no loading state: connecting shows idle with "Connecting" on the button.
