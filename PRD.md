@@ -266,7 +266,26 @@ TOOL RULES
 
 ## Character and rig
 
+**v1 uses an orb instead of Meera.** A circle that shows three states only: loading (connecting, or building the scorecard), listening (slow, calm breathing), and talking (wobbles and swells with her voice volume). Reactions from the agent and the live rules still fire, get logged and feed the scorecard, but nothing is shown for them yet. The spoken cut in is the only live callout the user sees. The orb sits behind the same InterviewVM inputs, so Meera's rig can replace it later without changing the rest of the app. Everything below in this section is for that later step.
+
 The same method as Unstuck. Meera is flat and front facing, built from separate named vector parts, and rigged in Rive with the Rive CLI. The app never animates. It only sets view model values.
+
+**V1 placeholder: the orb.** Meera's design moves to after v1. Until then, an animated orb, similar to a voice mode orb, stands in. It reads the same InterviewVM values the rig will use: mood, mouthOpen and every trigger. Build it as one avatar component behind that interface, so the Rive rig drops into the same slot later and nothing else in the app changes. Tests with the orb check the timing of reactions, not how they feel. That needs the face.
+
+| Signal | Orb |
+| --- | --- |
+| talking | Wobbles and swells with her voice volume (mouthOpen) |
+| listening, idle | Slow, calm breathing |
+| intake | Softer and slightly smaller |
+| sitUp (interview starts) | Firms up: crisper edge, slightly bigger |
+| nod | A quick small bounce |
+| expectant | Lifts slightly and brightens, holding |
+| browRaise | A small sharp pulse |
+| glanceDown, reading | Dims and shrinks a little |
+| checkWatch | A ring sweeps once around the edge |
+| writing (flag) | A subtle ripple |
+| leanIn | Grows slightly toward the viewer |
+| handUp, smile, skeptical | A matching variation of the above; keep each one distinct |
 
 **Method, step by step.** Everything is built from scratch. No existing Rive file, including the Unstuck one, is used or copied.
 
@@ -385,6 +404,8 @@ rive/           RML source, build script, meera.riv
 
 Two days, in order. Each block ends with checks. A block isn't done until its checks pass on my phone.
 
+**Change, 2 Nov.** Meera's design, the rig and lip sync move to after v1. v1 ships with the orb placeholder. All other Day 1 and Day 2 items stay.
+
 **Milestone 0: spike (first 2 hours of day 1)**
 
 Goal: prove the risky parts before any design depends on them. Use a static image instead of Meera.
@@ -400,14 +421,15 @@ If the cut in doesn't work, the long answer rule stops at checkWatch, and she as
 
 **Day 1, rest of the day: Meera on a call**
 
-- [ ] Style exploration, concept image, auto vectorise, then clean vector parts named as in the rig spec
-- [ ] RML rig script and build. Contact sheet of every mood and trigger rendered from the CLI
+- [ ] Moved after v1: style exploration, concept image, auto vectorise, then clean vector parts named as in the rig spec
+- [ ] Moved after v1: RML rig script and build. Contact sheet of every mood and trigger rendered from the CLI
+- [ ] Orb placeholder behind the InterviewVM interface, as in the Character section
 - [ ] Call screen: Meera full screen, controls, self view tile
-- [ ] Lip sync from alignment
+- [ ] Moved after v1, with the rig: lip sync from alignment. The orb uses her voice volume instead
 - [ ] react, setPhase, setSetup and nextQuestion wired to the rig and the app
 - [ ] Intake works by voice end to end, including the read back
 
-Check: one full intake by voice, with her mouth in sync and at least three reactions firing.
+Check: one full intake by voice, with the orb moving with her voice and at least three reactions firing.
 
 **Day 2 morning: the interview**
 
