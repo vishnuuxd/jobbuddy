@@ -73,8 +73,18 @@ button.hangup { background: #b3261e; border-color: #b3261e; color: #fff; }
   color: var(--navy);
 }
 
-.stage { position: absolute; inset: 17% 0 0; }
-.stage svg { display: block; width: 100%; height: 100%; }
+.stage { position: absolute; inset: 0 0 120px; }
+.orb { display: block; width: 100%; height: 100%; }
+
+.question-label {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 20px);
+  left: 20px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+}
 
 .self-view {
   position: absolute;
@@ -129,3 +139,16 @@ button.hangup { background: #b3261e; border-color: #b3261e; color: #fff; }
   color: #fff;
   font-weight: 600;
 }
+
+/* Orb preview at /orb */
+.orb-preview { display: flex; flex-direction: column; min-height: 100dvh; background: #dde3e6; color: #14283a; }
+.orb-preview .orb-live { position: relative; height: 300px; flex: none; }
+.orb-preview .stage { inset: 0; }
+.orb-group { padding: 0 16px 16px; }
+.orb-group h2 { margin: 0 0 8px; font-size: 13px; font-weight: 600; }
+.orb-group div { display: flex; flex-wrap: wrap; gap: 8px; }
+.orb-group button { background: #eef1f2; border: 0; border-radius: 22px; }
+.orb-group button[aria-pressed="true"] { background: #14283a; color: #fff; }
+.orb-sheet { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 0 8px 16px; }
+.orb-sheet figure { margin: 0; text-align: center; font-size: 12px; font-weight: 600; }
+.orb-sheet canvas { display: block; width: 100%; aspect-ratio: 1; }

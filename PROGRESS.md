@@ -33,6 +33,7 @@ Live agent checked against the PRD on Oct 31, 2026: Patient, take turn after sil
 
 - Course correction rule: it needs my words while I'm talking, and there are no tentative transcripts
 - Filler burst in 20 seconds, live: now 6 fillers in one answer, checked when it ends
+- Meera's rig and lip sync in v1: moved after v1, the orb stands in
 - 6 second silence rule for leanIn: she now leans in when she checks in at 10 seconds
 - 3 second resume window: replaced by the addition and restart rules, split at 15 seconds
 
@@ -42,9 +43,16 @@ Production: https://jobbuddy-app.vercel.app. Deployed with the Vercel CLI from t
 
 ## Day 1: Meera on a call
 
-- [ ] Style exploration, concept image, auto vectorise, vector parts (Vishnu)
-- [ ] RML rig script and build, once the vector parts arrive
-- [ ] Call screen: built at `/call` from the "Call, interview" artboard in the Paper file "JobBuddy screens". Mute, camera, hang up and audio passed on my phone. One full call on the Vercel link is still to do, blocked until ElevenLabs credits are added. The placeholder figure stays until the rig exists. Attach is disabled until Day 2. The progress label arrives with nextQuestion wiring. Call dropped and Reconnect are not built yet
-- [ ] Lip sync from alignment
-- [ ] react, setPhase, setSetup and nextQuestion wired to the rig and the app
+Changed Nov 2, 2026: Meera's design, the rig and lip sync moved to after v1. The orb stands in.
+
+- [x] Orb behind the InterviewVM interface: `lib/avatar/interviewVM.ts` holds the values, `components/MeeraStage.tsx` is the avatar slot, and `components/Orb.tsx` is the only code that reads them for drawing. The rig replaces Orb in that slot. Preview of every state at `/orb`
+- [x] mouthOpen from her voice volume: `lib/call/useVoiceVolume.ts`. `mouthOpenGain` in `lib/live/config.ts` is a guess until it's heard on a real call
+- [x] react, setPhase, setSetup and nextQuestion wired through `lib/call/session.ts`, with unit tests (`npm test`). Not yet tried on a live call. flag still only logs, and is wired in Day 2
+- [x] "Question 2 of 5" label, from the "Call, interview" artboard
+- [x] setPhase("done") waits for her to finish speaking before it hangs up. For now the call just returns to the start screen, because the scorecard comes in Day 2
+- [ ] Call screen: one full call on the Vercel link is still to do, blocked until ElevenLabs credits are added. Attach is disabled until Day 2. Call dropped and Reconnect are not built yet
 - [ ] Intake works by voice end to end
+
+Check, not passed yet: one full intake by voice, with the orb moving with her voice and at least three reactions firing.
+
+Open question: the first orb paragraph in the PRD says three states only, with reactions not shown. The "V1 placeholder: the orb" table says every signal is shown. Built to the table, as asked on Nov 2. The first paragraph's "loading" state isn't in InterviewVM, so connecting shows idle with "Connecting" on the button.

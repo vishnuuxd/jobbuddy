@@ -23,4 +23,12 @@ export const liveConfig = {
   // Talking after she has taken her turn: up to this long is an addition to
   // the previous answer, longer is a restart.
   additionMaxMs: 15_000,
+
+  // Her voice volume (0 to 1) times this gives mouthOpen (0 to 100).
+  mouthOpenGain: 250,
+
+  // After setPhase("done"), hang up once she's been quiet this long, so her
+  // closing line isn't cut off. The longest wait stops a stuck call staying open.
+  endCallQuietMs: 1_200,
+  endCallMaxWaitMs: 12_000,
 };
