@@ -75,3 +75,11 @@ Decisions to confirm:
 - Starting again counts only on an `interruption` event. The PRD also counts "speech once she's back to listening", but that can't be told apart from answering her next question
 - Writing and reading moods show over talking, because she usually calls flag while speaking. Her voice still moves the orb
 - Call.lateAdditions and Metric.words are added to the PRD data model
+
+## Change, 3 Nov 2026
+
+Setup moves to a setup sheet, lengths of 5, 10 and 20 minutes replace the modes, and Home, History and Profile get bottom tabs. Not built yet: waiting for the Paper designs of Home, the setup sheet, History, the scorecard and Profile. The current `/profile` page is a placeholder to rebuild from that design.
+
+- The opening phase keeps the `intake` mood name in InterviewVM, so the avatar interface doesn't change
+- Code still to change for this: remove setSetup, rename the intake phase to opening, question counts of 2, 3 and 5, the app-written first line, and the one minute left update
+- In ElevenLabs: delete the setSetup tool and turn on first message override in Security

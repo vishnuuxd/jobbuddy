@@ -148,7 +148,7 @@ The SDK has no method that makes her cut in while I'm still talking. So the v1 r
 
 ## Scorecard
 
-Built after the call by one model request with a JSON schema. Input: the transcript with timestamps, all flags, the app's delivery metrics, the role, seniority, mode, CV text and job description text.
+Built after the call by one model request with a JSON schema. Input: the transcript with timestamps, all flags, the app's delivery metrics, the role, seniority, length, question count, CV text and job description text.
 
 **Rubric.** Each answer gets 1 to 5 on five axes, judged against the seniority bar. A 3 is a passable answer at that level.
 
@@ -219,7 +219,7 @@ One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Turn settings
 | --- | --- | --- |
 | react | name: nod, smile, browRaise, glanceDown, handUp, checkWatch, sitUp, leanIn | Fires that trigger on the rig |
 | flag | type, quote | Logs the flag with a timestamp. Plays the writing mood. Ignored outside the interview phase |
-| setPhase | name: intake, interview, done | Sets the phase. done ends the call and starts the scorecard |
+| setPhase | name: opening, interview, done | Sets the phase. done ends the call and starts the scorecard |
 | setSetup | None | Removed. Setup now comes from the sheet. Delete this tool in ElevenLabs |
 | nextQuestion | index | Advances "Question 2 of 3". The app counts questions itself and ignores a call if she hasn't asked a new question since the last one |
 
@@ -448,12 +448,12 @@ Check: one full intake by voice, with the orb moving with her voice and at least
 
 - [ ] Live rules from `lib/live/config.ts`, with the ladder for long answers
 - [ ] flag tool, writing mood, and flags ignored outside the interview phase
-- [ ] Full and short mode, "Question 2 of 5"
+- [ ] Lengths of 5, 10 and 20 minutes, the one minute left update, and "Question 2 of 3"
 - [ ] Attach button: PDF and text extraction, context update, glanceDown and reading mood
 - [ ] Profile: saved CV upload, replace, delete. Saved CV sent at call start
 - [ ] Dexie store saving the call record as it happens
 
-Check: a short mode interview where a 2 minute answer gets the full ladder and the CV shapes one question.
+Check: a 10 minute interview where a 2 minute answer gets the full ladder and the CV shapes one question.
 
 **Day 2 afternoon: after the call**
 
