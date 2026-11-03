@@ -20,14 +20,29 @@ A mobile web app where you video call an AI HR interviewer, get called out live,
 
 ## Screens and flows
 
-Five screens. Mobile web, installable as an app, same as Unstuck. No sign in: everything is stored in the browser on my device.
+Six screens: Home, the setup sheet, Call, Scorecard, History and Profile. Home, History and Profile sit in a bottom tab bar. Mobile web, installable as an app, same as Unstuck. No sign in: everything is stored in the browser on my device.
 
 **Home**
 
-- A grid of interviewer cards. Each card: face, name, one line style ("Meera · HR screen · direct, fair") and a Call button.
+- A grid of interviewer cards. Each card: Meera's orb for now, her name and a one line style ("Meera · HR screen · direct, fair").
 - Meera is the only live card. Two or three placeholder cards say "Not taking calls yet" and can't be tapped.
-- Under the grid: the last three calls, each opening its scorecard, plus "Run this again" on the most recent.
+- Tapping Meera opens the setup sheet.
+- Under the grid: the last three calls, each opening its scorecard, plus "Run this again" on the most recent, which opens the sheet prefilled.
 - Bottom tabs: Home, History, Profile.
+
+**Setup sheet**
+
+All setup happens here, before the call. Nothing is asked by voice.
+
+- Opens from the bottom when I tap an interviewer.
+- Name: optional, remembered for next time. Meera uses it in her opening line.
+- Role: chips for common roles (Product designer, UX researcher, Software engineer, Product manager, Data analyst, Marketing, Sales) plus Other, which opens a text field. Required.
+- Seniority: chips for Junior, Mid, Senior and Lead. Required.
+- Length: three buttons, 5, 10 and 20 minutes. 10 is selected by default.
+- Job description: a paste box. Optional.
+- CV: attach a PDF or text file. Optional. If a CV is saved in Profile, it shows as "Using your saved CV · Change". A newly attached CV can be kept with "Remember this CV".
+- Continue is active once role and seniority are chosen. It closes the sheet and starts the call.
+- The sheet remembers my last choices.
 
 **Call**
 
@@ -45,38 +60,39 @@ Five screens. Mobile web, installable as an app, same as Unstuck. No sign in: ev
 
 **History**
 
-- Every past call, newest first: interviewer, role and seniority, mode, date, summary line.
+- At the top, the completion rate: "7 of 9 interviews completed".
+- Every past call, newest first: interviewer, role and seniority, length, date, summary line.
 - Tap to open the scorecard and the full transcript, with flagged moments highlighted.
 - Delete a call by swiping or from its menu.
 
 **Profile**
 
-- Saved CV: upload, replace, delete. Shows file name and the date it was added.
+- Saved CV: upload, replace, delete. Shows file name and the date it was added. The setup sheet uses it automatically.
 - Delete all data.
-- The completion rate, shown plainly: "7 of 9 calls completed".
+- The completion rate.
+- No accounts in v1. The tab looks and works like the other two. Google sign in comes later, when the link is shared with others.
 
 ## Call behavior
 
-The call has three phases: intake, interview and close. The app tracks the phase. Flags only count during the interview.
+The call has three phases: opening, interview and close. The app tracks the phase. Flags only count during the interview.
 
-**Intake (under a minute, one question at a time, fixed order)**
+**Opening.** The app speaks her first line, built from the sheet, through the first message override. Keep it short, like a real interviewer. The app picks one at random:
 
-1. She speaks first as soon as the call connects, set as the agent's first message: "Hey, I'm Meera. So what are we prepping for today?"
-2. Role and seniority. One follow up at most if the role is vague.
-3. Mode: "Want the full five questions, or a quick three?"
-4. Job description: "Got a job description handy? No worries if not, I'll keep it broad."
-5. CV. If one is saved in Profile: "I've got your CV from your profile. Still the latest?" If not: "And your CV, if you've got it? Helps me ask better questions."
-6. Anything skipped is not asked again.
-7. Read back: "Okay, so a senior product designer role, full five, I've got your CV, no job description. Sound right?"
+- With a CV or job description: "Hi Vishnu, I'm Meera. Ten minute screen for the senior product designer role. I've seen your CV. Ready?"
+- Without: "Hi Vishnu, I'm Meera. Ten minutes on the senior product designer role today. Shall we start?"
+- No name given: "Hi, I'm Meera." in place of "Hi Vishnu, I'm Meera."
 
-**The switch.** She sits up: "Alright. Let's get into it." Phase moves to interview.
+The setup also goes to her as a contextual update at connect. When I say I'm ready, she sits up, the phase moves to interview, and she asks the first question.
 
 **Interview**
 
-| Mode | Questions |
-| --- | --- |
-| Full (5) | Opener on background, three behavioral, why this role |
-| Short (3) | Opener on background, one behavioral, why this role |
+| Length | Main questions | Shape |
+| --- | --- | --- |
+| 5 min, Quick | 2 | Opener on background, one behavioral |
+| 10 min, Standard (default) | 3 | Opener on background, one behavioral, why this role |
+| 20 min, Full | 5 | Opener on background, three behavioral, why this role |
+
+At one minute left, the app sends a contextual update and she closes after the current question. The 1200 s call limit in ElevenLabs stays as the hard stop.
 
 - Questions come from the job description if there is one, otherwise from the usual competencies for that role and seniority.
 - With a CV, at least one question is specific to it.
@@ -118,7 +134,7 @@ The SDK has no method that makes her cut in while I'm still talking. So the v1 r
 
 - Nothing fires in the first 20 seconds of an answer, except the expectant look.
 - At most one spoken interruption per answer.
-- If I start talking after she has taken her turn, she stops and listens. A short addition, up to 15 seconds, joins the previous answer: she acknowledges it in a few words and asks her question again. The scorecard notes that the result came late. Counts as starting again: an `interruption` event, or speech once she's back to listening. Her speech alone never counts, so her own voice through the phone speaker can't trigger it.
+- If I start talking after she has taken her turn, she stops and listens. A short addition, up to 15 seconds, joins the previous answer: she acknowledges it in a few words and asks her question again. The scorecard notes that the result came late. Only an interruption event counts as starting again, so answering her next question is never mistaken for an addition.
 - Longer than 15 seconds is a restart. At 15 seconds the app sends a contextual update, and at my next pause she lets it run briefly, redirects once, like "Let's hold that, I want to get to the next one", and flags it as rambling. Either way, the question label stays where it was and any nextQuestion she called on that turn is dropped. Her speaking time is left out of words per minute and answer length.
 - All values live in one config file so I can tune them after testing.
 
@@ -195,7 +211,7 @@ The app adds the delivery metrics and the completion status before saving. If th
 
 ## Agent spec
 
-One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Turn settings: eagerness Patient, take turn after silence 10 s, end conversation after silence 20 s, max duration 1200 s, with the message "We're out of time for today. Your scorecard's ready when you are." The system prompt is below. Context such as the saved CV, uploaded files and live rule events arrives through `sendContextualUpdate`.
+One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Turn settings: eagerness Patient, take turn after silence 10 s, end conversation after silence 20 s, max duration 1200 s, with the message "We're out of time for today. Your scorecard's ready when you are." First message override is on in Security, because the app writes her opening line. The system prompt is below. Context such as the saved CV, uploaded files and live rule events arrives through `sendContextualUpdate`.
 
 **Client tools.** Configure them in the ElevenLabs dashboard with these exact names. None of them block the conversation.
 
@@ -204,7 +220,7 @@ One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Turn settings
 | react | name: nod, smile, browRaise, glanceDown, handUp, checkWatch, sitUp, leanIn | Fires that trigger on the rig |
 | flag | type, quote | Logs the flag with a timestamp. Plays the writing mood. Ignored outside the interview phase |
 | setPhase | name: intake, interview, done | Sets the phase. done ends the call and starts the scorecard |
-| setSetup | role, seniority, mode, hasJd, hasCv | Saves the intake result for History and the scorecard |
+| setSetup | None | Removed. Setup now comes from the sheet. Delete this tool in ElevenLabs |
 | nextQuestion | index | Advances "Question 2 of 3". The app counts questions itself and ignores a call if she hasn't asked a new question since the last one |
 
 **System prompt**
@@ -212,19 +228,16 @@ One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Turn settings
 ```text
 You are Meera, an experienced HR interviewer. You run screening interviews for any role. You are direct, calm and fair. You are not unkind, and you do not praise to be nice. When an answer lands, you nod and move on. When someone rambles, it shows on your face.
 
-INTAKE
-- If the person is silent, open with something like "Hey, I'm Meera. So what are we prepping for today?"
-- One question at a time, in this order: role and seniority, full five or quick three, job description, CV.
-- If the role is vague, ask one follow up at most.
-- If a CV is already in context, confirm it is still current instead of asking for one.
-- If they skip something, do not ask again.
-- Read the setup back in one sentence and check it is right. Then call setSetup.
-- Nothing in intake is judged. Never call flag during intake.
+OPENING
+- The app speaks your first line for you. It greets them, names the role and length, and asks if they're ready.
+- At the start you receive the setup as a context update: their name, role, seniority, length, number of main questions, and whether there is a CV or job description.
+- When they say they're ready, start the interview. If they ask something first, answer in one line, then start.
+- Nothing before the interview is judged. Never call flag before setPhase("interview").
 
 INTERVIEW
-- Call setPhase("interview") and react("sitUp"). Say something like "Alright. Let's get into it."
-- Full mode: an opener on their background, three behavioral questions, then why this role.
-- Short mode: an opener, one behavioral question, then why this role.
+- Call setPhase("interview") and react("sitUp"), then ask the first question with no extra preamble.
+- Ask the number of main questions in the setup. 2: an opener on their background, then one behavioral question. 3: an opener, one behavioral question, then why this role. 5: an opener, three behavioral questions, then why this role.
+- If you receive a context update saying about a minute is left, finish the current question and close. Never start a new main question then.
 - Base behavioral questions on the job description. With none, use the usual competencies for this role and seniority. With a CV, make at least one question specific to it.
 - Call nextQuestion before each main question. You may ask one follow up per question.
 - If a story ends with no result, ask something like "So how did that turn out?"
@@ -257,7 +270,6 @@ HOW YOU SOUND
 - Never write reactions or stage directions in brackets, like [nod] or [smile]. Show reactions only by calling react.
 
 TOOL RULES
-- Before calling setSetup, read the setup back in one sentence and wait for them to confirm.
 - Call nextQuestion only in the same turn where you ask a new main question.
 - Never call react("nod") on an answer you flagged.
 - In flag, quote at most 25 words: the part that shows the problem, not the whole answer.
@@ -352,12 +364,13 @@ type Call = {
   interviewerId: string;
   startedAt: string;
   endedAt?: string;
-  setup?: { role: string; seniority: string; mode: "full" | "short"; hasJd: boolean; hasCv: boolean };
+  setup?: { role: string; seniority: string; name?: string; durationMin: 5 | 10 | 20; questionCount: 2 | 3 | 5; hasJd: boolean; hasCv: boolean };
   jdText?: string;
   cvText?: string; // snapshot used in this call
   transcript: { speaker: "user" | "agent"; text: string; startSec: number; endSec: number; questionIndex?: number }[];
   flags: { type: string; quote: string; atSeconds: number; source: "client" | "agent" }[];
-  metrics: { questionIndex: number; seconds: number; wpm: number; fillers: number; hedges: number }[];
+  metrics: { questionIndex: number; seconds: number; wpm: number; fillers: number; hedges: number; words: number }[];
+  lateAdditions: number[]; // question indexes where a detail came after she moved on
   status: "completed" | "incomplete" | "scoring_failed";
   scorecard?: Scorecard; // the JSON schema above
   retries: { questionIndex: number; at: string; answer: Scorecard["answers"][number] }[];
@@ -403,6 +416,8 @@ rive/           RML source, build script, meera.riv
 Two days, in order. Each block ends with checks. A block isn't done until its checks pass on my phone.
 
 **Change, 2 Nov.** Meera's design, the rig and lip sync move to after v1. v1 ships with the orb placeholder, which shows every reaction. All other Day 1 and Day 2 items stay.
+
+**Change, 3 Nov.** Setup moves from voice to a setup sheet. Lengths of 5, 10 and 20 minutes replace the two modes. Home, History and Profile get a bottom tab bar. Profile has no accounts in v1. Design Home, the setup sheet, History, the scorecard and Profile together in Paper before building them.
 
 **Milestone 0: spike (first 2 hours of day 1)**
 
