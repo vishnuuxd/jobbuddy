@@ -18,6 +18,17 @@ A mobile web app where you video call an AI HR interviewer, get called out live,
 
 **Non goals for v1.** Judging technical correctness, camera analysis, multiple live interviewers, sign in, sharing, payments.
 
+## Version 2 focus
+
+Version 2 is a showcase build: four key flows with polished, delightful UI, recorded as a 2 to 3 minute video for the case study.
+
+- **Lead with the scorecard and the improvement loop.** The live reactions stay as supporting detail. Test 5, the cut in, runs later, and the plan adjusts if it fails.
+- **Four flows to polish:** Home to setup sheet, the call, the end of the call into the scorecard, and retrying one question. History and Profile only need to look right.
+- **Gamification:** the retry win, a practice streak, skill badges and personal bests. No XP and no leaderboards, because they reward time spent, not progress.
+- **Meera comes after the flows.** An original character, built to Duolingo's level of motion quality, not their look. Her expressions come from what the settled flows need.
+- **No call recording in v2.** Replaying the audio of a moment is a later stretch goal.
+- **Decision for the case study:** the orb shipped in v1 to build and test fast, before investing in a character.
+
 ## Screens and flows
 
 Six screens: Home, the setup sheet, Call, Scorecard, History and Profile. Home, History and Profile sit in a bottom tab bar. Mobile web, installable as an app, same as Unstuck. No sign in: everything is stored in the browser on my device.
@@ -71,6 +82,18 @@ All setup happens here, before the call. Nothing is asked by voice.
 - Delete all data.
 - The completion rate.
 - No accounts in v1. The tab looks and works like the other two. Google sign in comes later, when the link is shared with others.
+
+## User journeys
+
+Five journeys. The first two carry the video. The diagram is in the PRD doc.
+
+1. **First practice.** Home, tap Meera, setup sheet, call, scorecard, retry the weakest answer, see the improvement, and the streak starts.
+2. **Daily practice.** Home shows the streak and last time's weak spot. "Practice this" starts a 5 minute call focused on that skill, with the sheet prefilled.
+3. **Night before an interview.** Paste the job description, choose 20 minutes, review the moments, retry two answers.
+4. **Checking progress.** History, a past call, personal bests per skill, badges.
+5. **When things go wrong.** Cut short, mic denied, call dropped or scorecard failed. Each has a clear way back: Try again, Reconnect or Build scorecard.
+
+"Practice this" is the one new piece of scope here. It's a 5 minute call whose setup carries a focus skill, and Meera picks questions that test it.
 
 ## Call behavior
 
@@ -148,6 +171,23 @@ The SDK has no method that makes her cut in while I'm still talking. So the v1 r
 
 ## Scorecard
 
+**Layout, v2.** The scorecard answers one question: what do I fix, and can I fix it now. The wireframe is in the PRD doc.
+
+1. **Meera's take.** One honest sentence in her voice.
+2. **Your one thing.** The main pattern with evidence, like "2 of 3 answers ended before the result", and one line on why it matters.
+3. **Moments, two or three.** The weakest answers only. Each shows the question, a short quote of my words, the rewrite with blanks for missing numbers, and Retry.
+4. **What went well.** One real strength.
+5. **Skills.** Five bars, with a marker for my personal best.
+6. **Delivery and wins.** Pace, fillers, average answer length, badges from this call, the streak.
+7. **Actions.** Retry the weakest answer, new interview, save.
+
+**The retry.** Tapping Retry starts a short call with only that question and the same setup. Afterwards: my old answer next to the new one, the score change per skill, and a celebration if it went up. The moment card then shows "Improved".
+
+**Gamification data**, stored in the browser with the calls. Starting rules, to tune later:
+- **Streak:** days in a row with at least one completed call. A missed day resets it quietly.
+- **Badges:** Landed the result (every answer had one), No ramble (no answer over 2 minutes), Filler free (under 3 fillers per answer), Comeback (a retry scored higher).
+- **Personal bests:** the best score per skill, shown on the scorecard and in History.
+
 Built after the call by one model request with a JSON schema. Input: the transcript with timestamps, all flags, the app's delivery metrics, the role, seniority, length, question count, CV text and job description text.
 
 **Rubric.** Each answer gets 1 to 5 on five axes, judged against the seniority bar. A 3 is a passable answer at that level.
@@ -178,7 +218,9 @@ Built after the call by one model request with a JSON schema. Input: the transcr
   "summary": {
     "pattern": "string, one sentence, the main weakness across answers",
     "strongest": { "questionIndex": "number", "why": "string" },
-    "practiceNext": "string, one sentence"
+    "practiceNext": "string, one sentence",
+    "meeraTake": "string, one honest sentence in her voice",
+    "oneThing": { "pattern": "string", "evidence": "string, like 2 of 3 answers", "whyItMatters": "string, one line" }
   },
   "answers": [
     {
@@ -195,7 +237,8 @@ Built after the call by one model request with a JSON schema. Input: the transcr
       "flagged": {
         "type": "rambling | off_question | no_result | filler | hedging | pace",
         "quote": "string, my exact words",
-        "atSeconds": "number"
+        "atSeconds": "number",
+        "whyItMatters": "string, one line"
       },
       "rewrite": {
         "original": "string, my exact words",
