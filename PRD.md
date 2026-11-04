@@ -181,9 +181,9 @@ The SDK has no method that makes her cut in while I'm still talking. So the v1 r
 6. **Delivery and wins.** Pace, fillers, average answer length, badges from this call, the streak.
 7. **Actions.** Retry the weakest answer, new interview, save.
 
-**The retry.** Tapping Retry starts a short call with only that question and the same setup. Afterwards: my old answer next to the new one, the score change per skill, and a celebration if it went up. The moment card then shows "Improved".
+**The retry.** Tapping Retry starts a short call with only that question and the same setup. Afterwards: my old answer next to the new one, the score change per skill, and a celebration if it went up. The moment card then shows "Improved". The score change is worked out by comparing the retry's scores with the original answer's, so nothing extra is stored.
 
-**Gamification data**, stored in the browser with the calls. Starting rules, to tune later:
+**Gamification data** is worked out from past calls, so nothing extra is stored. The thresholds live in their own badges group in `lib/live/config.ts`. Starting rules, to tune later:
 - **Streak:** days in a row with at least one completed call. A missed day resets it quietly.
 - **Badges:** Landed the result (every answer had one), No ramble (no answer over 2 minutes), Filler free (under 3 fillers per answer), Comeback (a retry scored higher).
 - **Personal bests:** the best score per skill, shown on the scorecard and in History.
@@ -216,9 +216,8 @@ Built after the call by one model request with a JSON schema. Input: the transcr
 ```json
 {
   "summary": {
-    "pattern": "string, one sentence, the main weakness across answers",
     "strongest": { "questionIndex": "number", "why": "string" },
-    "practiceNext": "string, one sentence",
+    "practiceNext": "clarity | structure | evidence | relevance | delivery, the suggested focus skill for Practice this",
     "meeraTake": "string, one honest sentence in her voice",
     "oneThing": { "pattern": "string", "evidence": "string, like 2 of 3 answers", "whyItMatters": "string, one line" }
   },
@@ -407,7 +406,7 @@ type Call = {
   interviewerId: string;
   startedAt: string;
   endedAt?: string;
-  setup?: { role: string; seniority: string; name?: string; durationMin: 5 | 10 | 20; questionCount: 2 | 3 | 5; hasJd: boolean; hasCv: boolean };
+  setup?: { role: string; seniority: string; name?: string; durationMin: 5 | 10 | 20; questionCount: 2 | 3 | 5; focusSkill?: "clarity" | "structure" | "evidence" | "relevance" | "delivery"; hasJd: boolean; hasCv: boolean };
   jdText?: string;
   cvText?: string; // snapshot used in this call
   transcript: { speaker: "user" | "agent"; text: string; startSec: number; endSec: number; questionIndex?: number }[];
