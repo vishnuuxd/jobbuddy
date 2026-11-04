@@ -64,8 +64,7 @@ All setup happens here, before the call. Nothing is asked by voice.
 
 **Scorecard**
 
-- Summary card on top: the pattern, the strongest answer, the one thing to practice, and delivery numbers.
-- One card per answer underneath (see the Scorecard section).
+- The v2 layout in the Scorecard section: Meera's take, your one thing, two or three moments with Retry, what went well, skills, delivery and wins.
 - Actions: Retry a question, Run this again, Save as PDF or Markdown.
 - Cut short screen instead, if fewer than two answers were given.
 
