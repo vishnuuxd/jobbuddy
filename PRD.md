@@ -29,6 +29,8 @@ Version 2 is a showcase build: four key flows with polished, delightful UI, reco
 - **No call recording in v2.** Replaying the audio of a moment is a later stretch goal.
 - **Decision for the case study:** the orb shipped in v1 to build and test fast, before investing in a character.
 
+**Video plan, 2 to 3 minutes.** First practice, about 60 seconds. Daily practice, about 15 seconds. Checking progress, about 15 seconds. Retrying an old call, about 20 seconds. Then how it was built and what was cut.
+
 ## Screens and flows
 
 Six screens: Home, the setup sheet, Call, Scorecard, History and Profile. Home, History and Profile sit in a bottom tab bar. Mobile web, installable as an app, same as Unstuck. No sign in: everything is stored in the browser on my device.
@@ -72,7 +74,7 @@ All setup happens here, before the call. Nothing is asked by voice.
 
 - At the top, the completion rate: "7 of 9 interviews completed".
 - Every past call, newest first: interviewer, role and seniority, length, date, summary line.
-- Tap to open the scorecard and the full transcript, with flagged moments highlighted.
+- Tap to open the scorecard and the full transcript, with flagged moments highlighted. Retry stays on each moment, so I can retry an old answer and see the before and after.
 - Delete a call by swiping or from its menu.
 
 **Profile**
@@ -84,13 +86,14 @@ All setup happens here, before the call. Nothing is asked by voice.
 
 ## User journeys
 
-Five journeys. The first two carry the video. The diagram is in the PRD doc.
+Six journeys. Four of them carry the video: first practice, daily practice, checking progress and retrying an old call. The diagram is in the PRD doc.
 
 1. **First practice.** Home, tap Meera, setup sheet, call, scorecard, retry the weakest answer, see the improvement, and the streak starts.
 2. **Daily practice.** Home shows the streak and last time's weak spot. "Practice this" starts a 5 minute call focused on that skill, with the sheet prefilled.
-3. **Night before an interview.** Paste the job description, choose 20 minutes, review the moments, retry two answers.
-4. **Checking progress.** History, a past call, personal bests per skill, badges.
-5. **When things go wrong.** Cut short, mic denied, call dropped or scorecard failed. Each has a clear way back: Try again, Reconnect or Build scorecard.
+3. **Checking progress.** History with the completion rate, personal bests per skill, and badges.
+4. **Retrying an old call.** History, a past call, retry an answer that was weak back then, and see the before and after. The past call's scorecard keeps Retry on its moments, so this needs no new screen.
+5. **Night before an interview.** Paste the job description, choose 20 minutes, review the moments, retry two answers.
+6. **When things go wrong.** Cut short, mic denied, call dropped or scorecard failed. Each has a clear way back: Try again, Reconnect or Build scorecard.
 
 "Practice this" is the one new piece of scope here. It's a 5 minute call whose setup carries a focus skill, and Meera picks questions that test it.
 
