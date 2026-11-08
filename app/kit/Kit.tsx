@@ -7,7 +7,7 @@ import { CallControl, CallPill, ProgressSegments, QuestionCard } from "@/compone
 import { Card, Eyebrow } from "@/components/ui/Card";
 import { SelectChip, StatusPill, Sticker } from "@/components/ui/Chip";
 import { HeroGreeting, HeroHeader, HeroMeta } from "@/components/ui/HeroHeader";
-import { ArrowIcon, AttachIcon, CameraIcon, CheckIcon, FlameIcon, MicIcon, StarIcon } from "@/components/ui/icons";
+import { ArrowIcon, CameraIcon, CheckIcon, FlameIcon, MicIcon, StarIcon } from "@/components/ui/icons";
 import { InterviewerPlaceholder } from "@/components/ui/InterviewerPlaceholder";
 import { Sheet } from "@/components/ui/Sheet";
 import { SkillBar } from "@/components/ui/SkillBar";
@@ -420,9 +420,6 @@ export function Kit() {
         <div className={styles.controls}>
           <CallControl label="Mute">
             <MicIcon />
-          </CallControl>
-          <CallControl label="Attach a CV or job description">
-            <AttachIcon />
           </CallControl>
           <CallControl label="Turn camera on" pressed>
             <CameraIcon />

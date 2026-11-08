@@ -83,3 +83,8 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 - Screen showed: a white face with an ink outline next to "Meera says" in the pink header
 - Built instead: a `tone="light"` option on the same Meera component: white body, 2 px ink outline at any size, no sun dot
 - Why: the pink blob disappears on the pink header. One component keeps her face consistent everywhere
+
+## Phase 1 · 1.3 to 1.5, 2.1: no attach button on the call
+- Screen showed: four call controls: mic, attach, camera and End
+- Built instead: three controls, mic, camera and End. The attach icon and its kit example are removed
+- Why: the PRD and DESIGN.md changed on 8 Nov. The CV and job description only come in through the setup sheet, and Meera never asks for them
