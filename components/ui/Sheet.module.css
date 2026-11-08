@@ -1,0 +1,36 @@
+.sheet {
+  position: fixed;
+  inset: auto 0 var(--keyboard, 0px);
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100dvh - var(--keyboard, 0px) - 64px);
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 28px 28px 0 0;
+  background: var(--white);
+  color: var(--ink);
+  overflow: hidden;
+  transition: bottom 160ms ease-out;
+}
+.sheet[open] { display: flex; animation: rise 280ms var(--spring); }
+.sheet::backdrop { background: var(--pink); animation: fade 200ms ease-out; }
+
+/* The dialog itself catches backdrop taps, so the panel fills it edge to edge. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  padding: 12px var(--side) calc(env(safe-area-inset-bottom, 0px) + 24px);
+}
+.grabber { flex: none; align-self: center; width: 40px; height: 5px; border-radius: 3px; background: var(--border); }
+.panel .title { margin: 18px 0 0; font: 800 26px/30px var(--display); letter-spacing: -0.02em; }
+.body { min-height: 0; margin-top: 18px; overflow-y: auto; overscroll-behavior: contain; }
+
+@keyframes rise { from { transform: translateY(100%); } }
+@keyframes fade { from { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .sheet::backdrop { animation: none; transition: none; }
+}

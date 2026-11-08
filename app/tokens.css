@@ -1,0 +1,72 @@
+/* JobBuddy v2 tokens: Tropical. Names and values from design/DESIGN.md and the Paper file. */
+:root {
+  /* Colour */
+  --pink: #ff3d7f;
+  --pink-deep: #d61f5e;
+  --pink-tint: #ffe8ef;
+  --sun: #ffb800;
+  --cream: #fff4d6;
+  --cream-ink: #b07f00;
+  --cream-chip: #8a6400;
+  --ink: #1a1530;
+  --body: #3b3552;
+  --muted: #6b6580;
+  --line: #f1eef6;
+  --border: #e4e1ec;
+  --dashed: #c9c4d6;
+  --mint: #00a86b;
+  --mint-deep: #00764b;
+  --mint-tint: #e6f7f0;
+  --white: #ffffff;
+  --tile: #f7f5fa; /* Stat tile background, from Paper */
+
+  /* Dark call screens, from Paper */
+  --ink-raised: #2a2442; /* Controls, pills */
+  --ink-line: #3a3352; /* Upcoming progress, offline Meera */
+  --ink-muted: #b9b3cc; /* Sublines on ink, 8.7:1 */
+  --ink-dim: #5a5272; /* Offline sun dot */
+
+  /* Type */
+  --display: var(--font-display), system-ui, sans-serif;
+  --text: var(--font-body), system-ui, sans-serif;
+
+  /* Shape */
+  --r-hero: 32px;
+  --r-main: 24px;
+  --r-card: 22px;
+  --r-big: 18px;
+  --r-button: 16px;
+  --r-small: 14px;
+  --r-pill: 999px;
+  --outline: 2px;
+  --shadow-big: 0 5px 0 var(--ink);
+  --shadow-small: 0 4px 0 var(--ink);
+
+  /* Space */
+  --side: 22px;
+  --card-pad: 18px;
+  --section-gap: 20px;
+
+  /* Motion */
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --quick: 120ms;
+}
+
+/* Type roles */
+.t-hero { font: 800 34px/36px var(--display); letter-spacing: -0.02em; }
+.t-title { font: 800 26px/30px var(--display); letter-spacing: -0.02em; }
+.t-card { font: 800 20px/24px var(--display); }
+.t-button { font: 800 17px/22px var(--display); }
+.t-body { font: 600 15px/22px var(--text); }
+.t-small { font: 700 13px/18px var(--text); }
+.t-eyebrow { font: 900 13px/16px var(--text); letter-spacing: 0.06em; text-transform: uppercase; }
+.t-label { font: 800 15px/20px var(--text); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

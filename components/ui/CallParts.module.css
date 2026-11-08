@@ -1,0 +1,50 @@
+.segments { display: flex; gap: 6px; }
+.segment { width: 28px; height: 10px; border-radius: 5px; }
+.done { background: var(--mint); }
+.current { background: var(--sun); }
+.upcoming { background: var(--ink-line); }
+
+.pill {
+  padding: 5px 12px;
+  border-radius: var(--r-pill);
+  background: var(--ink-raised);
+  color: var(--white);
+  font: 800 14px/18px var(--text);
+}
+
+/* The 6 px corner points at Meera, who speaks from above-left. */
+.question {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 5px;
+  padding: 16px 18px;
+  border-radius: 22px 22px 22px 6px;
+  background: var(--white);
+  box-shadow: 0 5px 0 var(--pink);
+}
+.questionLabel { margin: 0; color: var(--pink); font: 800 13px/16px var(--text); }
+.questionText { margin: 0; color: var(--ink); font: 700 17px/24px var(--text); }
+
+.control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  height: 58px;
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  background: var(--ink-raised);
+  color: var(--white);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--quick) var(--spring);
+}
+.control[aria-pressed="true"] { background: var(--white); color: var(--ink); }
+.control:active { transform: scale(0.93); }
+.control:focus-visible { outline: 3px solid var(--sun); outline-offset: 3px; }
+.control:disabled { opacity: 0.4; cursor: not-allowed; }
+.end { padding: 0 20px; background: var(--pink); font: 800 17px/22px var(--display); }
+
+@media (prefers-reduced-motion: reduce) { .control { transition: none; } }

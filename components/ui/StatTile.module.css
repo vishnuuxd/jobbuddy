@@ -1,0 +1,5 @@
+.tile { display: flex; flex: 1 1 0; flex-direction: column; padding: 12px; border-radius: var(--r-button); }
+.soft { background: var(--tile); }
+.mint { background: var(--mint-tint); }
+.value { color: var(--ink); font: 800 24px/28px var(--display); }
+.label { color: var(--muted); font: 700 13px/16px var(--text); }

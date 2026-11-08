@@ -327,22 +327,29 @@ TOOL RULES
 
 The same method as Unstuck. Meera is flat and front facing, built from separate named vector parts, and rigged in Rive with the Rive CLI. The app never animates. It only sets view model values.
 
-**V1 placeholder: the orb.** Meera's design moves to after v1. Until then, an animated orb, similar to a voice mode orb, stands in. It reads the same InterviewVM values the rig will use: mood, mouthOpen and every trigger. Build it as one avatar component behind that interface, so the Rive rig drops into the same slot later and nothing else in the app changes. Tests with the orb check the timing of reactions, not how they feel. That needs the face.
+**V2 placeholder: Meera's blob.** v1 shipped an orb to build and test fast. v2 replaces it with Meera's blob from `design/DESIGN.md`: a pink blob with a sun dot and ink eyes, built in `components/meera/Meera.tsx`. She reads the same InterviewVM values the rig will use (mood, mouthOpen and every trigger) through one avatar component, so the Rive rig drops into the same slot later and nothing else in the app changes. The mapping lives in `lib/avatar/meeraFace.ts` and is unit tested. The call screen moves from the orb to the blob in v2 phase 4.
 
-| Signal | Orb |
+| Signal | Blob |
 | --- | --- |
-| talking | Wobbles and swells with her voice volume (mouthOpen) |
-| listening, idle | Slow, calm breathing |
-| intake | Softer and slightly smaller |
-| sitUp (interview starts) | Firms up: crisper edge, slightly bigger |
+| idle, listening | Tall eyes, no mouth, slow breathing |
+| intake (the opening) | Smile, the "hi" face, sitting slightly smaller |
+| talking | The mouth opens and closes with mouthOpen, her voice volume, and the body swells slightly |
+| skeptical | Worried eyes and a wavy mouth |
+| writing (flag) | Eyes down, notepad and pencil |
+| reading, glanceDown | Eyes drop and narrow |
+| checkWatch | Flat eyes and mouth, and a dotted sun ring around her for the length of the trigger |
+| browRaise | Wide eyes and a round, surprised mouth, briefly |
+| expectant | Lifts slightly and the eyes widen, holding |
+| smile | Smile for about a second |
 | nod | A quick small bounce |
-| expectant | Lifts slightly and brightens, holding |
-| browRaise | A small sharp pulse |
-| glanceDown, reading | Dims and shrinks a little |
-| checkWatch | A ring sweeps once around the edge |
-| writing (flag) | A subtle ripple |
+| sitUp (interview starts) | Settles slightly taller for the rest of the call |
 | leanIn | Grows slightly toward the viewer |
-| handUp, smile, skeptical | A matching variation of the above; keep each one distinct |
+| handUp | A quick squash, and the sun dot pops |
+
+- While she's talking, her voice keeps the talking mouth. Expression triggers change only the eyes.
+- Reduced motion turns off breathing, bounce and lift. Expressions still change.
+- Offline is not an InterviewVM value. When the call drops, the screen passes `offline` and she shows grey with dash eyes. Whether this moves into InterviewVM is to be settled before phase 7.
+- Reaction stickers like "Getting long" are placed by the screen next to her. They are not part of the blob.
 
 **Method, step by step.** Everything is built from scratch. No existing Rive file, including the Unstuck one, is used or copied.
 

@@ -1,0 +1,102 @@
+.button {
+  --edge: var(--ink);
+  --drop: 5px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0 0 var(--drop);
+  padding: 0 20px;
+  border: var(--outline) solid var(--edge);
+  border-radius: var(--r-button);
+  box-shadow: 0 var(--drop) 0 var(--edge);
+  color: var(--ink);
+  background: var(--white);
+  font: 800 17px/22px var(--display);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--quick) var(--spring),
+    box-shadow var(--quick) var(--spring);
+}
+
+.block { display: flex; width: 100%; }
+
+/* Sizes */
+.big { height: 58px; border-radius: var(--r-big); font-size: 19px; line-height: 24px; }
+.small { --drop: 4px; height: 50px; border-radius: var(--r-button); }
+.compact {
+  --drop: 0px;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: var(--r-small);
+  font: 900 14px/18px var(--text);
+}
+
+/* Variants */
+.primary { background: var(--pink); color: var(--white); }
+.secondary { background: var(--white); }
+.quiet { --edge: var(--border); --drop: 0px; background: var(--white); font: 800 15px/20px var(--text); }
+.ink { --drop: 0px; background: var(--ink); color: var(--white); }
+.text {
+  --drop: 0px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 4px;
+  border-color: transparent;
+  background: none;
+  font: 900 15px/20px var(--text);
+}
+
+.onDark { --edge: var(--white); }
+.onDark.text,
+.onDark.quiet { color: var(--white); }
+.onDark.quiet { --edge: var(--ink-line); background: var(--ink-raised); }
+
+/* Pressed: the button drops by its shadow. data-pressed forces it for /kit. */
+.button:active:not(:disabled):not([aria-busy]),
+.button[data-pressed] {
+  transform: translateY(var(--drop));
+  box-shadow: 0 0 0 var(--edge);
+}
+
+.button:focus-visible {
+  outline: 3px solid var(--sun);
+  outline-offset: 3px;
+}
+
+.button:disabled {
+  border-color: var(--border);
+  box-shadow: 0 var(--drop) 0 var(--border);
+  background: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.text:disabled { border-color: transparent; background: none; box-shadow: none; }
+
+/* Loading keeps its width and shows a spinner over the hidden label. */
+.button[aria-busy] { cursor: progress; }
+.hiddenLabel { opacity: 0; } /* Stays in the accessibility tree, so the button keeps its name */
+.spinner {
+  position: absolute;
+  inset: 0;
+  width: 22px;
+  height: 22px;
+  margin: auto;
+  border: 3px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(1turn); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .button { transition: none; }
+  .spinner { animation-duration: 2s; }
+}

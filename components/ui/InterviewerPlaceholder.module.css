@@ -1,0 +1,16 @@
+.card {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 10px;
+  border: var(--outline) dashed var(--dashed);
+  border-radius: var(--r-big);
+}
+.blob { flex: none; width: 30px; height: 30px; background: var(--line); }
+.b0 { border-radius: 52% 44% 56% 48% / 48% 52% 46% 54%; }
+.b1 { border-radius: 44% 56% 48% 52% / 56% 48% 52% 44%; }
+.text { display: flex; flex-direction: column; }
+.name { color: var(--ink); font: 800 14px/18px var(--text); }
+.status { color: var(--muted); font: 700 12px/16px var(--text); }

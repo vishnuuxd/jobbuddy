@@ -1,0 +1,65 @@
+/* Selectable chip. Every selected chip is ink with white text: pink is kept for primary actions. */
+.select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: var(--outline) solid var(--border);
+  background: var(--white);
+  color: var(--ink);
+  font: 700 15px/18px var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--quick) var(--spring);
+}
+.pill { border-radius: var(--r-pill); }
+.tile { flex: 1 1 0; border-radius: var(--r-small); }
+.dashed { border-style: dashed; border-color: var(--dashed); color: var(--muted); }
+.select[aria-checked="true"] { border-color: var(--ink); background: var(--ink); color: var(--white); font-weight: 800; }
+.select:active { transform: scale(0.96); }
+.select:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.select:disabled { color: var(--muted); background: var(--line); cursor: not-allowed; }
+
+/* Status pill */
+.status {
+  display: inline-flex;
+  white-space: nowrap;
+  border-radius: var(--r-pill);
+  align-items: center;
+  padding: 4px 10px;
+  font: 900 13px/16px var(--text);
+}
+.mint { background: var(--mint-tint); color: var(--mint-deep); }
+.cream { background: var(--cream); color: var(--cream-chip); }
+.pink { background: var(--pink-tint); color: var(--pink-deep); }
+.grey { background: var(--line); color: var(--muted); }
+
+/* Sticker: rare, tilted, outlined */
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-pill);
+  color: var(--ink);
+  font: 900 13px/16px var(--text);
+  white-space: nowrap;
+}
+.withIcon { padding: 6px 14px 6px 6px; font-size: 14px; line-height: 18px; }
+.stickerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: var(--outline) solid var(--ink);
+  border-radius: 50%;
+  background: var(--white);
+}
+.s-sun { background: var(--sun); }
+.s-white { background: var(--white); }
+.s-mint { background: var(--mint); color: var(--white); }
+.s-pink { background: var(--pink); color: var(--white); }
+.stickerOnDark { border-color: var(--white); }

@@ -83,3 +83,16 @@ Setup moves to a setup sheet, lengths of 5, 10 and 20 minutes replace the modes,
 - The opening phase keeps the `intake` mood name in InterviewVM, so the avatar interface doesn't change
 - Code still to change for this: remove setSetup, rename the intake phase to opening, question counts of 2, 3 and 5, the app-written first line, and the one minute left update
 - In ElevenLabs: delete the setSetup tool and turn on first message override in Security
+
+## v2 phase 1: Foundation
+
+Built Nov 8, 2026. Check, not passed yet: `/kit` on Vishnu's phone.
+
+- [x] Bricolage Grotesque and Nunito Sans through `next/font`, as variables only. Screens not yet restyled keep Inter
+- [x] Tokens in `app/tokens.css`: DESIGN.md colours, dark call colours from Paper, radii, shadows, spacing and type roles
+- [x] Components in `components/ui`: Button, Chip (select, status pill, sticker), Card, TabBar, Sheet, HeroHeader, SkillBar, StatTile, InterviewerPlaceholder and the call parts
+- [x] Meera's blob in `components/meera`, reading InterviewVM only. The mapping is in `lib/avatar/meeraFace.ts` and the PRD Character section, with unit tests. The call screen still uses the orb until phase 4
+- [x] `/kit` shows every component and state
+- [x] `/call`, `/profile` and `/orb` checked pixel for pixel against screenshots from before the phase: unchanged
+
+Waiting for Vishnu: the six contrast proposals in `design/DECISIONS.md`, also rendered in the Contrast section of `/kit`.
