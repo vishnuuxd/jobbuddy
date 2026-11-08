@@ -8,8 +8,8 @@ export const maxDuration = 60;
 
 // The current Flash model on this key, checked on 8 Nov 2026. GEMINI_MODEL overrides it.
 const defaultModel = "gemini-3.8-flash";
-// When the main model is busy, one try on Google's alias for its current Flash.
-const fallbackModel = "gemini-flash-latest";
+// When the main model is busy or rate limited, one try on each of these, in order.
+const fallbackModels = ["gemini-flash-latest", "gemini-3.5-flash"];
 
 type Body =
   | { kind: "call"; call: Call }
@@ -22,13 +22,19 @@ class BusyError extends Error {}
 async function generate(prompt: string, schema: object) {
   const model = process.env.GEMINI_MODEL || defaultModel;
   const started = Date.now();
-  try {
-    return await generateWith(model, prompt, schema, started);
-  } catch (error) {
-    if (!(error instanceof BusyError) || model === fallbackModel || Date.now() - started > 30_000) throw error;
-    console.warn(`Scorecard: ${model} is busy, trying ${fallbackModel}`);
-    return generateWith(fallbackModel, prompt, schema, started, 1);
+  const chain = [model, ...fallbackModels.filter((name) => name !== model)];
+  let lastError: unknown;
+  for (const [index, name] of chain.entries()) {
+    if (index > 0 && Date.now() - started > 35_000) break; // Leave time for one more full answer.
+    try {
+      return await generateWith(name, prompt, schema, started, index === 0 ? 2 : 1);
+    } catch (error) {
+      if (!(error instanceof BusyError)) throw error;
+      lastError = error;
+      console.warn(`Scorecard: ${name} is busy, trying the next model`);
+    }
   }
+  throw lastError;
 }
 
 async function generateWith(model: string, prompt: string, schema: object, started: number, maxAttempts = 3) {
@@ -53,7 +59,7 @@ async function generateWith(model: string, prompt: string, schema: object, start
     }
     const detail = (await res.text()).slice(0, 300);
     if (!retryable.has(res.status)) throw new Error(`Gemini returned ${res.status}: ${detail}`);
-    if (attempt >= maxAttempts || Date.now() - started > 25_000) throw new BusyError(`${model} returned ${res.status}: ${detail}`);
+    if (attempt >= maxAttempts || Date.now() - started > 35_000) throw new BusyError(`${model} returned ${res.status}: ${detail}`);
     await new Promise((resolve) => setTimeout(resolve, 1_500 * attempt));
   }
 }
