@@ -10,6 +10,10 @@ type Props = {
   /** Read by screen readers. Shown only if `showTitle` is set. */
   title: string;
   showTitle?: boolean;
+  /** Hero-size title, for sheets that are a screen of their own. */
+  largeTitle?: boolean;
+  /** Shown above the title, like a sticker. */
+  eyebrow?: ReactNode;
   children: ReactNode;
 };
 
@@ -17,7 +21,7 @@ type Props = {
  * Bottom sheet on a native modal dialog: focus stays inside, Escape closes it,
  * and the page behind can't be reached. A tap on the pink backdrop closes it too.
  */
-export function Sheet({ open, onClose, title, showTitle, children }: Props) {
+export function Sheet({ open, onClose, title, showTitle, largeTitle, eyebrow, children }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const keyboard = useKeyboardInset(open);
@@ -55,10 +59,14 @@ export function Sheet({ open, onClose, title, showTitle, children }: Props) {
     >
       <div className={styles.panel}>
         <div className={styles.grabber} aria-hidden="true" />
-        <h2 id={titleId} className={showTitle ? styles.title : "visually-hidden"}>
-          {title}
-        </h2>
-        <div className={styles.body}>{children}</div>
+        {/* Title and content scroll together, so a long sheet keeps its fields in view. */}
+        <div className={styles.body}>
+          {eyebrow && <div className={styles.eyebrow}>{eyebrow}</div>}
+          <h2 id={titleId} className={showTitle ? `${styles.title} ${largeTitle ? styles.large : ""}` : "visually-hidden"}>
+            {title}
+          </h2>
+          <div className={styles.content}>{children}</div>
+        </div>
       </div>
     </dialog>
   );

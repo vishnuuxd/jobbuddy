@@ -120,3 +120,8 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 - [x] History and Profile are simple for now. The full screens are phase 6. CV upload is unchanged
 - [x] `lib/home/format.ts`: titles, day labels, completion and streak, with tests
 - [x] `/call` and `/orb` checked pixel for pixel against the screenshots from before the phase
+
+## v2, one run (8 Nov 2026)
+
+- [x] Part 2: v2 data model (setup, scorecard, retries), Dexie v2 upgrade for v1 calls, Home pills and links from real scores
+- [x] Part 3: setup sheet with remembered choices, Run this again, Practice this and the night before heading. Calls start with Meera's opening line as the first message override, and the setup (with CV and job post text) as a contextual update. setSetup is gone, the phase is "opening" and the scanned PDF message is updated. Checked against a mocked ElevenLabs socket: each variant sends the right first line

@@ -9,12 +9,15 @@ import { SelfView } from "@/components/SelfView";
 import { createClientTools } from "@/lib/agent/clientTools";
 import { createInterviewVM } from "@/lib/avatar/interviewVM";
 import { AttachError, extractText } from "@/lib/attach/extract";
+import { setupUpdate } from "@/lib/call/context";
+import { openingLine } from "@/lib/call/opening";
+import { clearPendingCall, readPendingCall, type PendingCall } from "@/lib/call/pending";
 import { createCallSession, toCallRecord, totalQuestions } from "@/lib/call/session";
 import { useSelfView } from "@/lib/call/useSelfView";
 import { useVoiceVolume } from "@/lib/call/useVoiceVolume";
 import { liveConfig } from "@/lib/live/config";
 import { createLiveRules } from "@/lib/live/rules";
-import { getSavedCv, saveCall } from "@/lib/store/db";
+import { saveCall } from "@/lib/store/db";
 
 type StartError = "mic" | "failed" | null;
 
@@ -47,6 +50,20 @@ export function CallScreen() {
   const fileInput = useRef<HTMLInputElement>(null);
   const heldAttachment = useRef<{ kind: AttachKind; text: string } | null>(null);
   const herTurnStartedAt = useRef(0);
+  // The setup comes from the sheet on Home. Read once on mount, in the browser.
+  const pendingRef = useRef<PendingCall | null>(null);
+  const startCallRef = useRef<() => Promise<void>>(async () => {});
+  const autoStarted = useRef(false);
+  const [hasSetup, setHasSetup] = useState<boolean | null>(null);
+  useEffect(() => {
+    pendingRef.current = readPendingCall();
+    setHasSetup(pendingRef.current !== null);
+    // Once only, even when React runs effects twice in development.
+    if (pendingRef.current && !autoStarted.current) {
+      autoStarted.current = true;
+      void startCallRef.current();
+    }
+  }, []);
 
   function setSessionOpen(open: boolean) {
     inCallRef.current = open;
@@ -56,14 +73,16 @@ export function CallScreen() {
   const conversation = useConversation({
     clientTools,
     onConnect: () => {
-      session.start(crypto.randomUUID());
+      const pending = pendingRef.current!;
+      session.start(crypto.randomUUID(), pending.setup, { cvText: pending.cvText, jdText: pending.jdText });
       setSessionOpen(true);
-      void sendSavedCv();
+      conversation.sendContextualUpdate(setupUpdate(pending.setup, pending));
     },
     onDisconnect: () => {
       rules.finish();
       heldAttachment.current = null;
       if (session.get().id) void saveCall(toCallRecord(session.get(), new Date().toISOString()));
+      clearPendingCall();
       session.end();
       setSessionOpen(false);
       setChoosingAttach(false);
@@ -98,12 +117,6 @@ export function CallScreen() {
   useVoiceVolume(vm, conversation.getOutputVolume, inCall);
   sendRef.current = conversation.sendContextualUpdate;
 
-  async function sendSavedCv() {
-    const cv = await getSavedCv();
-    if (!cv || !inCallRef.current) return;
-    session.setCvText(cv.text);
-    conversation.sendContextualUpdate(`The candidate's saved CV, ${cv.fileName}:\n${cv.text}`);
-  }
 
   function deliverAttachment(kind: AttachKind, text: string) {
     session.attach(kind, text);
@@ -169,6 +182,7 @@ export function CallScreen() {
   const total = totalQuestions(call.setup);
   const connecting = starting || conversation.status === "connecting";
 
+  startCallRef.current = startCall;
   async function startCall() {
     setStarting(true);
     setStartError(null);
@@ -186,7 +200,13 @@ export function CallScreen() {
       const res = await fetch("/api/agent-session", { cache: "no-store" });
       if (!res.ok) throw new Error(`Session route returned ${res.status}`);
       const { signedUrl } = (await res.json()) as { signedUrl: string };
-      conversation.startSession({ signedUrl, connectionType: "websocket" });
+      const pending = pendingRef.current;
+      if (!pending) throw new Error("No setup");
+      conversation.startSession({
+        signedUrl,
+        connectionType: "websocket",
+        overrides: { agent: { firstMessage: openingLine(pending.setup) } },
+      });
     } catch {
       setStartError("failed");
     } finally {
@@ -242,12 +262,15 @@ export function CallScreen() {
             </p>
           )}
           {startError === "failed" && <p role="alert">Couldn't start the call.</p>}
-          <button className="call-start-button" onClick={startCall} disabled={connecting}>
-            {connecting ? "Connecting" : startError ? "Try again" : "Call Meera"}
-          </button>
-          <Link className="call-start-link" href="/profile">
-            Your CV
-          </Link>
+          {hasSetup === false ? (
+            <Link className="call-start-button" href="/">
+              Set up a call
+            </Link>
+          ) : (
+            <button className="call-start-button" onClick={startCall} disabled={connecting}>
+              {connecting ? "Connecting" : startError ? "Try again" : "Call Meera"}
+            </button>
+          )}
         </div>
       )}
     </main>

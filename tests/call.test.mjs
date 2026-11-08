@@ -4,14 +4,16 @@ import { createClientTools } from "../lib/agent/clientTools.ts";
 import { createInterviewVM } from "../lib/avatar/interviewVM.ts";
 import { createCallSession, totalQuestions } from "../lib/call/session.ts";
 
-function setup(mode = "short") {
+const sheetSetup = { role: "Product designer", seniority: "Senior", durationMin: 10, questionCount: 3, hasJd: false, hasCv: true };
+
+function setup() {
   const vm = createInterviewVM();
   const session = createCallSession(vm, { writingHoldMs: 5, readingHoldMs: 5 });
   const tools = createClientTools(session);
-  session.start("call-1");
+  session.start("call-1", sheetSetup, { cvText: "CV text" });
   const fired = [];
   vm.onTrigger((name) => fired.push(name));
-  return { vm, session, tools, fired, setupArgs: { role: "Designer", seniority: "Senior", mode, hasJd: false, hasCv: "true" } };
+  return { vm, session, tools, fired };
 }
 
 test("mood follows the phase, and her voice wins", () => {
@@ -40,25 +42,31 @@ test("setPhase only moves forward", () => {
   assert.equal(tools.setPhase({ name: "nonsense" }), "ignored");
   assert.equal(tools.setPhase({ name: "idle" }), "ignored");
   tools.setPhase({ name: "interview" });
-  assert.equal(tools.setPhase({ name: "intake" }), "ignored");
+  assert.equal(tools.setPhase({ name: "opening" }), "ignored");
   assert.equal(session.get().phase, "interview");
   tools.setPhase({ name: "done" });
   assert.equal(session.get().phase, "done");
 });
 
-test("setSetup saves the intake result and rejects a bad mode", () => {
-  const { session, tools, setupArgs } = setup();
-  assert.equal(tools.setSetup({ ...setupArgs, mode: "long" }), "ignored");
-  assert.equal(session.get().setup, null);
-  tools.setSetup(setupArgs);
-  assert.equal(session.get().setup.hasCv, true);
+test("the setup comes from the sheet, and setSetup is gone", () => {
+  const { session, tools } = setup();
+  assert.equal(session.get().setup.questionCount, 3);
+  assert.equal(session.get().cvText, "CV text");
   assert.equal(totalQuestions(session.get().setup), 3);
+  assert.equal(tools.setSetup, undefined);
+});
+
+test("the opening is a phase, and the agent's old intake name still works", () => {
+  const { session, tools } = setup();
+  assert.equal(session.get().phase, "opening");
+  assert.equal(tools.setPhase({ name: "intake" }), "ok");
+  assert.equal(session.get().phase, "opening");
+  assert.equal(tools.setPhase({ name: "opening" }), "ok");
 });
 
 test("nextQuestion counts for itself, needs a new turn and stops at the total", () => {
-  const { session, tools, setupArgs } = setup();
-  tools.setSetup(setupArgs);
-  assert.equal(tools.nextQuestion({ index: 1 }), "ignored"); // Still in intake.
+  const { session, tools } = setup();
+  assert.equal(tools.nextQuestion({ index: 1 }), "ignored"); // Still in the opening.
   tools.setPhase({ name: "interview" });
   tools.nextQuestion({ index: 9 });
   assert.equal(session.get().question, 1);

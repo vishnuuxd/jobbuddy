@@ -1,15 +1,8 @@
 import type { InterviewVM, Mood, Trigger } from "../avatar/interviewVM";
-import { toSetup } from "../store/migrate.ts";
-import type { Call, Flag, Metric, TranscriptLine } from "../store/types";
+import type { Call, Flag, Metric, Setup, TranscriptLine } from "../store/types";
 
-export type Phase = "idle" | "intake" | "interview" | "done";
-export type Setup = {
-  role: string;
-  seniority: string;
-  mode: "full" | "short";
-  hasJd: boolean;
-  hasCv: boolean;
-};
+export type { Setup };
+export type Phase = "idle" | "opening" | "interview" | "done";
 export type Reaction = { name: Trigger; at: number };
 export type CallState = {
   phase: Phase;
@@ -29,8 +22,9 @@ export type CallState = {
   lateAdditions: number[];
 };
 
-const questionsByMode = { full: 5, short: 3 } as const;
-const phaseOrder: Phase[] = ["idle", "intake", "interview", "done"];
+const phaseOrder: Phase[] = ["idle", "opening", "interview", "done"];
+// The agent may still say "intake" for the opening.
+const phaseNames: Record<string, Phase> = { opening: "opening", intake: "opening", interview: "interview", done: "done" };
 const flagTypes = ["rambling", "off_question", "no_result", "filler", "hedging", "pace"];
 const initialState: CallState = {
   phase: "idle",
@@ -48,13 +42,13 @@ const initialState: CallState = {
 };
 
 export function totalQuestions(setup: Setup | null) {
-  return setup ? questionsByMode[setup.mode] : null;
+  return setup ? setup.questionCount : null;
 }
 
 function moodFor({ phase, speaking, held }: CallState): Mood {
   if (held) return held; // Her voice still moves mouthOpen under a held mood.
   if (speaking) return "talking";
-  if (phase === "intake") return "intake";
+  if (phase === "opening") return "intake"; // The intake mood name stays for the opening.
   if (phase === "interview") return "listening";
   if (phase === "done") return "writing";
   return "idle";
@@ -66,7 +60,7 @@ export function toCallRecord(state: CallState, endedAt?: string): Call {
     interviewerId: "meera",
     startedAt: new Date(state.startedAtMs).toISOString(),
     endedAt,
-    setup: toSetup(state.setup),
+    setup: state.setup ?? undefined,
     jdText: state.jdText,
     cvText: state.cvText,
     transcript: state.transcript,
@@ -119,10 +113,11 @@ export function createCallSession(
       };
     },
 
-    start(id: string) {
+    /** The setup comes from the sheet, so it's known before the call connects. */
+    start(id: string, setup: Setup, texts: { cvText?: string; jdText?: string } = {}) {
       answeredSinceLastQuestion = false;
       questionThisTurn = false;
-      update({ ...initialState, phase: "intake", id, startedAtMs: clock() });
+      update({ ...initialState, phase: "opening", id, startedAtMs: clock(), setup, ...texts });
     },
     end() {
       answeredSinceLastQuestion = false;
@@ -206,15 +201,13 @@ export function createCallSession(
 
     // The phase only moves forward. Nothing before a call can be set by the agent.
     setPhase(name: string) {
-      const next = phaseOrder.indexOf(name as Phase);
-      if (next < 1 || next < phaseOrder.indexOf(state.phase)) return false;
-      update({ phase: name as Phase });
+      const phase = phaseNames[name];
+      if (!phase || phaseOrder.indexOf(phase) < phaseOrder.indexOf(state.phase)) return false;
+      update({ phase });
       return true;
     },
 
-    setSetup(setup: Setup) {
-      update({ setup });
-    },
+
 
     // The app counts for itself, so her index is never used. A new main question
     // needs a new turn: without one, a repeat call in the same turn is dropped.

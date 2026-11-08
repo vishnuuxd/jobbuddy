@@ -18,6 +18,10 @@
 .heroTop { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 28px; }
 .meeraCard {
   display: flex;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
   align-items: center;
   gap: 16px;
   margin-bottom: 5px;
@@ -65,3 +69,8 @@
 .localTitle { font: 800 15px/20px var(--text); }
 
 @media (prefers-reduced-motion: reduce) { .meeraCard { transition: none; } }
+
+.practiceRow { display: flex; align-items: center; gap: 12px; }
+.practiceText { flex: 1; min-width: 0; }
+.practiceMeta { color: var(--body); font: 600 14px/20px var(--text); }
+.again.again { flex: none; color: var(--pink-deep); font-size: 14px; }

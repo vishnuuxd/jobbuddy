@@ -14,7 +14,7 @@ function harness() {
   const rules = createLiveRules(session, (text) => sent.push(text), liveConfig, () => now);
   const fired = [];
   vm.onTrigger((name) => fired.push(name));
-  session.start("c");
+  session.start("c", { role: "PM", seniority: "Mid", durationMin: 10, questionCount: 3, hasJd: false, hasCv: false });
   session.setPhase("interview");
   session.nextQuestion();
   // Talks steadily until `ms` have passed, in 200 ms steps.

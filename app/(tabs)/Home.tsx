@@ -1,15 +1,18 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CallList } from "@/components/CallRow";
+import { SetupSheet, type SheetStart } from "@/components/setup/SetupSheet";
+import { Button } from "@/components/ui/Button";
+import { Card, Eyebrow } from "@/components/ui/Card";
 import { Meera } from "@/components/meera/Meera";
 import { Sticker } from "@/components/ui/Chip";
 import { HeroGreeting, HeroHeader } from "@/components/ui/HeroHeader";
 import { InterviewerPlaceholder } from "@/components/ui/InterviewerPlaceholder";
 import { createInterviewVM } from "@/lib/avatar/interviewVM";
 import { greeting, streakDays } from "@/lib/home/format";
-import { useCalls } from "@/lib/store/db";
+import { skillNames } from "@/lib/progress/score";
+import { useCalls, useProfile } from "@/lib/store/db";
 import styles from "./tabs.module.css";
 
 /** The time, set after mount so server and browser render the same HTML. */
@@ -23,22 +26,36 @@ export function Home() {
   const [vm] = useState(createInterviewVM); // Idle: she just breathes.
   const calls = useCalls();
   const now = useNow();
+  const profile = useProfile();
   const streak = calls && now ? streakDays(calls, now) : 0;
   const recent = calls?.slice(0, 3);
+  const [sheet, setSheet] = useState<SheetStart | null>(null);
+  const closed = useMemo<SheetStart>(() => ({ kind: "new" }), []);
+
+  // "From your last call": the latest scorecard's practiceNext skill.
+  const lastScored = calls?.find((call) => call.status === "completed" && call.scorecard);
+  const practice = lastScored?.scorecard
+    ? { skill: lastScored.scorecard.summary.practiceNext, label: lastScored.scorecard.summary.oneThing.pattern }
+    : null;
+  const name = profile?.lastSetup?.name;
 
   return (
     <main>
       <HeroHeader>
         <div className={styles.heroTop}>
-          <HeroGreeting>{now ? greeting(now) : "Hello"}</HeroGreeting>
+          <HeroGreeting>{now ? `${greeting(now)}${name ? `, ${name}` : ""}` : "Hello"}</HeroGreeting>
           {streak > 0 && <Sticker tilt={3}>Day {streak} streak</Sticker>}
         </div>
         <h1 className="t-hero">Who are you practising with?</h1>
       </HeroHeader>
 
       <div className={styles.content}>
-        {/* Goes straight to the call until the setup sheet arrives in phase 3. */}
-        <Link href="/call" className={styles.meeraCard} aria-label="Call Meera, HR screen, direct and fair. Taking calls.">
+        <button
+          type="button"
+          className={styles.meeraCard}
+          aria-label="Call Meera, HR screen, direct and fair. Taking calls."
+          onClick={() => setSheet({ kind: "new" })}
+        >
           <Meera vm={vm} size={92} />
           <span className={styles.meeraText}>
             <span className={styles.meeraName}>Meera</span>
@@ -47,12 +64,33 @@ export function Home() {
               <span className={styles.dot} /> Taking calls
             </span>
           </span>
-        </Link>
+        </button>
 
         <div className={styles.placeholders}>
           <InterviewerPlaceholder name="Arjun" />
           <InterviewerPlaceholder name="Lena" variant={1} />
         </div>
+
+        {practice && (
+          <Card kind="cream" outlined>
+            <Eyebrow>From your last call</Eyebrow>
+            <div className={styles.practiceRow}>
+              <div className={styles.practiceText}>
+                <p className="t-card">{practice.label}</p>
+                <p className={styles.practiceMeta}>5 min call on {skillNames[practice.skill].toLowerCase()}</p>
+              </div>
+              <Button
+                variant="ink"
+                size="compact"
+                onClick={() =>
+                  setSheet({ kind: "focus", skill: practice.skill, label: practice.label, setup: lastScored?.setup })
+                }
+              >
+                Practice this
+              </Button>
+            </div>
+          </Card>
+        )}
 
         <section aria-labelledby="recent-title">
           <h2 id="recent-title" className={styles.sectionHead}>
@@ -63,10 +101,27 @@ export function Home() {
           ) : recent.length === 0 ? (
             <p className={styles.quiet}>Your calls show up here.</p>
           ) : (
-            <CallList calls={recent} now={now} />
+            <CallList
+              calls={recent}
+              now={now}
+              actionFor={(call, index) =>
+                index === 0 && call.setup ? (
+                  <Button
+                    variant="text"
+                    className={styles.again}
+                    aria-label={`Run this again: ${call.setup.seniority} ${call.setup.role}`}
+                    onClick={() => setSheet({ kind: "again", setup: call.setup!, jdText: call.jdText })}
+                  >
+                    Run this again
+                  </Button>
+                ) : null
+              }
+            />
           )}
         </section>
       </div>
+
+      <SetupSheet open={sheet !== null} start={sheet ?? closed} onClose={() => setSheet(null)} />
     </main>
   );
 }

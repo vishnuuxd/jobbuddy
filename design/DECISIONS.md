@@ -128,3 +128,28 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 - Screen showed: "+1 Structure" and "Evidence 3" with no rule behind them
 - Built instead: a mint "+N Skill" when a retry on that call improved a skill (the biggest gain), otherwise a cream pill with the call's weakest skill and its score. Incomplete calls are grey "Incomplete", and calls whose scorecard failed are pink "No scorecard yet"
 - Why: each pill now says one true thing about the call. Calls with a scorecard, or a failed one to rebuild, open their scorecard screen
+
+## Part 3 · 1.2 Setup sheet: roles and name
+- Screen showed: four short role chips (Product designer, UX researcher, PM, Engineer) and no name field (known issue 5)
+- Built instead: the PRD's seven roles plus "Other" with a text field. An optional "Your name" field sits after the length, so the required choices come first
+- Why: the PRD lists the roles and the remembered name. The name feeds Meera's first line
+
+## Part 3 · 1.2, 3.1, 3.2: one selection style
+- Screen showed: selected role pink, level ink, length sun (known issue 4)
+- Built instead: every selected chip and length tile is ink with white text. Pink is only the "Call Meera · 10 min" button, and sun only the stickers
+- Why: one meaning per colour. Approved for chips on 8 Nov, and extended here to the length tiles
+
+## Part 3 · 3.2 Night before: heading and sticker
+- Screen showed: "Interview tomorrow" (known issue 3)
+- Built instead: the sheet's heading follows the choices. With a job post and 20 minutes it reads "Full run with the real job post", with a "Job post added" sticker. Practice this reads "A quick one on {skill}", with "Focus · {your one thing}"
+- Why: the app never learns an interview date, so the copy only says what it knows
+
+## Part 3 · 1.2 Setup sheet: CV and job post
+- Screen showed: "Using your saved CV · Change" and a "+ Job post" tile
+- Built instead: as shown, plus "Don't use a CV" and "Use my saved CV" to switch. A newly attached CV shows "Remember this CV for next time". The job post tile opens a paste box, then reads "Job post added · Tap to edit", with Remove
+- Why: PRD.md asks for "Remember this CV". The switch lets a call go without the saved CV
+
+## Part 3 · 1.2 → 1.3: the call starts from the sheet
+- Screen showed: "Call Meera" on the sheet, then the call
+- Built instead: the button is disabled until a role and level are chosen, with a hint under it. The call connects straight away on arrival, because the tap on the sheet counts as the gesture for the mic and audio. Opening `/call` directly, without a setup, offers "Set up a call", which goes to Home
+- Why: known issue 12 (Call Meera disabled until role and seniority). No double tap to start

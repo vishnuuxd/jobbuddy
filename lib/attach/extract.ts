@@ -5,7 +5,7 @@ export const maxWords = 4_000;
 export class AttachError extends Error {}
 
 const unreadable = "I can't read that one. A PDF or plain text works.";
-const scanned = "Looks like a scan, I can't read it. Want to just tell me about your experience?";
+const scanned = "Looks like a scan, I can't read it. Paste the text instead, or go without a CV.";
 
 async function pdfText(file: File) {
   const pdfjs = await import("pdfjs-dist");
