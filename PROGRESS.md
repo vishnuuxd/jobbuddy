@@ -138,3 +138,4 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 - [x] Overall score out of 5 from the saved scorecard (`lib/progress/overall.ts`), with the PRD band words, "+N after retries", the 1.7b gauge with its load sweep, and small gauges in History
 - [x] Call names: "Senior Product Designer 12", numbered when the call starts (one past the highest for that role and seniority). Dexie v3 numbers existing calls in date order, tested by upgrading a real v2 database in Chrome
 - [x] History rows trimmed at Vishnu's request: name, day and time ("Today, 4:12 pm · 10 min"), and score out of 5. The PRD History lines are updated to match
+- [x] Paper: added "4.1b History · built" (the 390 px History screenshot) at the end of the 4.x row on "v2 key flows · Tropical". A one-time exception to Paper being read only, approved by Vishnu on 9 Nov. Nothing else in the file was changed
