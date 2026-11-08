@@ -62,7 +62,7 @@ All setup happens here, before the call. Nothing is asked by voice.
 **Call**
 
 - Meera full screen. A small self view camera tile in the corner, off by default, one tap to turn on.
-- Controls: mute, attach (CV or job description), camera, hang up.
+- Controls: mute, camera, hang up. No attach button: the CV and job description only come in through the setup sheet, before the call. Meera never asks for them.
 - A small progress label once the interview starts: "Question 2 of 5". No timer.
 - While the scorecard is being built: Meera's face stays on screen with "Writing up your scorecard" and her writing mood.
 
@@ -258,7 +258,7 @@ The app adds the delivery metrics and the completion status before saving. If th
 
 ## Agent spec
 
-One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Turn settings: eagerness Patient, take turn after silence 10 s, end conversation after silence 20 s, max duration 1200 s, with the message "We're out of time for today. Your scorecard's ready when you are." First message override is on in Security, because the app writes her opening line. The system prompt is below. Context such as the saved CV, uploaded files and live rule events arrives through `sendContextualUpdate`.
+One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Turn settings: eagerness Patient, take turn after silence 10 s, end conversation after silence 20 s, max duration 1200 s, with the message "We're out of time for today. Your scorecard's ready when you are." First message override is on in Security, because the app writes her opening line. The system prompt is below. Context such as the setup, the CV and job description text from the sheet, and live rule events arrives through `sendContextualUpdate`.
 
 **Client tools.** Configure them in the ElevenLabs dashboard with these exact names. None of them block the conversation.
 
@@ -280,6 +280,7 @@ OPENING
 - At the start you receive the setup as a context update: their name, role, seniority, length, number of main questions, and whether there is a CV or job description.
 - When they say they're ready, start the interview. If they ask something first, answer in one line, then start.
 - Nothing before the interview is judged. Never call flag before setPhase("interview").
+- Never ask for a CV or job description. If there is none, work from the role and seniority.
 
 INTERVIEW
 - Call setPhase("interview") and react("sitUp"), then ask the first question with no extra preamble.
@@ -457,9 +458,8 @@ rive/           RML source, build script, meera.riv
 | I ask her questions back | She answers in one line and returns to the interview |
 | I ask how I'm doing | "I'll tell you everything at the end." No coaching mid call |
 | Hostile or off topic | She steers back once. If it continues, she ends the call politely. Saved as incomplete |
-| Upload is not a PDF or text | "I can't read that one. A PDF or plain text works." |
-| Scanned PDF with no text | "Looks like a scan, I can't read it. Want to just tell me about your experience?" |
-| Upload mid answer | Held until my answer ends, then she glances down to read it |
+| Upload is not a PDF or text | The setup sheet or Profile says: "I can't read that one. A PDF or plain text works." |
+| Scanned PDF with no text | The setup sheet or Profile says: "Looks like a scan, I can't read it. Paste the text instead, or go without a CV." |
 | Very long CV or job description | Trimmed to the first 4,000 words before it goes to the agent |
 | Scorecard request fails | Status scoring\_failed. Transcript is saved. History shows "Build scorecard" |
 | Hang up with fewer than two answers | No scorecard. Saved as incomplete |
@@ -473,7 +473,7 @@ Two days, in order. Each block ends with checks. A block isn't done until its ch
 
 **Change, 3 Nov.** Setup moves from voice to a setup sheet. Lengths of 5, 10 and 20 minutes replace the two modes. Home, History and Profile get a bottom tab bar. Profile has no accounts in v1. Design Home, the setup sheet, History, the scorecard and Profile together in Paper before building them.
 
-**Change, 8 Nov.** The visual direction is Tropical. v2 is built in the seven phases under "v2 build phases" below. The Day 1 and Day 2 lists stay as the record of v1.
+**Change, 8 Nov.** The attach button leaves the call: the CV and job description only come in through the setup sheet, and Meera never asks for them. The visual direction is Tropical. v2 is built in the seven phases under "v2 build phases" below. The Day 1 and Day 2 lists stay as the record of v1.
 
 **Milestone 0: spike (first 2 hours of day 1)**
 
@@ -505,7 +505,7 @@ Check: one full intake by voice, with the orb moving with her voice and at least
 - [ ] Live rules from `lib/live/config.ts`, with the ladder for long answers
 - [ ] flag tool, writing mood, and flags ignored outside the interview phase
 - [ ] Lengths of 5, 10 and 20 minutes, the one minute left update, and "Question 2 of 3"
-- [ ] Attach button: PDF and text extraction, context update, glanceDown and reading mood
+- [ ] Cut 8 Nov: the attach button in the call. PDF and text extraction moves to the setup sheet and Profile
 - [ ] Profile: saved CV upload, replace, delete. Saved CV sent at call start
 - [ ] Dexie store saving the call record as it happens
 

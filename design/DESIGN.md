@@ -87,7 +87,7 @@ Build these first, in the Foundation phase, with every state on a `/kit` page.
 - **Interviewer placeholder.** Dashed outline, grey blob, "Not taking calls". Not tappable.
 - **Tab bar.** Docked, white, 2 px `line` top border. Home, History, Profile. Active: icon filled pink with ink stroke, label ink 900. Inactive: `muted` 700. Hidden on the call, writing, scorecard, retry, streak and error screens.
 - **Sheet.** White, rounded top, grabber, over a pink background. Must work with the keyboard open.
-- **Call frame.** Ink background. Progress segments at the top (mint done, sun current, dim upcoming). Status pill top right. Meera in the middle, a title and a subline under her. Question card in white with a pink shadow edge. Controls: mic, attach, camera, and a pink End.
+- **Call frame.** Ink background. Progress segments at the top (mint done, sun current, dim upcoming). Status pill top right. Meera in the middle, a title and a subline under her. Question card in white with a pink shadow edge. Controls: mic, camera, and a pink End. The attach button in the screens is dropped: the CV and job description come from the setup sheet.
 - **Skill bar.** `line` track. Fill by score: pink at 1 to 2, sun at 3, mint at 4 to 5. An ink tick marks the personal best.
 - **Stat tile.** Big Bricolage number, small label, soft background.
 - **Hero header.** Pink, bottom radius 32, white text.
