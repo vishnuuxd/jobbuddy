@@ -1,4 +1,5 @@
 import type { InterviewVM, Mood, Trigger } from "../avatar/interviewVM";
+import { toSetup } from "../store/migrate.ts";
 import type { Call, Flag, Metric, TranscriptLine } from "../store/types";
 
 export type Phase = "idle" | "intake" | "interview" | "done";
@@ -65,7 +66,7 @@ export function toCallRecord(state: CallState, endedAt?: string): Call {
     interviewerId: "meera",
     startedAt: new Date(state.startedAtMs).toISOString(),
     endedAt,
-    setup: state.setup ?? undefined,
+    setup: toSetup(state.setup),
     jdText: state.jdText,
     cvText: state.cvText,
     transcript: state.transcript,

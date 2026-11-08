@@ -1,4 +1,5 @@
 import { midSentence } from "../call/opening.ts";
+import { bestGain, callSkillScores, skillNames, weakestSkill } from "../progress/score.ts";
 import type { Call } from "../store/types";
 
 // Plain-words labels for Home, History and Profile. Pure, so they're unit tested.
@@ -60,7 +61,14 @@ export function streakDays(calls: Pick<Call, "status" | "startedAt">[], now: Dat
 
 export type Pill = { tone: "mint" | "cream" | "pink" | "grey"; label: string } | null;
 
-/** Incomplete calls get a grey pill. Completed and failed calls get theirs with the scorecard. */
-export function callPill(call: Pick<Call, "status">): Pill {
-  return call.status === "incomplete" ? { tone: "grey", label: "Incomplete" } : null;
+/** "+1 Structure" after a retry that improved, otherwise the weakest skill and its score. */
+export function callPill(call: Pick<Call, "status" | "scorecard" | "retries">): Pill {
+  if (call.status === "incomplete") return { tone: "grey", label: "Incomplete" };
+  if (call.status === "scoring_failed") return { tone: "pink", label: "No scorecard yet" };
+  const gain = bestGain(call);
+  if (gain) return { tone: "mint", label: `+${gain.amount} ${skillNames[gain.skill]}` };
+  const scores = callSkillScores(call);
+  if (!scores) return null;
+  const weakest = weakestSkill(scores);
+  return { tone: "cream", label: `${skillNames[weakest]} ${scores[weakest]}` };
 }

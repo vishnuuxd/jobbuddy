@@ -123,3 +123,8 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 - Screen showed: an avatar with your name, the streak and completion line, and "Delete all data"
 - Built instead: a "Profile" headline with the completion line in ink (contrast decision B), the saved CV card, Replace and Remove, and "Everything stays on this phone" without the delete link. With no CV: a line and an "Upload a CV" button. CV upload works as before
 - Why: the name, avatar and "Delete all data" are phase 6. Profile with no CV was a missing state (known issue 12)
+
+## Part 2 · 1.1 Home: recent call pills
+- Screen showed: "+1 Structure" and "Evidence 3" with no rule behind them
+- Built instead: a mint "+N Skill" when a retry on that call improved a skill (the biggest gain), otherwise a cream pill with the call's weakest skill and its score. Incomplete calls are grey "Incomplete", and calls whose scorecard failed are pink "No scorecard yet"
+- Why: each pill now says one true thing about the call. Calls with a scorecard, or a failed one to rebuild, open their scorecard screen

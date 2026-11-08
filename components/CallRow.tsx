@@ -1,27 +1,49 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
 import { StatusPill } from "@/components/ui/Chip";
 import { callMeta, callPill, callTitle } from "@/lib/home/format";
 import type { Call } from "@/lib/store/types";
 import styles from "./CallRow.module.css";
 
-/** One past call. Rows open their scorecard once it exists (phase 5). */
-export function CallRow({ call, now }: { call: Call; now: Date }) {
+/** Calls with a scorecard, or a failed one to rebuild, open their scorecard screen. */
+export const callHref = (call: Call) => (call.status === "incomplete" ? null : `/scorecard/${call.id}`);
+
+type Props = { call: Call; now: Date; action?: ReactNode; extra?: ReactNode };
+
+export function CallRow({ call, now, action, extra }: Props) {
   const pill = callPill(call);
-  return (
-    <li className={styles.row}>
+  const href = callHref(call);
+  const body = (
+    <>
       <span className={styles.text}>
         <span className={styles.title}>{callTitle(call)}</span>
-        <span className={styles.meta}>{callMeta(call, now)}</span>
+        <span className={styles.meta}>
+          {callMeta(call, now)}
+          {extra}
+        </span>
       </span>
       {pill && <StatusPill tone={pill.tone}>{pill.label}</StatusPill>}
+    </>
+  );
+  return (
+    <li className={styles.row}>
+      {href ? (
+        <Link href={href} className={styles.main}>
+          {body}
+        </Link>
+      ) : (
+        <span className={styles.main}>{body}</span>
+      )}
+      {action}
     </li>
   );
 }
 
-export function CallList({ calls, now }: { calls: Call[]; now: Date }) {
+export function CallList({ calls, now, actionFor }: { calls: Call[]; now: Date; actionFor?: (call: Call, index: number) => ReactNode }) {
   return (
     <ul className={styles.list}>
-      {calls.map((call) => (
-        <CallRow key={call.id} call={call} now={now} />
+      {calls.map((call, index) => (
+        <CallRow key={call.id} call={call} now={now} action={actionFor?.(call, index)} />
       ))}
     </ul>
   );
