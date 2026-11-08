@@ -12,7 +12,7 @@ import { CameraIcon, CheckIcon, MicIcon } from "@/components/ui/icons";
 import { createClientTools } from "@/lib/agent/clientTools";
 import { createInterviewVM, type Trigger } from "@/lib/avatar/interviewVM";
 import { callCopy, type CallStage } from "@/lib/call/callCopy";
-import { readyToHangUp } from "@/lib/call/close";
+import { hangUpReason } from "@/lib/call/close";
 import { callConfig } from "@/lib/call/config";
 import {
   lastQuestionAsked,
@@ -251,23 +251,28 @@ export function CallScreen() {
     // sendContextualUpdate stays valid for the whole call.
   }, [inCall]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // After setPhase("done"): wait until her closing line has actually been spoken, then 1 second,
-  // then hang up. Never timed from the tool call. If it never comes, ElevenLabs' silence rule ends the call.
+  // After setPhase("done"): hang up 1 second after her closing line has actually been heard.
+  // Safety caps, counted from setPhase("done"): end anyway if her audio hasn't started
+  // within 3 seconds, or hasn't finished within 15.
   const callEnding = inCall && call.phase === "done";
   useEffect(() => {
     if (!callEnding) return;
+    const doneAt = Date.now();
     const timer = setInterval(() => {
-      const ready = readyToHangUp(
+      const reason = hangUpReason(
         {
-          done: true,
+          doneAt,
           speaking: session.get().speaking,
           lastLineAt: herLastLineAt.current,
+          voiceStartedAt: herTurnStartedAt.current,
           voiceStoppedAt: herVoiceStoppedAt.current,
           now: Date.now(),
         },
         callConfig.hangUpAfterHerVoiceMs,
+        liveConfig.endCallMaxWaitMs,
       );
-      if (ready) {
+      if (reason) {
+        if (reason !== "spoken") console.warn(`Call ended by the safety cap: ${reason}`);
         clearInterval(timer);
         conversation.endSession();
       }

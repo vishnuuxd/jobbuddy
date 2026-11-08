@@ -36,8 +36,11 @@ export const liveConfig = {
   // Her voice volume (0 to 1) times this gives mouthOpen (0 to 100).
   mouthOpenGain: 250,
 
-  // After setPhase("done"), hang up once she's been quiet this long, so her
-  // closing line isn't cut off. The longest wait stops a stuck call staying open.
-  endCallQuietMs: 1_200,
-  endCallMaxWaitMs: 12_000,
+  // Safety caps after setPhase("done"), counted from that call. Normally the call
+  // ends 1 s after her closing line has been heard (lib/call/config.ts). If her
+  // audio hasn't started by noAudioMs, or hasn't finished by unfinishedMs, end anyway.
+  endCallMaxWaitMs: {
+    noAudioMs: 3_000,
+    unfinishedMs: 15_000,
+  },
 };
