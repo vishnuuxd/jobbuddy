@@ -88,3 +88,38 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 - Screen showed: four call controls: mic, attach, camera and End
 - Built instead: three controls, mic, camera and End. The attach icon and its kit example are removed
 - Why: the PRD and DESIGN.md changed on 8 Nov. The CV and job description only come in through the setup sheet, and Meera never asks for them
+
+## Phase 2 · 1.1 Home: greeting
+- Screen showed: "Good evening, Vishnu"
+- Built instead: "Good evening", "Good afternoon" or "Good morning", with no name
+- Why: the name comes from the setup sheet, which remembers it from phase 3
+
+## Phase 2 · 1.1 Home: streak sticker
+- Screen showed: "Day 4 streak" in the header
+- Built instead: the sticker only shows when the streak is above 0. Until scorecards exist (phase 5), no call counts as completed, so it stays hidden
+- Why: a "Day 0 streak" sticker would celebrate nothing
+
+## Phase 2 · 1.1 Home: Meera card
+- Screen showed: the Meera card with no visible button
+- Built instead: the whole card is one link labelled "Call Meera", with the same pressed drop as the buttons. Until phase 3 it opens the call directly. After that it opens the setup sheet
+- Why: the card is the only way to start a call, so the whole card should be the tap target
+
+## Phase 2 · 1.1 Home: parts left out until their data exists
+- Screen showed: "From your last call" with Practice this, "Run this again", and score pills on recent calls ("+1 Structure", "Evidence 3")
+- Built instead: none of these yet. Recent calls show the title, day, length and a grey "Incomplete" pill. Rows aren't links yet
+- Why: all of them need scorecards (phase 5) or the prefilled sheet (phase 3). When "Run this again" arrives, it goes on the most recent call's row (known issue 9)
+
+## Phase 2 · 1.1 Home: first run
+- Screen showed: no empty state (known issue 12)
+- Built instead: "Your calls show up here." in place of the list. Nothing shows while the list loads, so the empty line never flashes
+- Why: first-run Home was one of the missing states
+
+## Phase 2 · 4.1 History: simple for now
+- Screen showed: "7 of 9" as a big number, personal bests, badges and status pills
+- Built instead: a "History" headline with "1 of 4 interviews completed" under it at 19 px bold, then every call, newest first. With no calls: "No interviews yet. Your first one takes five minutes." and a button to Home
+- Why: the full History is phase 6. Empty History was a missing state (known issue 12)
+
+## Phase 2 · 4.4 Profile: simple for now
+- Screen showed: an avatar with your name, the streak and completion line, and "Delete all data"
+- Built instead: a "Profile" headline with the completion line in ink (contrast decision B), the saved CV card, Replace and Remove, and "Everything stays on this phone" without the delete link. With no CV: a line and an "Upload a CV" button. CV upload works as before
+- Why: the name, avatar and "Delete all data" are phase 6. Profile with no CV was a missing state (known issue 12)

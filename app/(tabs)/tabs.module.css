@@ -1,0 +1,67 @@
+.shell {
+  min-height: 100dvh;
+  /* Room for the docked tab bar: 8 + 48 + 10 + 2 px, plus the safe area. */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 84px);
+  background: var(--white);
+  color: var(--ink);
+  font: 600 15px/22px var(--text);
+}
+.shell p, .shell h1, .shell h2 { margin: 0; }
+
+.content { display: flex; flex-direction: column; gap: 18px; padding: 20px var(--side) 24px; }
+.stackTight { display: flex; flex-direction: column; gap: 10px; }
+.sectionHead { display: flex; align-items: baseline; justify-content: space-between; color: var(--ink); font: 800 14px/18px var(--text); }
+.quiet { color: var(--muted); font: 700 14px/20px var(--text); }
+.loading { min-height: 120px; }
+
+/* Home */
+.heroTop { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 28px; }
+.meeraCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 5px;
+  padding: 16px;
+  border: var(--outline) solid var(--ink);
+  border-radius: var(--r-main);
+  box-shadow: var(--shadow-big);
+  background: var(--white);
+  color: var(--ink);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--quick) var(--spring), box-shadow var(--quick) var(--spring);
+}
+.meeraCard:active { transform: translateY(5px); box-shadow: 0 0 0 var(--ink); }
+.meeraCard:focus-visible { outline: 3px solid var(--sun); outline-offset: 3px; }
+.meeraText { display: flex; flex-direction: column; gap: 4px; }
+.meeraName { font: 800 26px/30px var(--display); }
+.meeraStyle { color: var(--muted); font: 700 14px/18px var(--text); }
+.live { display: flex; align-items: center; gap: 6px; padding-top: 2px; color: var(--mint-deep); font: 800 13px/16px var(--text); }
+.dot { width: 8px; height: 8px; border-radius: 4px; background: var(--mint); }
+.placeholders { display: flex; gap: 10px; }
+
+/* Profile */
+.cvCard.cvCard { flex-direction: row; align-items: center; gap: 14px; }
+.pdf {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 52px;
+  border: var(--outline) solid var(--ink);
+  border-radius: 10px;
+  background: var(--mint-tint);
+  color: var(--mint-deep);
+  font: 900 12px/16px var(--text);
+}
+.cvName { font: 800 17px/22px var(--text); overflow-wrap: anywhere; }
+.cvMeta { color: var(--muted); font: 600 14px/20px var(--text); }
+.pair { display: flex; gap: 10px; }
+.pair > * { flex: 1 1 0; }
+.pair .danger { color: var(--pink-deep); }
+.alert { padding: 12px 14px; border-radius: var(--r-button); background: var(--pink-tint); color: var(--ink); font: 700 14px/20px var(--text); }
+.local { gap: 4px; background: var(--tile); }
+.localTitle { font: 800 15px/20px var(--text); }
+
+@media (prefers-reduced-motion: reduce) { .meeraCard { transition: none; } }

@@ -1,0 +1,6 @@
+.list { margin: 0; padding: 0; list-style: none; }
+.row { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 0; border-bottom: var(--outline) solid var(--line); }
+.row:last-child { border-bottom: 0; }
+.text { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.title { color: var(--ink); font: 800 15px/20px var(--text); }
+.meta { color: var(--muted); font: 600 13px/18px var(--text); }

@@ -110,3 +110,13 @@ Built Nov 8, 2026. Closed by Vishnu.
 
 - Remove the old attach flow from the call screen: the attach button, the CV or job description chooser, the held upload and its contextual update (`app/call/CallScreen.tsx`, `components/CallControls.tsx`, `session.attach`)
 - Retire the reading mood and `readingHoldMs`, together with the attach flow so the current call keeps working until then. Update the PRD InterviewVM table and the blob mapping (keep glanceDown), the orb, `/kit` and the test
+
+## v2 phase 2: App shell
+
+Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and the bar never shows during a call.
+
+- [x] Home, History and Profile in the `app/(tabs)` route group, which is the only place the tab bar renders. `/call`, `/orb` and `/spike` sit outside it
+- [x] Home built to 1.1 from Dexie: greeting, streak sticker (from completed calls), the Meera card to `/call`, placeholders and the last three calls, with a first-run state
+- [x] History and Profile are simple for now. The full screens are phase 6. CV upload is unchanged
+- [x] `lib/home/format.ts`: titles, day labels, completion and streak, with tests
+- [x] `/call` and `/orb` checked pixel for pixel against the screenshots from before the phase

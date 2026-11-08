@@ -14,7 +14,7 @@ export type OpeningSetup = {
 const minutes = { 5: "Five", 10: "Ten", 20: "Twenty" } as const;
 
 // "Product designer" becomes "product designer", but "UX researcher" and "PM" keep their capitals.
-function midSentence(text: string) {
+export function midSentence(text: string) {
   const trimmed = text.trim();
   return /^[A-Z][A-Z]/.test(trimmed) ? trimmed : trimmed.charAt(0).toLowerCase() + trimmed.slice(1);
 }
