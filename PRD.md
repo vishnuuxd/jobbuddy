@@ -75,7 +75,9 @@ All setup happens here, before the call. Nothing is asked by voice.
 **History**
 
 - At the top, the completion rate: "7 of 9 interviews completed".
-- Every past call, newest first: interviewer, role and seniority, length, date, summary line.
+- Every past call, newest first: its name, overall score and word, length, date and summary line.
+- **Call names:** seniority, role and a number, with no separators: "Senior Product Designer 12". Role in title case. The number counts calls for that role and seniority, starting at 1, and is saved when the call starts, so deleting a call never renames the others. Retries stay under the original call and get no number of their own.
+- The past call screen uses the name as its title next to the back button. Length and date go in a small line under it.
 - Tap to open the scorecard and the full transcript, with flagged moments highlighted. Retry stays on each moment, so I can retry an old answer and see the before and after.
 - Delete a call by swiping or from its menu.
 
@@ -127,7 +129,7 @@ At one minute left, the app sends a contextual update and she closes after the c
 - With a CV, at least one question is specific to it.
 - Each question can have one follow up from her. Follow ups don't count toward the total.
 
-**Close.** "Okay, that's everything I wanted to ask. Your scorecard's ready when you are." Phase moves to done, the call ends, and the scorecard is built.
+**Close.** "Okay, that's everything I wanted to ask. Your scorecard's ready when you are." Phase moves to done. The app ends the call itself: it waits until her voice actually stops, then 1 second, then hangs up. It never times this from the setPhase call, which can arrive before she finishes speaking. If she never calls setPhase("done"), the 20 second silence rule in ElevenLabs ends the call. Then the scorecard is built.
 
 **Cut short.** If I hang up with fewer than two answers, no scorecard is built. The call is saved to History as incomplete: "That was quick. Want to jump back in where we stopped?"
 
@@ -179,13 +181,22 @@ The SDK has no method that makes her cut in while I'm still talking. So the v1 r
 
 **Layout, v2.** The scorecard answers one question: what do I fix, and can I fix it now. The wireframe is in the PRD doc.
 
-1. **Meera's take.** One honest sentence in her voice.
+1. **Overall score and Meera's take.** A gauge with the overall score at the top, then one honest sentence in her voice.
 2. **Your one thing.** The main pattern with evidence, like "2 of 3 answers ended before the result", and one line on why it matters.
 3. **Moments, two or three.** The weakest answers only. Each shows the question, a short quote of my words, the rewrite with blanks for missing numbers, and Retry.
 4. **What went well.** One real strength.
 5. **Skills.** Five bars, with a marker for my personal best.
 6. **Delivery and wins.** Pace, fillers, average answer length, badges from this call, the streak.
 7. **Actions.** Retry the weakest answer, new interview, save.
+
+**Overall score.** One number for the whole interview, out of 5.
+
+- The app works it out from the scorecard, not the model: the average of every skill score across every scored answer, to one decimal. It's ready the moment the scorecard arrives, with no extra request. Once saved, it never changes on a later visit.
+- A word goes with it: under 2.5 "Not there yet", 2.5 to 3.4 "Getting there", 3.5 to 4.2 "Interview ready", 4.3 and up "Strong". The bands live in `lib/progress`.
+- The gauge animates from 0 to the score each time the scorecard loads. With reduced motion, it shows the score straight away.
+- Retries never change the original score. When a retry improves an answer, "+0.4 after retries" shows beside it.
+- Incomplete calls and failed scorecards have no score. They keep their Incomplete or Build scorecard label.
+- History shows each call's score and word in its row, with a small static gauge.
 
 **The retry.** Tapping Retry starts a short call with only that question and the same setup. Afterwards: my old answer next to the new one, the score change per skill, and a celebration if it went up. The moment card then shows "Improved". The score change is worked out by comparing the retry's scores with the original answer's, so nothing extra is stored.
 
