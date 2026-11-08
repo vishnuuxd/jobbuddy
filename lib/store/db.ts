@@ -2,6 +2,7 @@
 
 import Dexie, { liveQuery, type EntityTable } from "dexie";
 import { useEffect, useState } from "react";
+import { numberCalls } from "../home/callName";
 import { upgradeCall } from "./migrate";
 import type { Call, ProfileRow, SavedCv } from "./types";
 
@@ -14,6 +15,17 @@ db.version(1).stores({ calls: "id, startedAt", profile: "id" });
 db.version(2)
   .stores({ calls: "id, startedAt", profile: "id" })
   .upgrade((tx) => tx.table("calls").toCollection().modify((call: Call) => Object.assign(call, upgradeCall(call))));
+// v3: call names. Existing calls get numbers in date order, per role and seniority.
+db.version(3)
+  .stores({ calls: "id, startedAt", profile: "id" })
+  .upgrade(async (tx) => {
+    const calls = tx.table<Call, string>("calls");
+    const numbers = numberCalls(await calls.toArray());
+    await calls.toCollection().modify((call: Call) => {
+      const number = numbers.get(call.id);
+      if (number && !call.number) call.number = number;
+    });
+  });
 
 export const saveCall = (call: Call) => db.calls.put(call);
 export const getSavedCv = async () => (await db.profile.get("me"))?.cv;

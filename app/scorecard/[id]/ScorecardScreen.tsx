@@ -7,8 +7,9 @@ import { Meera } from "@/components/meera/Meera";
 import { Button } from "@/components/ui/Button";
 import { Card, Eyebrow } from "@/components/ui/Card";
 import { Sticker } from "@/components/ui/Chip";
-import { HeroGreeting, HeroHeader, HeroMeta } from "@/components/ui/HeroHeader";
+import { HeroHeader, HeroMeta } from "@/components/ui/HeroHeader";
 import { ArrowIcon, FlameIcon, StarIcon } from "@/components/ui/icons";
+import { ScoreGauge } from "@/components/ui/ScoreGauge";
 import { SkillBar } from "@/components/ui/SkillBar";
 import { StatTile } from "@/components/ui/StatTile";
 import { setPendingCall } from "@/lib/call/pending";
@@ -17,6 +18,7 @@ import { liveConfig } from "@/lib/live/config";
 import { badgeList, callBadges } from "@/lib/progress/badges";
 import { bestRetry, callSkillScores, deliveryStats, momentsFor, personalBests, retryChange, skillNames } from "@/lib/progress/score";
 import { shouldShowStreak } from "@/lib/progress/streak";
+import { callScore } from "@/lib/progress/overall";
 import { scorecardMarkdown } from "@/lib/scorecard/markdown";
 import { buildScorecard } from "@/lib/scorecard/request";
 import { flagNames, transcriptItems } from "@/lib/scorecard/transcript";
@@ -70,6 +72,7 @@ export function ScorecardScreen({ id }: { id: string }) {
   const badges = callBadges(call, liveConfig.badges);
   const streak = streakDays(calls, now);
   const weakest = moments[0];
+  const score = callScore(call);
 
   function retry(answer: ScoredAnswer) {
     if (!call?.setup) return;
@@ -98,11 +101,18 @@ export function ScorecardScreen({ id }: { id: string }) {
           <button type="button" className={`${styles.close} noPrint`} aria-label={fresh ? "Close, back to Home" : "Back"} onClick={close}>
             {fresh ? <CloseMark /> : <BackMark />}
           </button>
-          <HeroMeta>{headerLine(call, now)}</HeroMeta>
+          <CallHeading call={call} now={now} />
         </div>
+        {score && (
+          <div className={styles.score}>
+            <ScoreGauge score={score.score} word={score.word} />
+            <p className={styles.word}>{score.word}</p>
+            {score.lift > 0 && <p className={styles.lift}>+{score.lift.toFixed(1)} after retries</p>}
+          </div>
+        )}
         <div className={styles.says}>
-          <Meera still={{ mood: "listening" }} size={40} tone="light" />
-          <HeroGreeting>Meera says</HeroGreeting>
+          <Meera still={{ mood: "listening" }} size={36} tone="light" />
+          <HeroMeta>Meera says</HeroMeta>
         </div>
         <h1 className={styles.take}>{card.summary.meeraTake}</h1>
         {(badges.length > 0 || streak > 0) && (
@@ -260,10 +270,14 @@ function Transcript({ call }: { call: Call }) {
   );
 }
 
-/** "Today · Senior product designer · 10 min" */
-function headerLine(call: Call, now: Date) {
-  const [day, ...rest] = callMeta(call, now).split(" · ");
-  return [day, callTitle(call), ...rest].join(" · ");
+/** 1.7b: the call's name, with its day and length in a small line under it. */
+function CallHeading({ call, now }: { call: Call; now: Date }) {
+  return (
+    <div className={styles.heading}>
+      <p className={styles.name}>{callTitle(call)}</p>
+      <HeroMeta>{callMeta(call, now)}</HeroMeta>
+    </div>
+  );
 }
 
 /** The question as Meera asked it, from the transcript, falling back to the model's short name. */
@@ -348,7 +362,7 @@ function NoScorecard({ call, onClose, startTab }: { call: Call; onClose: () => v
           <button type="button" className={styles.close} aria-label="Back" onClick={onClose}>
             <BackMark />
           </button>
-          <HeroMeta>{callTitle(call)}</HeroMeta>
+          <CallHeading call={call} now={new Date()} />
         </div>
         <h1 className={styles.take}>{failed ? "No scorecard yet" : "This call was cut short"}</h1>
       </HeroHeader>

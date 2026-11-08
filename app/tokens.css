@@ -19,6 +19,7 @@
   --mint-tint: #e6f7f0;
   --white: #ffffff;
   --tile: #f7f5fa; /* Stat tile background, from Paper */
+  --pink-soft: #ffd1e0; /* Empty part of the score gauge, from Paper 1.7b */
 
   /* Dark call screens, from Paper */
   --ink-raised: #2a2442; /* Controls, pills */

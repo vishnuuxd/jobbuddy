@@ -20,6 +20,8 @@ export type CallState = {
   flags: Flag[];
   metrics: Metric[];
   lateAdditions: number[];
+  /** Saved when the call starts, for its name. Retries have none. */
+  number?: number;
   /** A retry of one question: starts in the interview, and never moves past it. */
   retryOf: { callId: string; questionIndex: number } | null;
 };
@@ -71,6 +73,7 @@ export function toCallRecord(state: CallState, endedAt?: string): Call {
     startedAt: new Date(state.startedAtMs).toISOString(),
     endedAt,
     setup: state.setup ?? undefined,
+    number: state.number,
     jdText: state.jdText,
     cvText: state.cvText,
     transcript: state.transcript,
@@ -124,10 +127,10 @@ export function createCallSession(
     },
 
     /** The setup comes from the sheet, so it's known before the call connects. */
-    start(id: string, setup: Setup, texts: { cvText?: string; jdText?: string } = {}) {
+    start(id: string, setup: Setup, texts: { cvText?: string; jdText?: string } = {}, number?: number) {
       answeredSinceLastQuestion = false;
       questionThisTurn = false;
-      update({ ...initialState, phase: "opening", id, startedAtMs: clock(), setup, ...texts });
+      update({ ...initialState, phase: "opening", id, startedAtMs: clock(), setup, number, ...texts });
     },
     /** Retry one question: no opening, and the label stays on that question. */
     startRetry(
@@ -160,6 +163,7 @@ export function createCallSession(
         id: call.id,
         startedAtMs: Date.parse(call.startedAt),
         setup: call.setup ?? null,
+        number: call.number,
         cvText: call.cvText,
         jdText: call.jdText,
         transcript: call.transcript,

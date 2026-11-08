@@ -18,3 +18,7 @@ a.main:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; borde
 .text { display: flex; flex: 1; flex-direction: column; min-width: 0; }
 .title { color: var(--ink); font: 800 15px/20px var(--text); }
 .meta { color: var(--muted); font: 600 13px/18px var(--text); }
+.score { display: flex; flex: none; align-items: center; gap: 8px; }
+.scoreNumber { color: var(--ink); font: 800 20px/24px var(--display); font-variant-numeric: tabular-nums; }
+.summary { color: var(--muted); font: 600 13px/18px var(--text); }
+.scoreWord { color: var(--ink); font-weight: 800; }

@@ -12,6 +12,7 @@ import { CameraIcon, CheckIcon, MicIcon } from "@/components/ui/icons";
 import { createClientTools } from "@/lib/agent/clientTools";
 import { createInterviewVM, type Trigger } from "@/lib/avatar/interviewVM";
 import { callCopy, type CallStage } from "@/lib/call/callCopy";
+import { readyToHangUp } from "@/lib/call/close";
 import { callConfig } from "@/lib/call/config";
 import {
   lastQuestionAsked,
@@ -30,7 +31,8 @@ import { useVoiceVolume } from "@/lib/call/useVoiceVolume";
 import { liveConfig } from "@/lib/live/config";
 import { createLiveRules } from "@/lib/live/rules";
 import { buildScorecard, scoreRetry } from "@/lib/scorecard/request";
-import { getCall, saveCall } from "@/lib/store/db";
+import { nextCallNumber } from "@/lib/home/callName";
+import { getCall, listCalls, saveCall } from "@/lib/store/db";
 import type { Call } from "@/lib/store/types";
 import styles from "./call.module.css";
 
@@ -74,10 +76,13 @@ export function CallScreen() {
   const inCallRef = useRef(false);
   const hangingUp = useRef(false);
   const herTurnStartedAt = useRef(0);
+  const herLastLineAt = useRef(0);
+  const herVoiceStoppedAt = useRef(0);
   const pendingRef = useRef<PendingCall | null>(null);
   const autoStarted = useRef(false);
   const savedCall = useRef<Promise<unknown>>(Promise.resolve());
   const resumeRecord = useRef<Call | null>(null);
+  const callNumber = useRef<number | undefined>(undefined);
   const [callId, setCallId] = useState<string | null>(null);
   const selfView = useSelfView();
 
@@ -103,7 +108,7 @@ export function CallScreen() {
         conversation.sendContextualUpdate(retryUpdate(pending.retry.question));
         showReaction({ text: "Go on, land it", tone: "sun" });
       } else {
-        session.start(crypto.randomUUID(), pending.setup, texts);
+        session.start(crypto.randomUUID(), pending.setup, texts, callNumber.current);
         conversation.sendContextualUpdate(setupUpdate(pending.setup, pending));
         showReaction({ text: "Hi there!", tone: "sun" });
       }
@@ -137,6 +142,8 @@ export function CallScreen() {
       if (mode === "speaking") {
         herTurnStartedAt.current = Date.now();
         rules.herTurn();
+      } else {
+        herVoiceStoppedAt.current = Date.now(); // Her audio finished playing.
       }
       session.setSpeaking(mode === "speaking");
     },
@@ -148,6 +155,7 @@ export function CallScreen() {
         session.addTranscript("user", message, Date.now());
         rules.userMessage(message);
       } else {
+        herLastLineAt.current = Date.now();
         session.addTranscript("agent", message, herTurnStartedAt.current || Date.now());
       }
     },
@@ -243,17 +251,23 @@ export function CallScreen() {
     // sendContextualUpdate stays valid for the whole call.
   }, [inCall]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // After setPhase("done"), hang up once she's been quiet, so her last line isn't cut off.
+  // After setPhase("done"): wait until her closing line has actually been spoken, then 1 second,
+  // then hang up. Never timed from the tool call. If it never comes, ElevenLabs' silence rule ends the call.
   const callEnding = inCall && call.phase === "done";
   useEffect(() => {
     if (!callEnding) return;
-    const startedAt = Date.now();
-    let quietSince = startedAt;
     const timer = setInterval(() => {
-      const now = Date.now();
-      if (session.get().speaking) quietSince = now;
-      const quietEnough = now - quietSince >= liveConfig.endCallQuietMs;
-      if (quietEnough || now - startedAt >= liveConfig.endCallMaxWaitMs) {
+      const ready = readyToHangUp(
+        {
+          done: true,
+          speaking: session.get().speaking,
+          lastLineAt: herLastLineAt.current,
+          voiceStoppedAt: herVoiceStoppedAt.current,
+          now: Date.now(),
+        },
+        callConfig.hangUpAfterHerVoiceMs,
+      );
+      if (ready) {
         clearInterval(timer);
         conversation.endSession();
       }
@@ -279,6 +293,8 @@ export function CallScreen() {
 
     // Picking up a dropped call: load what's saved so far.
     resumeRecord.current = pending.resume ? ((await getCall(pending.resume.callId)) ?? null) : null;
+    // A new call gets its number now, so its name never changes later.
+    if (!pending.resume && !pending.retry) callNumber.current = nextCallNumber(await listCalls(), pending.setup);
 
     try {
       const res = await fetch("/api/agent-session", { cache: "no-store" });

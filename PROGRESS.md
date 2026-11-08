@@ -131,3 +131,9 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 - [x] Part 7: mic denied, call dropped with Reconnect, cut short with Jump back in, and scorecard failed with Build scorecard (5.1 to 5.4). Each was forced in Chrome against the mock socket. Reconnect sends "Sorry, we lost you. Where were we: …" and a RESUME context, then continues at the same question in the same call record
 - [x] Scorecard route: `gemini-3.8-flash` stays the default. When Gemini answers 503 or 429, it falls back to `gemini-flash-latest`, then `gemini-3.5-flash`, inside the 60 s limit. On 8 Nov Google returned "high demand" on the newest Flash models for over an hour, while `gemini-3.5-flash` answered
 - [x] Scorecard route: a model that hasn't answered in 45 s counts as busy, and the next one gets a turn: `gemini-3.5-flash`, then `gemini-flash-latest`. The route's limit is 120 s. On 8 Nov the newest Flash models took 85 to 171 s to answer at all
+
+## 9 Nov 2026
+
+- [x] The call ends itself after Meera's closing line. Once setPhase("done") has fired, the app waits until her latest line's audio has finished playing, then 1 second, then hangs up. It's never timed from the tool call. In the mocked session with 2 s of audio after an early setPhase("done"), the call ended at 3.8 s (audio ended near 2.7 s). The old `endCallQuietMs` and `endCallMaxWaitMs` in `lib/live/config.ts` are no longer used, but are left in place because lib/live doesn't change
+- [x] Overall score out of 5 from the saved scorecard (`lib/progress/overall.ts`), with the PRD band words, "+N after retries", the 1.7b gauge with its load sweep, and small gauges in History
+- [x] Call names: "Senior Product Designer 12", numbered when the call starts (one past the highest for that role and seniority). Dexie v3 numbers existing calls in date order, tested by upgrading a real v2 database in Chrome

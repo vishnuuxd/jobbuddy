@@ -109,6 +109,7 @@ export function History() {
               <CallList
                 calls={calls}
                 now={now}
+                showScore
                 actionFor={(call) => (
                   <>
                     {call.status === "scoring_failed" && (

@@ -1,4 +1,5 @@
 import { midSentence } from "../call/opening.ts";
+import { callName } from "./callName.ts";
 import { bestGain, callSkillScores, skillNames, weakestSkill } from "../progress/score.ts";
 import type { Call } from "../store/types";
 
@@ -11,8 +12,9 @@ export function greeting(now: Date) {
   return "Good evening";
 }
 
-export function callTitle(call: Pick<Call, "setup">) {
+export function callTitle(call: Pick<Call, "setup" | "number">) {
   if (!call.setup?.role) return "Call with Meera";
+  if (call.number) return callName(call.setup, call.number);
   const seniority = call.setup.seniority?.trim();
   const role = midSentence(call.setup.role);
   const title = seniority ? `${seniority} ${role}` : role;

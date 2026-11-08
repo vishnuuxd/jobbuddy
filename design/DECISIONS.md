@@ -238,3 +238,18 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 - Screen showed: "Build scorecard" and "Read the transcript"
 - Built instead: as shown, with Meera worried and a "?!" card. "Read the transcript" opens the call's page, which also has "Build scorecard" and the full transcript. History shows "Build scorecard" on the row too. A failed retry offers "Back to scorecard" instead
 - Why: PRD.md, Edge cases: Scorecard request fails
+
+## 9 Nov · 1.7b Scorecard: overall score
+- Screen showed: the call name and "Today · 10 min" by the back button, a gauge with "3.4/5", "Getting there" under it, then "Meera says" and her take
+- Built instead: as shown, with the exact values from Paper. The gauge has an ink outline, a `pink-soft` #FFD1E0 track (a new token, taken from Paper), a sun fill and a white knob. The number is white at 76 px and "/5" is ink. The band word is plain ink text, not a pill. On every load the fill, the knob and the number sweep up together from 0 over 1.1 seconds. Under reduced motion they show the final score at once. "+0.2 after retries" sits on its own ink line under the word, because there's no room beside a 22 px word on a phone. Badges and the streak stay as stickers under Meera's take, which 1.7b doesn't show
+- Why: PRD.md, Scorecard: Overall score. Ink text on pink keeps contrast decision B. The name and the 26 px take count as large text
+
+## 9 Nov · 4.1 History rows: score
+- Screen showed: no design for score rows yet
+- Built instead: each scored call shows a small static gauge and its score on the right, with the band word in bold at the start of the summary line: "Interview ready · End with the result". Calls without a score keep their Incomplete pill or Build scorecard button
+- Why: a gauge, the number and the word side by side squeezed the call name onto three lines at 390 px. With the word in the summary line, names fit on one
+
+## 9 Nov · call names
+- Screen showed: "Senior Product Designer 12" as the title on 1.7b
+- Built instead: the name is the title on the scorecard, past call and History screens, and on Home's recent calls. Role words in capitals, like UX, stay as they are
+- Why: PRD.md, History: call names

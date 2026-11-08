@@ -61,6 +61,8 @@ export type Call = {
   startedAt: string;
   endedAt?: string;
   setup?: Setup;
+  /** Counts calls for this role and seniority, saved when the call starts: "Senior Product Designer 12". */
+  number?: number;
   jdText?: string;
   cvText?: string; // Snapshot used in this call
   transcript: TranscriptLine[];
