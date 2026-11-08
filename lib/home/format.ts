@@ -41,6 +41,16 @@ export function callMeta(call: Pick<Call, "startedAt" | "endedAt">, now: Date) {
   return parts.join(" · ");
 }
 
+/** "Today, 4:12 pm · 10 min": History rows show the time of day too. */
+export function callMetaWithTime(call: Pick<Call, "startedAt" | "endedAt">, now: Date) {
+  const [day, ...rest] = callMeta(call, now).split(" · ");
+  const time = new Date(call.startedAt)
+    .toLocaleTimeString("en-GB", { hour: "numeric", minute: "2-digit", hour12: true })
+    .replace(/\s/g, " ")
+    .toLowerCase();
+  return [`${day}, ${time}`, ...rest].join(" · ");
+}
+
 export function completion(calls: Pick<Call, "status">[]) {
   const done = calls.filter((call) => call.status === "completed").length;
   return `${done} of ${calls.length} ${calls.length === 1 ? "interview" : "interviews"} completed`;

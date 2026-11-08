@@ -1,12 +1,9 @@
 .hero { position: relative; width: 300px; max-width: 100%; aspect-ratio: 300 / 172; }
-.small { flex: none; width: 44px; aspect-ratio: 300 / 172; }
 .svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .outline { fill: none; stroke: var(--ink); stroke-width: 36; stroke-linecap: round; }
 .track { fill: none; stroke: var(--pink-soft); stroke-width: 28; stroke-linecap: round; }
 .fill { fill: none; stroke: var(--sun); stroke-width: 28; stroke-linecap: round; }
 .knob { fill: var(--white); stroke: var(--ink); stroke-width: 3; }
-.small .outline { stroke-width: 44; }
-.small .knob { stroke-width: 8; }
 
 .reading { position: absolute; inset: auto 0 0; display: flex; align-items: flex-end; justify-content: center; gap: 4px; margin: 0; }
 .number { color: var(--white); font: 800 76px/70px var(--display); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }

@@ -253,3 +253,7 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 - Screen showed: "Senior Product Designer 12" as the title on 1.7b
 - Built instead: the name is the title on the scorecard, past call and History screens, and on Home's recent calls. Role words in capitals, like UX, stay as they are
 - Why: PRD.md, History: call names
+
+## 9 Nov · 4.1 History rows: simpler, at Vishnu's request
+- Replaces the earlier "History rows: score" entry. Rows now show the name, day and time, length, and the score as "3.5/5". No small gauge, band word or summary line. The gauge and word stay on the scorecard
+- Why: Vishnu asked for only what's needed to find a call in the list

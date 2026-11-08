@@ -75,7 +75,7 @@ All setup happens here, before the call. Nothing is asked by voice.
 **History**
 
 - At the top, the completion rate: "7 of 9 interviews completed".
-- Every past call, newest first: its name, overall score and word, length, date and summary line.
+- Every past call, newest first: its name, date and time, length, and overall score. Scored rows have no gauge, word or summary line.
 - **Call names:** seniority, role and a number, with no separators: "Senior Product Designer 12". Role in title case. The number counts calls for that role and seniority, starting at 1, and is saved when the call starts, so deleting a call never renames the others. Retries stay under the original call and get no number of their own.
 - The past call screen uses the name as its title next to the back button. Length and date go in a small line under it.
 - Tap to open the scorecard and the full transcript, with flagged moments highlighted. Retry stays on each moment, so I can retry an old answer and see the before and after.
@@ -196,7 +196,7 @@ The SDK has no method that makes her cut in while I'm still talking. So the v1 r
 - The gauge animates from 0 to the score each time the scorecard loads. With reduced motion, it shows the score straight away.
 - Retries never change the original score. When a retry improves an answer, "+0.4 after retries" shows beside it.
 - Incomplete calls and failed scorecards have no score. They keep their Incomplete or Build scorecard label.
-- History shows each call's score and word in its row, with a small static gauge.
+- History shows each call's score in its row, as a number out of 5. The gauge and the word are on the scorecard only.
 
 **The retry.** Tapping Retry starts a short call with only that question and the same setup. Afterwards: my old answer next to the new one, the score change per skill, and a celebration if it went up. The moment card then shows "Improved". The score change is worked out by comparing the retry's scores with the original answer's, so nothing extra is stored.
 

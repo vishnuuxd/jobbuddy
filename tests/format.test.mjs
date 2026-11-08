@@ -50,3 +50,10 @@ test("incomplete calls get a grey pill", () => {
   assert.deepEqual(callPill({ status: "incomplete" }), { tone: "grey", label: "Incomplete" });
   assert.equal(callPill({ status: "completed" }), null);
 });
+
+test("History rows add the time of day", async () => {
+  const { callMetaWithTime } = await import("../lib/home/format.ts");
+  const startedAt = new Date(2026, 10, 8, 16, 12).toISOString();
+  const endedAt = new Date(2026, 10, 8, 16, 22).toISOString();
+  assert.equal(callMetaWithTime({ startedAt, endedAt }, now), "Today, 4:12 pm · 10 min");
+});

@@ -13,18 +13,13 @@ function knobAt(fraction: number) {
   return { x: 150 - 120 * Math.cos(angle), y: 152 - 120 * Math.sin(angle) };
 }
 
-type Props = {
-  score: number;
-  word: string;
-  /** "hero" sweeps from 0 on load and shows the number. "small" is static, for list rows. */
-  size?: "hero" | "small";
-};
+type Props = { score: number; word: string };
 
-export function ScoreGauge({ score, word, size = "hero" }: Props) {
+/** Sweeps from 0 to the score on every load, with the number counting up. */
+export function ScoreGauge({ score, word }: Props) {
   const fill = useRef<SVGPathElement>(null);
   const knob = useRef<SVGCircleElement>(null);
   const number = useRef<HTMLSpanElement>(null);
-  const hero = size === "hero";
   const target = Math.max(0, Math.min(5, score)) / 5;
 
   useEffect(() => {
@@ -35,8 +30,8 @@ export function ScoreGauge({ score, word, size = "hero" }: Props) {
       knob.current?.setAttribute("cy", y.toFixed(1));
       if (number.current) number.current.textContent = (fraction * 5).toFixed(1);
     }
-    // Small gauges and reduced motion show the final state straight away.
-    if (!hero || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // Reduced motion shows the final state straight away.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       draw(target);
       return;
     }
@@ -51,27 +46,25 @@ export function ScoreGauge({ score, word, size = "hero" }: Props) {
     draw(0);
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [hero, target]);
+  }, [target]);
 
-  const start = knobAt(hero ? 0 : target);
+  const start = knobAt(0);
   const label = `Overall score ${score.toFixed(1)} out of 5, ${word}`;
 
   return (
-    <div className={hero ? styles.hero : styles.small} role="img" aria-label={label}>
+    <div className={styles.hero} role="img" aria-label={label}>
       <svg className={styles.svg} viewBox="0 0 300 172" aria-hidden="true">
         <path d={ARC} className={styles.outline} />
         <path d={ARC} className={styles.track} />
-        <path ref={fill} d={ARC} pathLength={100} className={styles.fill} strokeDasharray={`${hero ? 0 : target * 100} 100`} />
+        <path ref={fill} d={ARC} pathLength={100} className={styles.fill} strokeDasharray="0 100" />
         <circle ref={knob} cx={start.x} cy={start.y} r="15" className={styles.knob} />
       </svg>
-      {hero && (
-        <p className={styles.reading} aria-hidden="true">
-          <span ref={number} className={styles.number}>
-            0.0
-          </span>
-          <span className={styles.outOf}>/5</span>
-        </p>
-      )}
+      <p className={styles.reading} aria-hidden="true">
+        <span ref={number} className={styles.number}>
+          0.0
+        </span>
+        <span className={styles.outOf}>/5</span>
+      </p>
     </div>
   );
 }

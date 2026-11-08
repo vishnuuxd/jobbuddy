@@ -1,9 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { StatusPill } from "@/components/ui/Chip";
-import { ScoreGauge } from "@/components/ui/ScoreGauge";
 import { callScore } from "@/lib/progress/overall";
-import { callMeta, callPill, callTitle } from "@/lib/home/format";
+import { callMeta, callMetaWithTime, callPill, callTitle } from "@/lib/home/format";
 import type { Call } from "@/lib/store/types";
 import styles from "./CallRow.module.css";
 
@@ -13,11 +12,10 @@ export const callHref = (call: Call) => (call.status === "incomplete" ? null : `
 type Props = { call: Call; now: Date; action?: ReactNode; extra?: ReactNode; showScore?: boolean };
 
 export function CallRow({ call, now, action, extra, showScore }: Props) {
-  // History shows the overall score in place of the pill. A failed scorecard gets "Build scorecard" instead.
+  // History: name, day and time, length and the score. A failed scorecard gets "Build scorecard" instead.
   const score = showScore ? callScore(call) : null;
   const pill = score || (call.status === "scoring_failed" && action) ? null : callPill(call);
-  const summary = showScore ? call.scorecard?.summary.oneThing.pattern : undefined;
-  const meta = callMeta(call, now);
+  const meta = showScore ? callMetaWithTime(call, now) : callMeta(call, now);
   const href = callHref(call);
   const body = (
     <>
@@ -27,18 +25,14 @@ export function CallRow({ call, now, action, extra, showScore }: Props) {
           {meta}
           {extra}
         </span>
-        {score && (
-          <span className={styles.summary}>
-            <span className={styles.scoreWord}>{score.word}</span>
-            {summary && ` · ${summary}`}
-          </span>
-        )}
       </span>
       {score && (
-        <span className={styles.score}>
-          <ScoreGauge score={score.score} word={score.word} size="small" />
+        <span className={styles.score} aria-label={`Score ${score.score.toFixed(1)} out of 5`}>
           <span className={styles.scoreNumber} aria-hidden="true">
             {score.score.toFixed(1)}
+          </span>
+          <span className={styles.outOf} aria-hidden="true">
+            /5
           </span>
         </span>
       )}
