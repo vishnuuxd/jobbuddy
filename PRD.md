@@ -475,7 +475,7 @@ Two days, in order. Each block ends with checks. A block isn't done until its ch
 
 **Change, 3 Nov.** Setup moves from voice to a setup sheet. Lengths of 5, 10 and 20 minutes replace the two modes. Home, History and Profile get a bottom tab bar. Profile has no accounts in v1. Design Home, the setup sheet, History, the scorecard and Profile together in Paper before building them.
 
-**Change, 8 Nov.** The attach button leaves the call: the CV and job description only come in through the setup sheet, and Meera never asks for them. The visual direction is Tropical. v2 is built in the seven phases under "v2 build phases" below. The Day 1 and Day 2 lists stay as the record of v1.
+**Change, 8 Nov.** The attach button leaves the call: the CV and job description only come in through the setup sheet, and Meera never asks for them. The visual direction is Tropical. v2 is built in the order under "v2 build plan" below. The Day 1 and Day 2 lists stay as the record of v1.
 
 **Milestone 0: spike (first 2 hours of day 1)**
 
@@ -529,17 +529,17 @@ Check: a 10 minute interview where a 2 minute answer gets the full ladder and th
 - [ ] Note every unfair callout and tune the config
 - [ ] Screen record one good call for the case study
 
-**v2 build phases**
+**v2 build plan**
 
-One Claude Code session per phase. Start each in plan mode, commit after its check passes on my phone. Reference screens are in `design/screens`, numbered by flow.
+**Change, 8 Nov, later.** v2 is no longer built phase by phase. Everything left is built in one run, in this order, with one commit per part so any part can be rolled back. After each part: typecheck, tests and screenshots at 390 px. Meera's Rive rig is the only thing left out: the blob from part 1 stays. At the end: the production build, a deploy, and phone tests in the order of the four video journeys. Reference screens are in `design/screens`, numbered by flow.
 
-1. **Foundation.** Fonts, colour tokens and shared components from `design/DESIGN.md`: button, card, chip, Meera's blob, sheet, tab bar. A `/kit` page shows every component and state. No screen changes. Check: `/kit` on my phone.
-2. **App shell.** Home, History and Profile routes with the bottom tab bar. The tab bar hides on the call, writing, scorecard, retry and streak screens. Check: tabs work, and the bar never shows during a call.
-3. **Setup sheet.** All fields, remembered choices, and the Practice this and Night before variants (screens 1.2, 3.1, 3.2). Check: each variant starts a call with the right opening line.
-4. **Call.** Restyle screens 1.3 to 1.6 and 2.1. No changes to `lib/live` or the ElevenLabs wiring. Check: a full 5 minute call behaves exactly as before.
-5. **Scorecard.** `/api/scorecard`, the writing screen, scorecard v2 and saving to Dexie (screens 1.6, 1.7). Check: a 10 minute call ends in a full scorecard.
-6. **Progress and retry.** Retry call and result, streak screen, badges, personal bests, History, past call scorecard and transcript, Profile (screens 2.1 to 2.3, 4.1 to 4.4). Check: retry an old answer from History and see the before and after.
-7. **Errors.** Mic denied, call dropped, cut short and scorecard failed (screens 5.1 to 5.4). Check: force each one on my phone.
+1. **Foundation.** Done. Fonts, colour tokens and shared components from `design/DESIGN.md`: button, card, chip, Meera's blob, sheet, tab bar. A `/kit` page shows every component and state.
+2. **App shell and Home.** Home, History and Profile routes with the bottom tab bar. The tab bar hides on the call, writing, scorecard, retry and streak screens. Home in full (screen 1.1).
+3. **Setup sheet.** All fields, remembered choices, and the Practice this and Night before variants (screens 1.2, 3.1, 3.2). Each variant starts a call with the right opening line.
+4. **Call.** Screens 1.3 to 1.6 and 2.1. The old attach flow and the reading mood go. No changes to the `lib/live` rules or thresholds.
+5. **Scorecard.** `/api/scorecard`, the writing screen, scorecard v2 and saving to Dexie (screens 1.6, 1.7).
+6. **Progress and retry.** Retry call and result, streak screen, badges, personal bests, History, past call scorecard and transcript, Profile, all in full (screens 2.1 to 2.3, 4.1 to 4.4).
+7. **Errors.** Mic denied, call dropped, cut short and scorecard failed (screens 5.1 to 5.4).
 
 ## Building with Claude Code
 
@@ -565,7 +565,7 @@ When it runs, tell me exactly what to test by voice and what to look for in the 
 
 ```text
 - PRD.md is the source of truth. If something in the code disagrees with it, ask me.
-- Work one build plan block at a time. Stop at the block's checks and tell me how to verify them.
+- v2 is built in one run, in the order of the v2 build plan in PRD.md. After each part: typecheck, tests and Playwright screenshots at 390 px, then one commit per part, pushed. Stop only if something is truly blocked, or a choice changes behaviour in the PRD.
 - Every live reaction threshold lives in lib/live/config.ts. Never hardcode one elsewhere.
 - The app never animates Meera directly. It only sets InterviewVM values.
 - No API keys in the browser.
@@ -573,7 +573,7 @@ When it runs, tell me exactly what to test by voice and what to look for in the 
 - After any UI change, take a mobile width screenshot and show me.
 - Design: PRD.md decides behaviour. design/DESIGN.md and design/screens decide look and feel. Inside those, you own the UI and UX details: fix problems you find instead of copying them.
 - Log every departure from a reference screen in design/DECISIONS.md.
-- During UI phases, never change lib/live or the ElevenLabs wiring.
+- Never change the lib/live rules or thresholds.
 - Paper (file "JobBuddy screens", page "v2 key flows · Tropical") is read only. Use it to check exact styles. Never create, edit or delete anything in Paper.
 ```
 
