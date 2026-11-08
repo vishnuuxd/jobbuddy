@@ -28,6 +28,7 @@ Version 2 is a showcase build: four key flows with polished, delightful UI, reco
 - **Meera comes after the flows.** An original character, built to Duolingo's level of motion quality, not their look. Her expressions come from what the settled flows need.
 - **No call recording in v2.** Replaying the audio of a moment is a later stretch goal.
 - **Decision for the case study:** the orb shipped in v1 to build and test fast, before investing in a character.
+- **Visual direction: Tropical.** Hot pink, sun yellow and ink, chunky type, 2 px ink outlines and hard offset shadows. Twenty reference screens live in `design/screens` and the visual rules in `design/DESIGN.md`. The screens are a direction, not a spec. Claude Code refines them while building and logs each change in `design/DECISIONS.md`.
 
 **Video plan, 2 to 3 minutes.** First practice, about 60 seconds. Daily practice, about 15 seconds. Checking progress, about 15 seconds. Retrying an old call, about 20 seconds. Then how it was built and what was cut.
 
@@ -40,6 +41,7 @@ Six screens: Home, the setup sheet, Call, Scorecard, History and Profile. Home, 
 - A grid of interviewer cards. Each card: Meera's orb for now, her name and a one line style ("Meera · HR screen · direct, fair").
 - Meera is the only live card. Two or three placeholder cards say "Not taking calls yet" and can't be tapped.
 - Tapping Meera opens the setup sheet.
+- Under the cards: a "From your last call" card with the last call's practiceNext skill and a Practice this button. It opens the sheet prefilled for a 5 minute focus call. Hidden until the first scorecard exists.
 - Under the grid: the last three calls, each opening its scorecard, plus "Run this again" on the most recent, which opens the sheet prefilled.
 - Bottom tabs: Home, History, Profile.
 
@@ -189,6 +191,7 @@ The SDK has no method that makes her cut in while I'm still talking. So the v1 r
 - **Streak:** days in a row with at least one completed call. A missed day resets it quietly.
 - **Badges:** Landed the result (every answer had one), No ramble (no answer over 2 minutes), Filler free (under 3 fillers per answer), Comeback (a retry scored higher).
 - **Personal bests:** the best score per skill, shown on the scorecard and in History.
+- **Streak screen:** when a completed call starts a new streak, a one time full screen moment follows the scorecard or the retry result: "Your streak starts today". On later days the streak shows on Home and the scorecard only.
 
 Built after the call by one model request with a JSON schema. Input: the transcript with timestamps, all flags, the app's delivery metrics, the role, seniority, length, question count, CV text and job description text.
 
@@ -463,6 +466,8 @@ Two days, in order. Each block ends with checks. A block isn't done until its ch
 
 **Change, 3 Nov.** Setup moves from voice to a setup sheet. Lengths of 5, 10 and 20 minutes replace the two modes. Home, History and Profile get a bottom tab bar. Profile has no accounts in v1. Design Home, the setup sheet, History, the scorecard and Profile together in Paper before building them.
 
+**Change, 8 Nov.** The visual direction is Tropical. v2 is built in the seven phases under "v2 build phases" below. The Day 1 and Day 2 lists stay as the record of v1.
+
 **Milestone 0: spike (first 2 hours of day 1)**
 
 Goal: prove the risky parts before any design depends on them. Use a static image instead of Meera.
@@ -515,6 +520,18 @@ Check: a 10 minute interview where a 2 minute answer gets the full ladder and th
 - [ ] Note every unfair callout and tune the config
 - [ ] Screen record one good call for the case study
 
+**v2 build phases**
+
+One Claude Code session per phase. Start each in plan mode, commit after its check passes on my phone. Reference screens are in `design/screens`, numbered by flow.
+
+1. **Foundation.** Fonts, colour tokens and shared components from `design/DESIGN.md`: button, card, chip, Meera's blob, sheet, tab bar. A `/kit` page shows every component and state. No screen changes. Check: `/kit` on my phone.
+2. **App shell.** Home, History and Profile routes with the bottom tab bar. The tab bar hides on the call, writing, scorecard, retry and streak screens. Check: tabs work, and the bar never shows during a call.
+3. **Setup sheet.** All fields, remembered choices, and the Practice this and Night before variants (screens 1.2, 3.1, 3.2). Check: each variant starts a call with the right opening line.
+4. **Call.** Restyle screens 1.3 to 1.6 and 2.1. No changes to `lib/live` or the ElevenLabs wiring. Check: a full 5 minute call behaves exactly as before.
+5. **Scorecard.** `/api/scorecard`, the writing screen, scorecard v2 and saving to Dexie (screens 1.6, 1.7). Check: a 10 minute call ends in a full scorecard.
+6. **Progress and retry.** Retry call and result, streak screen, badges, personal bests, History, past call scorecard and transcript, Profile (screens 2.1 to 2.3, 4.1 to 4.4). Check: retry an old answer from History and see the before and after.
+7. **Errors.** Mic denied, call dropped, cut short and scorecard failed (screens 5.1 to 5.4). Check: force each one on my phone.
+
 ## Building with Claude Code
 
 Save this PRD as `PRD.md` in the repo root. Then start each block with a prompt that names one block, not the whole PRD.
@@ -545,7 +562,19 @@ When it runs, tell me exactly what to test by voice and what to look for in the 
 - No API keys in the browser.
 - Build Meera's rig from scratch. Never use or copy another Rive file.
 - After any UI change, take a mobile width screenshot and show me.
+- Design: PRD.md decides behaviour. design/DESIGN.md and design/screens decide look and feel. Inside those, you own the UI and UX details: fix problems you find instead of copying them.
+- Log every departure from a reference screen in design/DECISIONS.md.
+- During UI phases, never change lib/live or the ElevenLabs wiring.
+- Paper (file "JobBuddy screens", page "v2 key flows · Tropical") is read only. Use it to check exact styles. Never create, edit or delete anything in Paper.
 ```
+
+**v2: how to use the designs**
+
+- PRD.md decides what the app does: flows, rules, data.
+- `design/DESIGN.md` and `design/screens` decide how it looks and feels.
+- Inside those limits, Claude Code owns the UI and UX details: layout, spacing, hierarchy, copy, states and interactions. It fixes problems it finds instead of copying them.
+- Every departure from a reference screen goes in `design/DECISIONS.md`: screen, what it showed, what was built, and why. I review the log after each phase.
+- If a screen and the PRD disagree, the PRD wins, and the conflict is logged. Anything that changes behaviour gets asked first.
 
 **The loop.** Same as Unstuck: design, build, screenshot, critique, fix. Keep my critiques in plain words ("the frown reads angry", "she interrupts too early"). Keep a running list of what I cut and why. That list becomes the "what I threw away" section of the case study.
 
