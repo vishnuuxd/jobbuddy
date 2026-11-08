@@ -18,6 +18,7 @@ import { badgeList, callBadges } from "@/lib/progress/badges";
 import { bestRetry, callSkillScores, deliveryStats, momentsFor, personalBests, retryChange, skillNames } from "@/lib/progress/score";
 import { shouldShowStreak } from "@/lib/progress/streak";
 import { scorecardMarkdown } from "@/lib/scorecard/markdown";
+import { buildScorecard } from "@/lib/scorecard/request";
 import { flagNames, transcriptItems } from "@/lib/scorecard/transcript";
 import { useCall, useCalls, useProfile } from "@/lib/store/db";
 import { skills, type Call, type ScoredAnswer } from "@/lib/store/types";
@@ -35,7 +36,9 @@ export function ScorecardScreen({ id }: { id: string }) {
   const [tab, setTab] = useState<"scorecard" | "transcript">("scorecard");
   useEffect(() => {
     setNow(new Date());
-    setFresh(new URLSearchParams(window.location.search).has("fresh"));
+    const params = new URLSearchParams(window.location.search);
+    setFresh(params.has("fresh"));
+    if (params.get("tab") === "transcript") setTab("transcript");
   }, []);
 
   if (call === undefined || !now || !calls) return <main className={styles.loading} />;
@@ -58,7 +61,7 @@ export function ScorecardScreen({ id }: { id: string }) {
     router.push(shouldShowStreak(calls ?? [], profile?.streakShownOn, new Date()) ? "/streak" : "/");
   };
   const card = call.scorecard;
-  if (!card) return <NoScorecard call={call} onClose={close} />;
+  if (!card) return <NoScorecard call={call} onClose={close} startTab={tab} />;
 
   const scores = callSkillScores(call)!;
   const bests = personalBests(calls);
@@ -333,7 +336,11 @@ function Moment({ call, answer, full, onRetry }: { call: Call; answer: ScoredAns
   );
 }
 
-function NoScorecard({ call, onClose }: { call: Call; onClose: () => void }) {
+/** A call without a scorecard: rebuild it if it failed, and read the transcript either way. */
+function NoScorecard({ call, onClose, startTab }: { call: Call; onClose: () => void; startTab: "scorecard" | "transcript" }) {
+  const [building, setBuilding] = useState(false);
+  const [failedAgain, setFailedAgain] = useState(false);
+  const failed = call.status === "scoring_failed";
   return (
     <main className={styles.page}>
       <HeroHeader>
@@ -343,14 +350,38 @@ function NoScorecard({ call, onClose }: { call: Call; onClose: () => void }) {
           </button>
           <HeroMeta>{callTitle(call)}</HeroMeta>
         </div>
-        <h1 className={styles.take}>{call.status === "scoring_failed" ? "No scorecard yet" : "This call was cut short"}</h1>
+        <h1 className={styles.take}>{failed ? "No scorecard yet" : "This call was cut short"}</h1>
       </HeroHeader>
       <div className={styles.body}>
-        <p className={styles.quiet}>
-          {call.status === "scoring_failed"
-            ? "The scorecard didn't build. The transcript is saved."
-            : "Fewer than two answers, so there's no scorecard."}
-        </p>
+        {startTab !== "transcript" && (
+          <>
+            <p className={styles.quiet}>
+              {failed ? "Writing it up didn't work last time. Nothing is lost: the transcript is below." : "Fewer than two answers, so there's no scorecard. The transcript is below."}
+            </p>
+            {failed && (
+              <Button
+                variant="primary"
+                block
+                loading={building}
+                onClick={async () => {
+                  setBuilding(true);
+                  const result = await buildScorecard(call.id);
+                  setBuilding(false);
+                  setFailedAgain(result?.status !== "completed");
+                }}
+              >
+                Build scorecard
+              </Button>
+            )}
+            {failedAgain && (
+              <p className={styles.quiet} role="alert">
+                It didn't build this time either. Try again in a minute.
+              </p>
+            )}
+          </>
+        )}
+        <h2 className={styles.label}>Transcript</h2>
+        <Transcript call={call} />
       </div>
     </main>
   );

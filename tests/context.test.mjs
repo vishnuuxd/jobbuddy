@@ -35,3 +35,32 @@ test("skills", () => {
   assert.equal(isSkill("structure"), true);
   assert.equal(isSkill("charm"), false);
 });
+
+test("resume picks up at the question she was on, with no intro", async () => {
+  const { lastQuestionAsked, resumeUpdate, resumeFirstLine } = await import("../lib/call/context.ts");
+  const transcript = [
+    { speaker: "agent", text: "Tell me about yourself?", questionIndex: 1 },
+    { speaker: "user", text: "I design.", questionIndex: 1 },
+    { speaker: "agent", text: "Got it. Tell me about a stakeholder who pushed back?", questionIndex: 2 },
+    { speaker: "user", text: "So", questionIndex: 2 },
+  ];
+  const last = lastQuestionAsked(transcript);
+  assert.deepEqual(last, { question: 2, text: "Got it. Tell me about a stakeholder who pushed back?" });
+  assert.match(resumeUpdate(2, last.text), /No intro\. Pick up at main question 2: .*1 main questions are done/);
+  assert.match(resumeUpdate(0), /before the interview started/);
+  assert.equal(resumeFirstLine(), "Sorry, we lost you. Shall we pick up where we left off?");
+});
+
+test("a resumed session keeps the call's record and question", async () => {
+  const { createInterviewVM } = await import("../lib/avatar/interviewVM.ts");
+  const { createCallSession } = await import("../lib/call/session.ts");
+  const session = createCallSession(createInterviewVM(), { writingHoldMs: 5 });
+  session.resume({
+    id: "c", startedAt: new Date(0).toISOString(), setup: { role: "PM", seniority: "Mid", durationMin: 10, questionCount: 3, hasJd: false, hasCv: false },
+    transcript: [{ speaker: "user", text: "x", startSec: 1, endSec: 2, questionIndex: 2 }], flags: [], metrics: [], lateAdditions: [], retries: [], status: "incomplete", interviewerId: "meera",
+  });
+  assert.equal(session.get().id, "c");
+  assert.equal(session.get().phase, "interview");
+  assert.equal(session.get().question, 2);
+  assert.equal(session.get().transcript.length, 1);
+});

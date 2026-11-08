@@ -1,10 +1,9 @@
 "use client";
 
 import { useConversation } from "@elevenlabs/react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { Meera } from "@/components/meera/Meera";
+import { Meera, type MeeraStill } from "@/components/meera/Meera";
 import { SelfView } from "@/components/SelfView";
 import { Button } from "@/components/ui/Button";
 import { CallControl, CallPill, ProgressSegments, QuestionCard } from "@/components/ui/CallParts";
@@ -14,16 +13,25 @@ import { createClientTools } from "@/lib/agent/clientTools";
 import { createInterviewVM, type Trigger } from "@/lib/avatar/interviewVM";
 import { callCopy, type CallStage } from "@/lib/call/callCopy";
 import { callConfig } from "@/lib/call/config";
-import { oneMinuteLeftUpdate, retryFirstLine, retryUpdate, setupUpdate } from "@/lib/call/context";
+import {
+  lastQuestionAsked,
+  oneMinuteLeftUpdate,
+  resumeFirstLine,
+  resumeUpdate,
+  retryFirstLine,
+  retryUpdate,
+  setupUpdate,
+} from "@/lib/call/context";
 import { openingLine } from "@/lib/call/opening";
-import { clearPendingCall, readPendingCall, type PendingCall } from "@/lib/call/pending";
+import { clearPendingCall, readPendingCall, setPendingCall, type PendingCall } from "@/lib/call/pending";
 import { answeredQuestions, createCallSession, toCallRecord, totalQuestions } from "@/lib/call/session";
 import { useSelfView } from "@/lib/call/useSelfView";
 import { useVoiceVolume } from "@/lib/call/useVoiceVolume";
 import { liveConfig } from "@/lib/live/config";
 import { createLiveRules } from "@/lib/live/rules";
 import { buildScorecard, scoreRetry } from "@/lib/scorecard/request";
-import { saveCall } from "@/lib/store/db";
+import { getCall, saveCall } from "@/lib/store/db";
+import type { Call } from "@/lib/store/types";
 import styles from "./call.module.css";
 
 type Problem = "mic" | "failed" | "noSetup" | "dropped" | "cutShort" | "scoreFailed" | null;
@@ -69,6 +77,7 @@ export function CallScreen() {
   const pendingRef = useRef<PendingCall | null>(null);
   const autoStarted = useRef(false);
   const savedCall = useRef<Promise<unknown>>(Promise.resolve());
+  const resumeRecord = useRef<Call | null>(null);
   const [callId, setCallId] = useState<string | null>(null);
   const selfView = useSelfView();
 
@@ -82,7 +91,13 @@ export function CallScreen() {
     onConnect: () => {
       const pending = pendingRef.current!;
       const texts = { cvText: pending.cvText, jdText: pending.jdText };
-      if (pending.retry) {
+      if (pending.resume && resumeRecord.current) {
+        const record = resumeRecord.current;
+        session.resume(record);
+        const last = lastQuestionAsked(record.transcript);
+        conversation.sendContextualUpdate(setupUpdate(pending.setup, pending));
+        conversation.sendContextualUpdate(resumeUpdate(last.question, last.text));
+      } else if (pending.retry) {
         session.startRetry(crypto.randomUUID(), pending.setup, pending.retry, texts);
         conversation.sendContextualUpdate(setupUpdate(pending.setup, pending));
         conversation.sendContextualUpdate(retryUpdate(pending.retry.question));
@@ -95,7 +110,7 @@ export function CallScreen() {
       setSessionOpen(true);
       setStage("live");
     },
-    onDisconnect: () => {
+    onDisconnect: (details) => {
       rules.finish();
       const state = session.get();
       const answered = answeredQuestions(state);
@@ -113,10 +128,10 @@ export function CallScreen() {
         savedCall.current = saveCall(toCallRecord(state, new Date().toISOString()));
         setCallId(state.id);
       }
-      if (state.phase === "done" || answered >= 2) setStage("writing");
-      else if (hangingUp.current) setProblem("cutShort");
-      else setProblem("dropped");
-      clearPendingCall();
+      // A real drop offers Reconnect. Otherwise two answers make a scorecard, and fewer is cut short.
+      if (details.reason === "error" && state.phase !== "done") setProblem("dropped");
+      else if (state.phase === "done" || answered >= 2) setStage("writing");
+      else setProblem("cutShort");
     },
     onModeChange: ({ mode }) => {
       if (mode === "speaking") {
@@ -262,11 +277,18 @@ export function CallScreen() {
       return;
     }
 
+    // Picking up a dropped call: load what's saved so far.
+    resumeRecord.current = pending.resume ? ((await getCall(pending.resume.callId)) ?? null) : null;
+
     try {
       const res = await fetch("/api/agent-session", { cache: "no-store" });
       if (!res.ok) throw new Error(`Session route returned ${res.status}`);
       const { signedUrl } = (await res.json()) as { signedUrl: string };
-      const firstMessage = pending.retry ? retryFirstLine(pending.retry.question) : openingLine(pending.setup);
+      const firstMessage = resumeRecord.current
+        ? resumeFirstLine(lastQuestionAsked(resumeRecord.current.transcript).text)
+        : pending.retry
+          ? retryFirstLine(pending.retry.question)
+          : openingLine(pending.setup);
       conversation.startSession({ signedUrl, connectionType: "websocket", overrides: { agent: { firstMessage } } });
     } catch {
       setProblem("failed");
@@ -317,16 +339,56 @@ export function CallScreen() {
   });
 
   if (problem) {
+    const state = session.get();
+    const id = callId ?? state.id;
+    const answeredSoFar = answeredQuestions(state);
+    const resume = () => {
+      const pending = pendingRef.current;
+      if (!pending || !id) return;
+      pendingRef.current = { ...pending, retry: undefined, resume: { callId: id } };
+      setPendingCall(pendingRef.current);
+      void startCall();
+    };
     const rebuild = () => {
       setProblem(null); // Back to the writing screen while it tries again.
       if (session.get().retryOf) return scoreThisRetry();
-      if (callId) {
-        void buildScorecard(callId).then((result) =>
-          result?.status === "completed" ? router.replace(`/scorecard/${callId}?fresh=1`) : setProblem("scoreFailed"),
+      if (id) {
+        void buildScorecard(id).then((result) =>
+          result?.status === "completed" ? router.replace(`/scorecard/${id}?fresh=1`) : setProblem("scoreFailed"),
         );
       }
     };
-    return <CallProblem problem={problem} onRetry={problem === "scoreFailed" ? rebuild : () => void startCall()} />;
+    const endHere = () => {
+      clearPendingCall();
+      if (answeredSoFar >= 2) {
+        setProblem(null);
+        setStage("writing");
+      } else router.push("/");
+    };
+    const actions = {
+      mic: { primary: { label: "Try again", run: () => void startCall() }, secondary: { label: "Back home", run: () => router.push("/") } },
+      failed: { primary: { label: "Try again", run: () => void startCall() }, secondary: { label: "Back home", run: () => router.push("/") } },
+      noSetup: { primary: { label: "Set up a call", run: () => router.push("/?sheet=new") }, secondary: { label: "Back home", run: () => router.push("/") } },
+      dropped: { primary: { label: "Reconnect", run: resume }, secondary: { label: "End here", run: endHere } },
+      cutShort: { primary: { label: "Jump back in", run: resume }, secondary: { label: "Back home", run: () => { clearPendingCall(); router.push("/"); } } },
+      scoreFailed: {
+        primary: { label: "Build scorecard", run: rebuild },
+        secondary: state.retryOf
+          ? { label: "Back to scorecard", run: () => router.push(`/scorecard/${state.retryOf!.callId}`) }
+          : { label: "Read the transcript", run: () => router.push(`/scorecard/${id}?tab=transcript`) },
+      },
+    }[problem];
+    return (
+      <CallProblem
+        problem={problem}
+        total={total}
+        question={state.question}
+        answered={answeredSoFar}
+        lastQuestion={state.question > 0 ? state.transcript.findLast((line) => line.speaker === "agent" && line.questionIndex === state.question)?.text : undefined}
+        primary={actions.primary}
+        secondary={actions.secondary}
+      />
+    );
   }
 
   const segments = total ?? 0;
@@ -414,38 +476,96 @@ function WritingSteps() {
   );
 }
 
-function CallProblem({ problem, onRetry }: { problem: Exclude<Problem, null>; onRetry: () => void }) {
-  const copy = {
-    mic: { title: "Meera can't hear you", sub: "Your mic is blocked for this site", action: "Try again" },
-    failed: { title: "Couldn't start the call", sub: "Something went wrong connecting", action: "Try again" },
-    noSetup: { title: "No call set up", sub: "Pick a role and a length first", action: null },
-    dropped: { title: "Call dropped", sub: "Your answers so far are saved", action: null },
-    cutShort: { title: "That was quick", sub: "Saved to History as incomplete", action: null },
-    scoreFailed: { title: "Scorecard didn't build", sub: "Your transcript is saved", action: "Build scorecard" },
-  }[problem];
+type Action = { label: string; run: () => void };
+type ProblemProps = {
+  problem: Exclude<Problem, null>;
+  total: number | null;
+  question: number;
+  answered: number;
+  lastQuestion?: string;
+  primary: Action;
+  secondary: Action;
+};
+
+/** Screens 5.1 to 5.4: what went wrong, that nothing is lost, and one clear way back. */
+function CallProblem({ problem, total, question, answered, lastQuestion, primary, secondary }: ProblemProps) {
+  const answers = `${answered} ${answered === 1 ? "answer" : "answers"}`;
+  const copy: Record<Exclude<Problem, null>, { title: string; sub: string; note?: string; pill: string; still: MeeraStill; offline?: boolean; badge?: "mic" | "oops" }> = {
+    mic: {
+      title: "Meera can't hear you",
+      sub: "Your mic is blocked for this site",
+      note: "iPhone: tap aA in the address bar, then Website Settings, and allow Microphone. Chrome: tap the icon left of the address, then Permissions. Then try again.",
+      pill: "Before the call",
+      still: { mood: "listening" },
+      badge: "mic",
+    },
+    failed: { title: "Couldn't start the call", sub: "Meera's line didn't connect", note: "Check your connection and try again.", pill: "Before the call", still: { mood: "skeptical" } },
+    noSetup: { title: "No call set up yet", sub: "Pick a role and a length first", pill: "Before the call", still: { mood: "listening" } },
+    dropped: {
+      title: "Call dropped",
+      sub: "Your answers so far are saved",
+      note: lastQuestion ? `Meera picks up at this question: "${lastQuestion}" No intro again.` : "Meera picks up where you stopped. No intro again.",
+      pill: question > 0 ? `Paused at Q${question}` : "Paused",
+      still: { mood: "listening" },
+      offline: true,
+    },
+    cutShort: {
+      title: "That was quick",
+      sub: answered === 1 ? "One answer isn't enough for a scorecard" : "A scorecard needs two answers",
+      note: "Saved to History as incomplete. Want to jump back in where we stopped?",
+      pill: answers,
+      still: { mood: "listening", trigger: "browRaise" },
+    },
+    scoreFailed: {
+      title: "Scorecard didn't build",
+      sub: "Your transcript is saved",
+      note: "Something went wrong writing it up. Nothing is lost. You can also do this later from History.",
+      pill: "Call ended",
+      still: { mood: "skeptical" },
+      badge: "oops",
+    },
+  };
+  const { title, sub, note, pill, still, offline, badge } = copy[problem];
+  const segments = total ?? 0;
+  const done = problem === "scoreFailed" ? segments + 1 : problem === "cutShort" ? answered + 1 : question;
+
   return (
     <main className={styles.call}>
-      <div className={styles.top} />
+      <div className={styles.top}>
+        {segments > 0 && problem !== "mic" && problem !== "failed" && problem !== "noSetup" ? (
+          <ProgressSegments total={segments} current={done} />
+        ) : (
+          <span />
+        )}
+        <CallPill>{pill}</CallPill>
+      </div>
       <div className={styles.middle}>
-        <Meera still={{ mood: "listening" }} size={240} offline={problem === "dropped"} />
-        <div className={styles.words}>
-          <h1 className={styles.title}>{copy.title}</h1>
-          <p className={styles.sub}>{copy.sub}</p>
+        <div className={styles.stage}>
+          <Meera still={still} size={240} offline={offline} />
+          {badge === "mic" && (
+            <span className={styles.micBadge} aria-hidden="true">
+              <MicIcon off size={26} />
+            </span>
+          )}
+          {badge === "oops" && (
+            <span className={styles.oopsBadge} aria-hidden="true">
+              ?!
+            </span>
+          )}
+        </div>
+        <div className={styles.words} role="alert">
+          <h1 className={styles.title}>{title}</h1>
+          <p className={styles.sub}>{sub}</p>
         </div>
       </div>
       <div className={styles.actions}>
-        {copy.action ? (
-          <Button variant="primary" onDark block onClick={onRetry}>
-            {copy.action}
-          </Button>
-        ) : (
-          <Button href="/" variant="primary" onDark block>
-            Set up a call
-          </Button>
-        )}
-        <Link href="/" className={styles.textLink}>
-          Back home
-        </Link>
+        {note && <p className={styles.note}>{note}</p>}
+        <Button variant="primary" onDark block onClick={primary.run}>
+          {primary.label}
+        </Button>
+        <button type="button" className={styles.textLink} onClick={secondary.run}>
+          {secondary.label}
+        </button>
       </div>
     </main>
   );

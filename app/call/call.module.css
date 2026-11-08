@@ -46,7 +46,39 @@
 
 .actions { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .note { color: var(--ink-muted); font: 600 15px/22px var(--text); text-align: center; }
-.textLink { display: inline-flex; align-items: center; min-height: 44px; color: var(--white); font: 800 15px/20px var(--text); text-decoration: none; }
+.textLink { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border: 0; background: none; color: var(--white); font: 800 15px/20px var(--text); text-decoration: none; cursor: pointer; }
+.textLink:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; border-radius: 8px; }
+.micBadge {
+  position: absolute;
+  right: 18px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--ink);
+}
+.micBadge svg path:last-child { stroke: var(--pink); }
+.oopsBadge {
+  position: absolute;
+  right: 16px;
+  bottom: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 64px;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--pink);
+  font: 800 26px/1 var(--display);
+  rotate: -8deg;
+}
 
 @keyframes pop { from { transform: scale(0.6); opacity: 0; } }
 @keyframes spin { to { transform: rotate(1turn); } }

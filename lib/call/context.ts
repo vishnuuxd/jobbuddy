@@ -37,3 +37,19 @@ export function retryUpdate(question: string) {
 }
 
 export const retryFirstLine = (question: string) => `Take two. ${question}`;
+
+/** The question she was on when the call dropped, as she asked it. */
+export function lastQuestionAsked(transcript: { speaker: string; text: string; questionIndex?: number }[]) {
+  const current = Math.max(0, ...transcript.map((line) => line.questionIndex ?? 0));
+  const asked = [...transcript].reverse().find((line) => line.speaker === "agent" && (line.questionIndex ?? 0) === current);
+  return { question: current, text: asked?.text };
+}
+
+/** Picking up after a drop (PRD.md, Agent spec: CONTEXT FROM THE APP). */
+export function resumeUpdate(question: number, lastQuestion?: string) {
+  if (question <= 0) return "RESUME. The call dropped before the interview started and they're back. No intro. Ask if they're ready to start.";
+  return `RESUME. The call dropped and they're back. No intro. Pick up at main question ${question}${lastQuestion ? `: "${lastQuestion}"` : ""}. ${question - 1} main questions are done. Keep counting from there.`;
+}
+
+export const resumeFirstLine = (lastQuestion?: string) =>
+  lastQuestion ? `Sorry, we lost you. Where were we: ${lastQuestion}` : "Sorry, we lost you. Shall we pick up where we left off?";

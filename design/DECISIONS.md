@@ -218,3 +218,23 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 - Screen showed: the avatar initial, the name and "Day 4 streak · 7 of 9 completed"
 - Built instead: as shown. The name is the one the sheet remembers ("You" until there is one), and the meta line is ink. "Delete all data" opens a sheet to confirm it
 - Why: contrast decision B. Deleting everything gets a second step
+
+## Part 7 · 5.1 Mic denied
+- Screen showed: "Tap the lock in the address bar, allow Microphone, then try again." (known issue 10)
+- Built instead: steps for both browsers. "iPhone: tap aA in the address bar, then Website Settings, and allow Microphone. Chrome: tap the icon left of the address, then Permissions. Then try again." Meera has a mic-off badge
+- Why: the lock isn't where Safari keeps site permissions
+
+## Part 7 · 5.2 Call dropped
+- Screen showed: "Meera picks up at the stakeholder question. No intro again."
+- Built instead: the note quotes the question she was on. Reconnect starts a new session under the same call record. Her first line is "Sorry, we lost you. Where were we: …", and a RESUME context tells her the question number. "End here" builds the scorecard if there are two answers, otherwise it goes Home with the call saved as incomplete. Only a real connection error counts as a drop. If her side ends the call (silence, time limit), two answers get a scorecard and fewer show "That was quick"
+- Why: PRD.md, Edge cases: a reconnect restarts at the current question, with no intake
+
+## Part 7 · 5.3 Cut short
+- Screen showed: "That was quick", "One answer isn't enough for a scorecard", "Jump back in"
+- Built instead: as shown, with Meera's surprised face. "Jump back in" resumes the same call the same way as Reconnect
+- Why: PRD.md, Call behavior: Cut short
+
+## Part 7 · 5.4 Scorecard failed
+- Screen showed: "Build scorecard" and "Read the transcript"
+- Built instead: as shown, with Meera worried and a "?!" card. "Read the transcript" opens the call's page, which also has "Build scorecard" and the full transcript. History shows "Build scorecard" on the row too. A failed retry offers "Back to scorecard" instead
+- Why: PRD.md, Edge cases: Scorecard request fails

@@ -12,7 +12,7 @@ export type PendingCall = {
   /** Retry one question of an earlier call. */
   retry?: { callId: string; questionIndex: number; question: string; hint?: string };
   /** Pick up a dropped or cut short call. */
-  resume?: { callId: string; question: number; lastQuestion?: string };
+  resume?: { callId: string };
 };
 
 const key = "jobbuddy.pendingCall";

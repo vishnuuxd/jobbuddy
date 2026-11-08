@@ -149,6 +149,26 @@ export function createCallSession(
         retryOf: retry,
       });
     },
+    /** Pick up a dropped or cut short call: same record, same question, no opening. */
+    resume(call: Call) {
+      answeredSinceLastQuestion = true;
+      questionThisTurn = false;
+      const question = Math.max(0, ...call.transcript.map((line) => line.questionIndex ?? 0));
+      update({
+        ...initialState,
+        phase: question > 0 ? "interview" : "opening",
+        id: call.id,
+        startedAtMs: Date.parse(call.startedAt),
+        setup: call.setup ?? null,
+        cvText: call.cvText,
+        jdText: call.jdText,
+        transcript: call.transcript,
+        flags: call.flags,
+        metrics: call.metrics,
+        lateAdditions: call.lateAdditions,
+        question,
+      });
+    },
     end() {
       answeredSinceLastQuestion = false;
       questionThisTurn = false;
