@@ -11,7 +11,8 @@ export const callHref = (call: Call) => (call.status === "incomplete" ? null : `
 type Props = { call: Call; now: Date; action?: ReactNode; extra?: ReactNode };
 
 export function CallRow({ call, now, action, extra }: Props) {
-  const pill = callPill(call);
+  // A failed scorecard gets a "Build scorecard" button in History instead of its pill.
+  const pill = call.status === "scoring_failed" && action ? null : callPill(call);
   const href = callHref(call);
   const body = (
     <>

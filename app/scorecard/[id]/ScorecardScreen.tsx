@@ -16,8 +16,10 @@ import { callMeta, callTitle, streakDays } from "@/lib/home/format";
 import { liveConfig } from "@/lib/live/config";
 import { badgeList, callBadges } from "@/lib/progress/badges";
 import { bestRetry, callSkillScores, deliveryStats, momentsFor, personalBests, retryChange, skillNames } from "@/lib/progress/score";
+import { shouldShowStreak } from "@/lib/progress/streak";
 import { scorecardMarkdown } from "@/lib/scorecard/markdown";
-import { useCall, useCalls } from "@/lib/store/db";
+import { flagNames, transcriptItems } from "@/lib/scorecard/transcript";
+import { useCall, useCalls, useProfile } from "@/lib/store/db";
 import { skills, type Call, type ScoredAnswer } from "@/lib/store/types";
 import styles from "./scorecard.module.css";
 
@@ -27,8 +29,10 @@ export function ScorecardScreen({ id }: { id: string }) {
   const router = useRouter();
   const call = useCall(id);
   const calls = useCalls();
+  const profile = useProfile();
   const [now, setNow] = useState<Date | null>(null);
   const [fresh, setFresh] = useState(false);
+  const [tab, setTab] = useState<"scorecard" | "transcript">("scorecard");
   useEffect(() => {
     setNow(new Date());
     setFresh(new URLSearchParams(window.location.search).has("fresh"));
@@ -48,7 +52,11 @@ export function ScorecardScreen({ id }: { id: string }) {
     );
   }
 
-  const close = () => (fresh ? router.push("/") : router.back());
+  // Straight after a call: close to Home, through the streak screen the day a streak starts.
+  const close = () => {
+    if (!fresh) return router.back();
+    router.push(shouldShowStreak(calls ?? [], profile?.streakShownOn, new Date()) ? "/streak" : "/");
+  };
   const card = call.scorecard;
   if (!card) return <NoScorecard call={call} onClose={close} />;
 
@@ -114,6 +122,25 @@ export function ScorecardScreen({ id }: { id: string }) {
       </HeroHeader>
 
       <div className={styles.body}>
+        <div className={`${styles.tabs} noPrint`} role="tablist" aria-label="Scorecard or transcript">
+          {(["scorecard", "transcript"] as const).map((name) => (
+            <button
+              key={name}
+              type="button"
+              role="tab"
+              aria-selected={tab === name}
+              className={styles.tab}
+              onClick={() => setTab(name)}
+            >
+              {name === "scorecard" ? "Scorecard" : "Transcript"}
+            </button>
+          ))}
+        </div>
+
+        {tab === "transcript" ? (
+          <Transcript call={call} />
+        ) : (
+        <>
         <Card kind="cream" outlined raised>
           <Eyebrow>Your one thing</Eyebrow>
           <p className={styles.oneThing}>{card.summary.oneThing.pattern}</p>
@@ -188,8 +215,45 @@ export function ScorecardScreen({ id }: { id: string }) {
             Save as Markdown
           </Button>
         </div>
+        </>
+        )}
       </div>
     </main>
+  );
+}
+
+const flagTones: Record<string, string> = { no_result: "sun", hedging: "pink", rambling: "sun", filler: "pink", off_question: "white", pace: "white" };
+
+/** Screen 4.3: every line, with flagged moments highlighted by type. */
+function Transcript({ call }: { call: Call }) {
+  const items = transcriptItems(call);
+  if (items.length === 0) return <p className={styles.quiet}>No transcript for this call.</p>;
+  return (
+    <ol className={styles.transcript}>
+      {items.map((item, index) =>
+        item.speaker === "agent" ? (
+          <li key={index} className={styles.agentLine}>
+            <p className={styles.who}>Meera · {clock(Math.round(item.startSec))}</p>
+            <p className={styles.agentText}>{item.text}</p>
+          </li>
+        ) : item.flag ? (
+          <li key={index} className={`${styles.flagged} ${styles[`flag-${flagTones[item.flag.type] ?? "white"}`]}`}>
+            <p className={styles.flagHead}>
+              <Sticker tone={flagTones[item.flag.type] === "pink" ? "pink" : flagTones[item.flag.type] === "sun" ? "sun" : "white"} tilt={0}>
+                {flagNames[item.flag.type] ?? item.flag.type} · {clock(Math.round(item.startSec))}
+              </Sticker>
+              <span className={styles.flagSource}>{item.flag.source === "agent" ? "Flagged by Meera" : "Spotted live"}</span>
+            </p>
+            <p className={styles.flagText}>{item.text}</p>
+          </li>
+        ) : (
+          <li key={index} className={styles.userLine}>
+            <p className={styles.whoYou}>You · {clock(Math.round(item.startSec))}</p>
+            <p className={styles.userText}>{item.text}</p>
+          </li>
+        ),
+      )}
+    </ol>
   );
 }
 

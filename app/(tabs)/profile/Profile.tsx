@@ -4,41 +4,40 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { HeroHeader, HeroMeta } from "@/components/ui/HeroHeader";
+import { Sheet } from "@/components/ui/Sheet";
 import { AttachError, extractText } from "@/lib/attach/extract";
-import { completion } from "@/lib/home/format";
-import { getSavedCv, setSavedCv, useCalls } from "@/lib/store/db";
-import type { SavedCv } from "@/lib/store/types";
+import { completion, streakDays } from "@/lib/home/format";
+import { deleteAllData, setSavedCv, useCalls, useProfile } from "@/lib/store/db";
 import styles from "../tabs.module.css";
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
 
-// Simple for now: the full Profile (name, delete all data) is phase 6. CV handling is unchanged.
+/** Screen 4.4: who you are, your saved CV, and your data. */
 export function Profile() {
-  const [cv, setCv] = useState<SavedCv | undefined | null>(null); // null while loading
-  const [message, setMessage] = useState<string | null>(null);
-  const fileInput = useRef<HTMLInputElement>(null);
+  const profile = useProfile();
   const calls = useCalls();
+  const [message, setMessage] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
+  const [now, setNow] = useState<Date | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
+  useEffect(() => setNow(new Date()), []);
 
-  useEffect(() => {
-    void getSavedCv().then(setCv);
-  }, []);
+  const cv = profile?.cv;
+  const name = profile?.lastSetup?.name?.trim();
+  const streak = calls && now ? streakDays(calls, now) : 0;
+  const meta = [streak > 0 ? `Day ${streak} streak` : null, calls ? completion(calls).replace(" interviews", "").replace(" interview", "") : null]
+    .filter(Boolean)
+    .join(" · ");
 
   async function onFileChosen(file: File | undefined) {
     if (fileInput.current) fileInput.current.value = "";
     if (!file) return;
     try {
-      const next = { fileName: file.name, text: await extractText(file), addedAt: new Date().toISOString() };
-      await setSavedCv(next);
-      setCv(next);
+      await setSavedCv({ fileName: file.name, text: await extractText(file), addedAt: new Date().toISOString() });
       setMessage(null);
     } catch (error) {
-      setMessage(error instanceof AttachError ? error.message : "I can't read that one.");
+      setMessage(error instanceof AttachError ? error.message : "I can't read that one. A PDF or plain text works.");
     }
-  }
-
-  async function remove() {
-    await setSavedCv(undefined);
-    setCv(undefined);
   }
 
   const pick = () => fileInput.current?.click();
@@ -46,8 +45,15 @@ export function Profile() {
   return (
     <main>
       <HeroHeader>
-        <h1 className="t-hero">Profile</h1>
-        <HeroMeta>{calls ? completion(calls) : " "}</HeroMeta>
+        <div className={styles.profileHead}>
+          <span className={styles.avatar} aria-hidden="true">
+            {(name?.[0] ?? "Y").toUpperCase()}
+          </span>
+          <div>
+            <h1 className="t-title">{name || "You"}</h1>
+            <HeroMeta>{meta || " "}</HeroMeta>
+          </div>
+        </div>
       </HeroHeader>
 
       <div className={styles.content}>
@@ -62,7 +68,7 @@ export function Profile() {
             accept=".pdf,.txt,.md,application/pdf,text/plain"
             onChange={(event) => void onFileChosen(event.target.files?.[0])}
           />
-          {cv === null ? (
+          {profile === undefined ? (
             <div className={styles.loading} />
           ) : cv ? (
             <>
@@ -79,14 +85,14 @@ export function Profile() {
                 <Button variant="quiet" size="small" onClick={pick}>
                   Replace
                 </Button>
-                <Button variant="quiet" size="small" className={styles.danger} onClick={() => void remove()}>
+                <Button variant="quiet" size="small" className={styles.danger} onClick={() => void setSavedCv(undefined)}>
                   Remove
                 </Button>
               </div>
             </>
           ) : (
             <>
-              <p className={styles.quiet}>No CV yet. Add one and Meera uses it in every call.</p>
+              <p className={styles.quiet}>No CV yet. Add one and the setup sheet uses it for every call.</p>
               <Button variant="primary" size="small" block onClick={pick}>
                 Upload a CV
               </Button>
@@ -102,8 +108,30 @@ export function Profile() {
         <Card kind="calm" className={styles.local}>
           <p className={styles.localTitle}>Everything stays on this phone</p>
           <p className={styles.cvMeta}>No account needed. Calls, scorecards and your CV live in this browser only.</p>
+          <Button variant="text" className={styles.deleteAll} onClick={() => setConfirming(true)}>
+            Delete all data
+          </Button>
         </Card>
       </div>
+
+      <Sheet open={confirming} onClose={() => setConfirming(false)} title="Delete everything?" showTitle>
+        <div className={styles.stackTight}>
+          <p className={styles.quiet}>Every call, scorecard and retry, your saved CV and your remembered setup. It can't be undone.</p>
+          <Button
+            variant="primary"
+            block
+            onClick={async () => {
+              await deleteAllData();
+              setConfirming(false);
+            }}
+          >
+            Delete all data
+          </Button>
+          <Button variant="quiet" size="small" block onClick={() => setConfirming(false)}>
+            Keep it
+          </Button>
+        </div>
+      </Sheet>
     </main>
   );
 }

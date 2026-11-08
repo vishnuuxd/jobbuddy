@@ -22,7 +22,7 @@ import { useSelfView } from "@/lib/call/useSelfView";
 import { useVoiceVolume } from "@/lib/call/useVoiceVolume";
 import { liveConfig } from "@/lib/live/config";
 import { createLiveRules } from "@/lib/live/rules";
-import { buildScorecard } from "@/lib/scorecard/request";
+import { buildScorecard, scoreRetry } from "@/lib/scorecard/request";
 import { saveCall } from "@/lib/store/db";
 import styles from "./call.module.css";
 
@@ -170,6 +170,24 @@ export function CallScreen() {
     return () => clearTimeout(timer);
   }, [watching]);
 
+  // A retry: score the new answer and save it under the original call, then show the before and after.
+  const retryTranscript = useRef<typeof call.transcript>([]);
+  function scoreThisRetry() {
+    const state = session.get();
+    const retry = pendingRef.current?.retry;
+    if (!state.retryOf || !retry) return;
+    if (state.transcript.length) retryTranscript.current = state.transcript;
+    void scoreRetry(retry.callId, retry.questionIndex, retry.question, retryTranscript.current).then((saved) => {
+      if (saved) {
+        clearPendingCall();
+        router.replace(`/scorecard/${retry.callId}/retry/${retry.questionIndex}?fresh=1`);
+      } else setProblem("scoreFailed");
+    });
+  }
+  useEffect(() => {
+    if (stage === "writing" && call.retryOf) scoreThisRetry();
+  }, [stage]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Writing: build the scorecard once the call is saved, then open it.
   useEffect(() => {
     if (stage !== "writing" || !callId || call.retryOf) return;
@@ -301,6 +319,7 @@ export function CallScreen() {
   if (problem) {
     const rebuild = () => {
       setProblem(null); // Back to the writing screen while it tries again.
+      if (session.get().retryOf) return scoreThisRetry();
       if (callId) {
         void buildScorecard(callId).then((result) =>
           result?.status === "completed" ? router.replace(`/scorecard/${callId}?fresh=1`) : setProblem("scoreFailed"),

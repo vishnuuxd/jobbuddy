@@ -1,0 +1,41 @@
+.page { min-height: 100dvh; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 32px); background: var(--white); color: var(--ink); font: 600 15px/22px var(--text); }
+.page p, .page h1 { margin: 0; }
+.loading { min-height: 100dvh; background: var(--white); }
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: calc(env(safe-area-inset-top, 0px) + 28px) var(--side) 28px;
+  border-radius: 0 0 var(--r-hero) var(--r-hero);
+  background: var(--pink);
+  color: var(--white);
+  overflow: hidden;
+}
+.badge { align-self: flex-start; }
+.headline { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; }
+.title { font: 800 34px/36px var(--display); letter-spacing: -0.02em; }
+.sub { font: 800 19px/24px var(--text); } /* White on pink: 19 px bold counts as large text */
+.confetti span { position: absolute; display: block; animation: drop 600ms var(--spring) both; }
+.confetti span:nth-child(2) { animation-delay: 80ms; }
+.confetti span:nth-child(3) { animation-delay: 160ms; }
+.confetti span:nth-child(4) { animation-delay: 240ms; }
+
+.body { display: flex; flex-direction: column; gap: 14px; padding: 20px var(--side) 0; }
+.before { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: var(--r-button); background: var(--tile); }
+.after { display: flex; flex-direction: column; gap: 4px; margin-bottom: 5px; padding: 14px 16px; border: var(--outline) solid var(--ink); border-radius: var(--r-button); background: var(--mint-tint); box-shadow: var(--shadow-big); }
+.label { color: var(--muted); font: 900 13px/16px var(--text); }
+.labelNow { color: var(--mint-deep); font: 900 13px/16px var(--text); }
+.quote { color: var(--body); font: 600 15px/22px var(--text); }
+.quoteNow { color: var(--ink); font: 800 15px/22px var(--text); }
+
+.changes { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 4px 0 0; list-style: none; }
+.changes li { display: flex; align-items: center; gap: 12px; }
+.skill { width: 90px; font: 800 15px/20px var(--text); }
+.scores { flex: 1; color: var(--muted); font: 700 15px/20px var(--text); }
+.scores strong { color: var(--ink); font-weight: 900; }
+.actions { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 8px; }
+
+@keyframes drop { from { opacity: 0; transform: translateY(-24px) scale(0.4); } }
+@media (prefers-reduced-motion: reduce) { .confetti span { animation: none; } }

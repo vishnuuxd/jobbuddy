@@ -193,3 +193,28 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 - Screen showed: the writing screen, then the scorecard
 - Built instead: the writing screen stays until Gemini answers (about 30 seconds in tests). If it fails, the call is saved as scoring_failed and the screen offers "Build scorecard". Gemini is retried twice when it's busy, then tried once more on its "flash latest" alias
 - Why: PRD.md, Edge cases: Scorecard request fails
+
+## Part 6 · 2.2 Retry result: which number leads
+- Screen showed: "+2" big, above "You landed it this time." and a per skill list (known issue 8)
+- Built instead: the plain-words outcome leads ("You landed it this time.", or "Not quite yet."), and the total change sits beside it as a "+3 overall" sticker. The line under it names the biggest single skill change: "Structure went from 2 to 4 on stakeholder pushback." Then before and after, and up to three skills with their change. Confetti only when it went up. "New badge · Comeback" only the first time a retry on that call beats its original
+- Why: the sentence is what you feel. The number is the evidence, and a sum of five skills isn't a scale people know
+
+## Part 6 · 2.3 Streak screen
+- Screen showed: Sun to Thu, starting on Sunday (known issue 11)
+- Built instead: today and the next four real weekdays. It shows once, the day a completed call starts a new streak, when you close the scorecard. White text on pink is 19 px bold or larger, and the weekday labels are ink
+- Why: real days, and contrast decision B
+
+## Part 6 · 4.1 History
+- Screen showed: "7 of 9" with "of 9" in a paler pink, best tiles with Clarity highlighted, badges with counts, and calls with pills or "Build scorecard"
+- Built instead: as shown, all from real data. "of 9" is white too (pale pink on pink fails contrast). Every tile at the top personal best is highlighted. Badges not earned yet are dashed. Each row has a "⋯" button that opens a sheet to delete the call (known issue 12). A failed call shows "Build scorecard" in place of its pill
+- Why: PRD.md: delete by swipe or menu. The menu works with screen readers and is harder to trigger by accident
+
+## Part 6 · 4.2, 4.3 Past call
+- Screen showed: Scorecard and Transcript tabs on a past call
+- Built instead: the same tabs on every scorecard, straight after a call too. Flagged lines in the transcript are coloured by type: sun for no result and rambling, pink for hedging and fillers. They're marked "Flagged by Meera" or "Spotted live". Meera's name labels are pink-deep (contrast decision C)
+- Why: the transcript is useful right after a call as well
+
+## Part 6 · 4.4 Profile
+- Screen showed: the avatar initial, the name and "Day 4 streak · 7 of 9 completed"
+- Built instead: as shown. The name is the one the sheet remembers ("You" until there is one), and the meta line is ink. "Delete all data" opens a sheet to confirm it
+- Why: contrast decision B. Deleting everything gets a second step

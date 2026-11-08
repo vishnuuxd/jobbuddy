@@ -35,3 +35,15 @@ test("incomplete calls earn nothing, and counts add up across calls", () => {
   const clean = scoredCall({ metrics: [metric(1, 60, 1)] });
   assert.equal(badgeCounts([clean, clean], limits).noRamble, 2);
 });
+
+test("the streak screen shows once, on the day a new streak starts", async () => {
+  const { shouldShowStreak, streakWeek, dayKey } = await import("../lib/progress/streak.ts");
+  const now = new Date(2026, 10, 8, 20);
+  const today = { status: "completed", startedAt: new Date(2026, 10, 8, 10).toISOString() };
+  const yesterday = { status: "completed", startedAt: new Date(2026, 10, 7, 10).toISOString() };
+  assert.equal(shouldShowStreak([today], undefined, now), true);
+  assert.equal(shouldShowStreak([today], dayKey(now), now), false); // Already shown today.
+  assert.equal(shouldShowStreak([today, yesterday], undefined, now), false); // Day 2, not a start.
+  assert.equal(shouldShowStreak([{ ...today, status: "incomplete" }], undefined, now), false);
+  assert.deepEqual(streakWeek(now).map((day) => day.label), ["Sun", "Mon", "Tue", "Wed", "Thu"]);
+});

@@ -57,3 +57,23 @@
   .page { padding: 0; }
   .body { gap: 12px; }
 }
+
+.tabs { display: flex; gap: 4px; padding: 4px; border-radius: var(--r-button); background: var(--tile); }
+.tab { flex: 1; min-height: 44px; border: 0; border-radius: 12px; background: none; color: var(--body); font: 900 15px/20px var(--text); cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--white); }
+.tab:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+
+.transcript { display: flex; flex-direction: column; gap: 16px; margin: 0; padding: 0; list-style: none; }
+.who { color: var(--pink-deep); font: 900 13px/16px var(--text); }
+.agentText { padding-top: 2px; font: 800 16px/22px var(--text); }
+.userLine { padding-left: 14px; border-left: 3px solid var(--border); }
+.whoYou { color: var(--muted); font: 900 13px/16px var(--text); }
+.userText { padding-top: 2px; color: var(--body); font: 600 15px/22px var(--text); }
+.flagged { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border-left: 4px solid var(--sun); border-radius: 4px 16px 16px 4px; background: var(--cream); }
+.flag-pink { border-left-color: var(--pink); background: var(--pink-tint); }
+.flag-white { border-left-color: var(--ink); background: var(--tile); }
+.flagHead { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.flagSource { color: var(--cream-chip); font: 800 13px/16px var(--text); }
+.flag-pink .flagSource { color: var(--pink-deep); }
+.flag-white .flagSource { color: var(--muted); }
+.flagText { font: 800 16px/22px var(--text); }

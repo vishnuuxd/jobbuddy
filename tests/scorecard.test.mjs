@@ -56,3 +56,22 @@ test("the schema lists every PRD field", () => {
   assert.deepEqual(scorecardSchema.required, ["summary", "answers"]);
   assert.ok(scorecardSchema.properties.summary.required.includes("oneThing"));
 });
+
+test("flags land on the line they quote, or the nearest line in time", async () => {
+  const { transcriptItems } = await import("../lib/scorecard/transcript.ts");
+  const call = {
+    transcript: [
+      { speaker: "agent", text: "How did it end?", startSec: 120, endSec: 124 },
+      { speaker: "user", text: "So I aligned everyone and we moved on to the next sprint.", startSec: 130, endSec: 140 },
+      { speaker: "user", text: "I think it kind of went well? I guess.", startSec: 200, endSec: 205 },
+    ],
+    flags: [
+      { type: "no_result", quote: "…so I aligned everyone and we moved on", atSeconds: 0, source: "agent" },
+      { type: "hedging", quote: "words that aren't there", atSeconds: 198, source: "client" },
+    ],
+  };
+  const items = transcriptItems(call);
+  assert.equal(items[0].flag, undefined);
+  assert.equal(items[1].flag.type, "no_result");
+  assert.equal(items[2].flag.type, "hedging");
+});

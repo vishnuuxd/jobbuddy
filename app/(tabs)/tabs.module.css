@@ -74,3 +74,24 @@
 .practiceText { flex: 1; min-width: 0; }
 .practiceMeta { color: var(--body); font: 600 14px/20px var(--text); }
 .again.again { flex: none; color: var(--pink-deep); font-size: 14px; }
+
+/* History */
+.bigRate { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 14px; }
+.bigNumber { font: 800 72px/72px var(--display); letter-spacing: -0.03em; }
+.bigLabel { max-width: 140px; font: 800 19px/22px var(--text); }
+.bests { display: flex; gap: 6px; }
+.best { display: flex; flex: 1 1 0; flex-direction: column; align-items: center; min-width: 0; padding: 10px 2px; border: var(--outline) solid var(--border); border-radius: var(--r-small); }
+.bestTop { border-color: var(--ink); background: var(--mint-tint); }
+.bestNumber { font: 800 24px/28px var(--display); }
+.bestLabel { max-width: 100%; color: var(--muted); font: 800 11px/14px var(--text); overflow-wrap: anywhere; text-align: center; }
+.bestTop .bestLabel { color: var(--mint-deep); }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.locked { display: inline-flex; align-items: center; padding: 5px 12px; border: var(--outline) dashed var(--dashed); border-radius: var(--r-pill); color: var(--muted); font: 900 13px/16px var(--text); }
+.build.build { flex: none; }
+.more { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted); font: 900 20px/1 var(--text); cursor: pointer; }
+.more:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+
+/* Profile */
+.profileHead { display: flex; align-items: center; gap: 14px; }
+.avatar { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 56px; height: 56px; border: var(--outline) solid var(--ink); border-radius: 50%; background: var(--sun); color: var(--ink); font: 800 24px/1 var(--display); }
+.deleteAll.deleteAll { align-self: flex-start; padding: 0; color: var(--pink-deep); }
