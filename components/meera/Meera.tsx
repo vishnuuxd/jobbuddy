@@ -16,6 +16,8 @@ type Props = {
   size?: number;
   /** Not connected: grey body and dash eyes. A display state, not an InterviewVM value. */
   offline?: boolean;
+  /** White face with an ink outline and no sun dot, for pink grounds like the scorecard header. */
+  tone?: "pink" | "light";
   className?: string;
 };
 
@@ -41,7 +43,8 @@ const mouthPaths: Record<Exclude<Mouth, "talk" | "round" | "none">, string> = {
 };
 
 /** Meera, the v2 stand-in until the rig. Reads InterviewVM only: the app never animates her. */
-export function Meera({ vm, still, size = 240, offline = false, className }: Props) {
+export function Meera({ vm, still, size = 240, offline = false, tone = "pink", className }: Props) {
+  const light = tone === "light" && !offline;
   const figure = useRef<SVGGElement>(null);
   const sun = useRef<SVGCircleElement>(null);
   const eyes = useRef<(SVGRectElement | null)[]>([]);
@@ -137,8 +140,20 @@ export function Meera({ vm, still, size = 240, offline = false, className }: Pro
       aria-label={offline ? "Meera, offline" : "Meera"}
     >
       <g ref={figure}>
-        <path d={BODY} className={offline ? styles.offlineBody : styles.body} />
-        <circle ref={sun} cx="208" cy="34" r="20" className={offline ? styles.offlineSun : styles.sun} />
+        <path
+          d={BODY}
+          className={offline ? styles.offlineBody : light ? styles.lightBody : styles.body}
+          // A 2 px outline at any size.
+          strokeWidth={light ? (2 * 240) / size : undefined}
+        />
+        <circle
+          ref={sun}
+          cx="208"
+          cy="34"
+          r="20"
+          className={offline ? styles.offlineSun : styles.sun}
+          visibility={light ? "hidden" : undefined}
+        />
         {offline ? (
           <g className={styles.offlineEyes}>
             <rect x="70" y="109" width="20" height="6" rx="3" />

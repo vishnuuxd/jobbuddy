@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { CallControl, CallPill, ProgressSegments, QuestionCard } from "@/components/ui/CallParts";
 import { Card, Eyebrow } from "@/components/ui/Card";
 import { SelectChip, StatusPill, Sticker } from "@/components/ui/Chip";
-import { HeroHeader } from "@/components/ui/HeroHeader";
+import { HeroGreeting, HeroHeader, HeroMeta } from "@/components/ui/HeroHeader";
 import { ArrowIcon, AttachIcon, CameraIcon, CheckIcon, FlameIcon, MicIcon, StarIcon } from "@/components/ui/icons";
 import { InterviewerPlaceholder } from "@/components/ui/InterviewerPlaceholder";
 import { Sheet } from "@/components/ui/Sheet";
@@ -28,13 +28,13 @@ const colours: [string, string][] = [
 
 // Text and background pairs the screens use, with the smallest size each appears at.
 const pairs: { text: string; on: string; where: string; large: boolean }[] = [
-  { text: "#FFFFFF", on: "#FF3D7F", where: "Hero headline 34, big button 19 bold", large: true },
-  { text: "#FFFFFF", on: "#FF3D7F", where: "Small button 17, header text 13 to 15", large: false },
-  { text: "#FF3D7F", on: "#FFFFFF", where: "Run this again 14, Retry 15, Meera asked 13", large: false },
-  { text: "#B07F00", on: "#FFF4D6", where: "Eyebrow 13 on cream", large: false },
-  { text: "#D61F5E", on: "#FFE8EF", where: "You said 12 on pink tint", large: false },
-  { text: "#FFFFFF", on: "#00A86B", where: "Filler free sticker 13 (History)", large: false },
-  { text: "#8A6400", on: "#FFF4D6", where: "Chip text on cream", large: false },
+  { text: "#FFFFFF", on: "#FF3D7F", where: "Hero 34, titles 26, header greeting 19 bold", large: true },
+  { text: "#FFFFFF", on: "#FF3D7F", where: "Pink button labels, all 19 bold", large: true },
+  { text: "#1A1530", on: "#FF3D7F", where: "Meta lines in pink headers (B)", large: false },
+  { text: "#D61F5E", on: "#FFFFFF", where: "Small pink text on white: links, Meera asked (C)", large: false },
+  { text: "#8A6400", on: "#FFF4D6", where: "Eyebrow and chip text on cream (D)", large: false },
+  { text: "#1A1530", on: "#FFE8EF", where: "You said label on pink tint (E)", large: false },
+  { text: "#1A1530", on: "#00A86B", where: "Text on the mint sticker (F)", large: false },
   { text: "#00764B", on: "#E6F7F0", where: "Text on mint tint", large: false },
   { text: "#6B6580", on: "#FFFFFF", where: "Muted text", large: false },
   { text: "#6B6580", on: "#F1EEF6", where: "Muted on line (grey pill)", large: false },
@@ -144,15 +144,15 @@ export function Kit() {
     <main className={styles.kit}>
       <HeroHeader>
         <div className={styles.heroTop}>
-          <span className="t-label">Foundation · phase 1</span>
-          <Sticker tilt={3}>Day 4 streak</Sticker>
+          <HeroGreeting>Foundation</HeroGreeting>
+          <Sticker tilt={3}>Phase 1</Sticker>
         </div>
         <h1 className="t-hero">Kit</h1>
-        <p className={styles.heroNote}>Every v2 component and state. Nothing here is wired to a call.</p>
+        <HeroMeta>Every v2 component and state. Nothing here is wired to a call.</HeroMeta>
       </HeroHeader>
 
       <nav className={styles.toc} aria-label="Sections">
-        {["colour", "type", "buttons", "chips", "cards", "data", "meera", "call", "sheet", "contrast"].map((id) => (
+        {["colour", "type", "headers", "buttons", "chips", "cards", "data", "meera", "call", "sheet", "contrast"].map((id) => (
           <a key={id} href={`#${id}`}>
             {id}
           </a>
@@ -180,6 +180,39 @@ export function Kit() {
         <p className="t-small">Small 13</p>
         <p className="t-eyebrow">Eyebrow 13</p>
         <p className="t-label">Label in a list 15</p>
+      </Section>
+
+      <Section id="headers" title="Pink headers">
+        <p className="t-body">White only where it counts as large text. Small meta lines are ink.</p>
+        <div className={styles.headerDemo}>
+          <HeroHeader>
+            <div className={styles.heroTop}>
+              <HeroGreeting>Good evening, Vishnu</HeroGreeting>
+              <Sticker tilt={3}>Day 4 streak</Sticker>
+            </div>
+            <p className="t-hero">Who are you practising with?</p>
+          </HeroHeader>
+        </div>
+        <div className={styles.headerDemo}>
+          <HeroHeader>
+            <div className={styles.profileRow}>
+              <span className={styles.avatar}>V</span>
+              <div>
+                <p className="t-title">Vishnu</p>
+                <HeroMeta>Day 4 streak · 7 of 9 completed</HeroMeta>
+              </div>
+            </div>
+          </HeroHeader>
+        </div>
+        <div className={styles.headerDemo}>
+          <HeroHeader>
+            <div className={styles.saysRow}>
+              <Meera still={{ mood: "listening" }} size={40} tone="light" />
+              <HeroGreeting>Meera says</HeroGreeting>
+            </div>
+            <p className={styles.verdict}>Good energy! Your stories stop right before the payoff.</p>
+          </HeroHeader>
+        </div>
       </Section>
 
       <Section id="buttons" title="Buttons on white">
@@ -439,7 +472,7 @@ export function Kit() {
       </Section>
 
       <Section id="contrast" title="Contrast">
-        <p className="t-body">Every text and background pair the screens use. Nothing failing has been changed yet: the options are below.</p>
+        <p className="t-body">Every text and background pair the components use, after the 8 Nov decisions. Each one passes.</p>
         <ul className={styles.pairs}>
           {pairs.map((pair) => (
             <li key={pair.where}>
@@ -453,7 +486,6 @@ export function Kit() {
             </li>
           ))}
         </ul>
-        <ContrastOptions />
       </Section>
 
       <Section id="tabs" title="Tab bar">
@@ -469,53 +501,5 @@ export function Kit() {
 
       <TabBar current={tab} />
     </main>
-  );
-}
-
-function ContrastOptions() {
-  return (
-    <div className={styles.options}>
-      <h3 className="t-card">Options, waiting for Vishnu</h3>
-
-      <p className="t-label">A. Small primary button, 17 px white on pink (3.37)</p>
-      <div className={styles.optionGrid}>
-        <figure><Button variant="primary" size="small" block>Retry this answer</Button><figcaption>As designed · 3.37</figcaption></figure>
-        <figure><Button variant="primary" size="small" block className={styles.optInk}>Retry this answer</Button><figcaption>1 · ink label · 5.21</figcaption></figure>
-        <figure><Button variant="primary" size="small" block className={styles.optLarge}>Retry this answer</Button><figcaption>2 · 19 px label, counts as large · 3.37</figcaption></figure>
-        <figure><Button variant="primary" size="small" block className={styles.optDeep}>Retry this answer</Button><figcaption>3 · pink-deep fill · 4.98 (colour change)</figcaption></figure>
-      </div>
-
-      <p className="t-label">B. Small white text in pink headers, 13 to 15 px (3.37)</p>
-      <div className={styles.optionGrid}>
-        <figure><div className={styles.miniHero}><span>Good evening, Vishnu</span></div><figcaption>As designed · 3.37</figcaption></figure>
-        <figure><div className={`${styles.miniHero} ${styles.miniInk}`}><span>Good evening, Vishnu</span></div><figcaption>1 · ink text · 5.21</figcaption></figure>
-        <figure><div className={`${styles.miniHero} ${styles.miniLarge}`}><span>Good evening, Vishnu</span></div><figcaption>2 · 19 px bold, counts as large</figcaption></figure>
-      </div>
-
-      <p className="t-label">C. Small pink text on white, 13 to 15 px (3.37)</p>
-      <div className={styles.optionGrid}>
-        <figure><span className={styles.pinkText}>Run this again · Retry →</span><figcaption>As designed · 3.37</figcaption></figure>
-        <figure><span className={styles.deepText}>Run this again · Retry →</span><figcaption>1 · pink-deep · 4.98</figcaption></figure>
-      </div>
-
-      <p className="t-label">D. Eyebrow on cream, 13 px (3.26)</p>
-      <div className={styles.optionGrid}>
-        <figure><Card kind="cream"><Eyebrow>Your one thing</Eyebrow></Card><figcaption>As designed · cream-ink 3.26</figcaption></figure>
-        <figure><Card kind="cream"><p className={`${styles.eyebrowChip}`}>Your one thing</p></Card><figcaption>1 · cream-chip · 4.91</figcaption></figure>
-      </div>
-
-      <p className="t-label">E. &ldquo;You said&rdquo; on pink tint, 12 px (4.28)</p>
-      <div className={styles.optionGrid}>
-        <figure><div className={styles.saidBubble}><p className={styles.saidLabel}>You said</p></div><figcaption>As designed · 4.28</figcaption></figure>
-        <figure><div className={styles.saidBubble}><p className={`${styles.saidLabel} ${styles.saidBig}`}>You said</p></div><figcaption>1 · 14 px, still 4.28: needs ink</figcaption></figure>
-        <figure><div className={styles.saidBubble}><p className={`${styles.saidLabel} ${styles.saidInk}`}>You said</p></div><figcaption>2 · ink label · 15.1</figcaption></figure>
-      </div>
-
-      <p className="t-label">F. White on mint sticker, 13 px (3.08)</p>
-      <div className={styles.optionGrid}>
-        <figure><Sticker tone="mint" tilt={0}>Filler free</Sticker><figcaption>As designed · 3.08</figcaption></figure>
-        <figure><Sticker tone="mint" tilt={0} className={styles.mintInk}>Filler free</Sticker><figcaption>1 · ink text on mint · 5.7</figcaption></figure>
-      </div>
-    </div>
   );
 }

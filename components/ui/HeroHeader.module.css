@@ -7,3 +7,5 @@
   background: var(--pink);
   color: var(--white);
 }
+.greeting { margin: 0; color: var(--white); font: 800 19px/24px var(--text); }
+.meta { margin: 0; color: var(--ink); font: 800 14px/18px var(--text); }

@@ -63,40 +63,23 @@ Entries start below.
 - Built instead: a native modal dialog with a pink backdrop and a 28 px top radius. Focus stays inside, and Escape or a tap on the pink closes it. On iOS the sheet rises above the keyboard, and inputs are 16 px so Safari doesn't zoom
 - Why: "Must work with the keyboard open" (DESIGN.md)
 
-## Proposed, waiting for Vishnu: contrast
+## Phase 1 · all screens: contrast, decided 8 Nov
+Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). No colours changed. Every pair is listed with its ratio in the Contrast section of `/kit`.
 
-Built as designed for now. Each option is rendered in the Contrast section of `/kit`. Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold).
+- **A, pink buttons:** screen showed white 17 px labels on the 50 px pink buttons (3.37, fails). Built instead: every pink button label is 19 px bold, which counts as large text, as on the big buttons. The pink End button on the call is 19 px too
+- **B, pink headers:** screen showed small white text (13 to 15 px) in pink headers (3.37, fails). Built instead: white stays only where it counts as large text. Greetings and short lines like "Good evening, Vishnu" and "Meera says" are 19 px bold (`HeroGreeting`). Small meta lines like "Day 4 streak · 7 of 9 completed" are ink, 5.21 (`HeroMeta`)
+- **C, pink text on white:** screen showed 13 to 15 px pink text on white, for example "Run this again", "Retry →" and "Meera asked" (3.37, fails). Built instead: `pink-deep`, 4.98
+- **D, cream eyebrows:** screen showed `cream-ink` eyebrows on cream (3.26, fails). Built instead: `cream-chip`, 4.91
+- **E, "You said":** screen showed a `pink-deep` label on pink tint (4.28, fails). Built instead: an ink label, 15.1
+- **F, mint sticker:** screen showed white text on the mint "Filler free" sticker (3.08, fails). Built instead: ink text, 5.71
+- Why: AA contrast, keeping every brand colour. Approved by Vishnu on 8 Nov
 
-**A. White labels on 50 px pink buttons, 17 px: 3.37, fails**
-1. Ink label on pink: 5.21
-2. 19 px label, like the big button: counts as large, so 3.37 passes
-3. Fill with `pink-deep`: 4.98. Changes the colour
+## Phase 1 · 5.2: Meera offline
+- Screen showed: grey Meera with dash eyes when the call drops
+- Built instead: `offline` is a prop on the avatar component, not an InterviewVM value. Question closed on 8 Nov
+- Why: it's the connection state, not something Meera does, and the rig won't need it in its view model. Decided by Vishnu
 
-Recommended: 2. It keeps the colours and matches the big button.
-
-**B. Small white text in pink headers, 13 to 15 px ("Good evening, Vishnu", "Meera says", "Day 4 streak · 7 of 9 completed"): 3.37, fails**
-1. Ink text: 5.21
-2. 19 px bold: counts as large
-
-Recommended: 1 for one-line labels. It reads well against the pink.
-
-**C. Small pink text on white, 13 to 15 px ("Run this again", "Retry →", "Meera asked"): 3.37, fails**
-1. `pink-deep`: 4.98
-
-Recommended: 1.
-
-**D. Eyebrow on cream, 13 px, `cream-ink` #B07F00: 3.26, fails**
-1. `cream-chip` #8A6400: 4.91
-
-Recommended: 1.
-
-**E. "You said" label on pink tint, 12 px, `pink-deep`: 4.28, fails**
-1. 14 px only: still 4.28, fails
-2. Ink label: 15.1
-
-Recommended: 2.
-
-**F. White on the mint "Filler free" sticker, 13 px: 3.08, fails**
-1. Ink text on mint: 5.71
-
-Recommended: 1.
+## Phase 1 · 1.7: Meera on pink
+- Screen showed: a white face with an ink outline next to "Meera says" in the pink header
+- Built instead: a `tone="light"` option on the same Meera component: white body, 2 px ink outline at any size, no sun dot
+- Why: the pink blob disappears on the pink header. One component keeps her face consistent everywhere

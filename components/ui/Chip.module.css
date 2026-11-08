@@ -60,6 +60,6 @@
 }
 .s-sun { background: var(--sun); }
 .s-white { background: var(--white); }
-.s-mint { background: var(--mint); color: var(--white); }
+.s-mint { background: var(--mint); } /* White on mint is 3.08:1, ink is 5.71 */
 .s-pink { background: var(--pink); color: var(--white); }
 .stickerOnDark { border-color: var(--white); }

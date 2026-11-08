@@ -348,7 +348,7 @@ The same method as Unstuck. Meera is flat and front facing, built from separate 
 
 - While she's talking, her voice keeps the talking mouth. Expression triggers change only the eyes.
 - Reduced motion turns off breathing, bounce and lift. Expressions still change.
-- Offline is not an InterviewVM value. When the call drops, the screen passes `offline` and she shows grey with dash eyes. Whether this moves into InterviewVM is to be settled before phase 7.
+- Offline is a prop on the avatar component, not an InterviewVM value: it's the connection state, not something Meera does. When the call drops, the screen passes `offline` and she shows grey with dash eyes. Decided 8 Nov.
 - Reaction stickers like "Getting long" are placed by the screen next to her. They are not part of the blob.
 
 **Method, step by step.** Everything is built from scratch. No existing Rive file, including the Unstuck one, is used or copied.

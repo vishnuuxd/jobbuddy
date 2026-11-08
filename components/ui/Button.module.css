@@ -40,6 +40,8 @@
 
 /* Variants */
 .primary { background: var(--pink); color: var(--white); }
+/* White on pink is 3.37:1, so every pink button label is 19 px bold: large text, passes AA. */
+.primary.small { font-size: 19px; line-height: 24px; }
 .secondary { background: var(--white); }
 .quiet { --edge: var(--border); --drop: 0px; background: var(--white); font: 800 15px/20px var(--text); }
 .ink { --drop: 0px; background: var(--ink); color: var(--white); }

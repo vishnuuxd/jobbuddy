@@ -1,5 +1,6 @@
 .meera { display: block; overflow: visible; }
 .body { fill: var(--pink); }
+.lightBody { fill: var(--white); stroke: var(--ink); }
 .sun { fill: var(--sun); }
 .eye { fill: var(--ink); }
 .mouthLine { fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }

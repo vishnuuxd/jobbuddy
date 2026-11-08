@@ -8,7 +8,6 @@
 .kit p, .kit h1, .kit h2, .kit h3, .kit figure { margin: 0; }
 
 .heroTop { display: flex; align-items: center; justify-content: space-between; }
-.heroNote { font: 700 15px/20px var(--text); }
 
 .toc { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 16px var(--side) 0; }
 .toc a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; color: var(--ink); font: 800 14px/18px var(--text); text-transform: capitalize; }
@@ -40,7 +39,7 @@
 
 .saidBubble, .tryBubble { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 16px 16px 16px 4px; background: var(--pink-tint); }
 .tryBubble { border-radius: 16px 16px 4px 16px; background: var(--mint-tint); }
-.saidLabel { color: var(--pink-deep); font: 900 12px/16px var(--text); }
+.saidLabel { color: var(--ink); font: 900 12px/16px var(--text); } /* E: pink-deep was 4.28:1 */
 .tryLabel { color: var(--mint-deep); font: 900 12px/16px var(--text); }
 
 .stage { display: flex; justify-content: center; padding: 8px 0; }
@@ -82,19 +81,9 @@
 .pass { color: var(--mint-deep); font: 900 13px/16px var(--text); }
 .fail { color: var(--pink-deep); font: 900 13px/16px var(--text); }
 
-.options { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: var(--outline) dashed var(--dashed); border-radius: var(--r-card); }
-.optionGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.optionGrid figure { display: flex; flex-direction: column; gap: 6px; }
-.optionGrid figcaption { color: var(--muted); font: 700 12px/16px var(--text); }
-.optInk { color: var(--ink); }
-.optLarge { font-size: 19px; line-height: 24px; }
-.optDeep { background: var(--pink-deep); }
-.miniHero { padding: 14px 12px; border-radius: 0 0 18px 18px; background: var(--pink); color: var(--white); font: 800 15px/20px var(--text); }
-.miniInk { color: var(--ink); }
-.miniLarge { font-size: 19px; line-height: 24px; }
-.pinkText { color: var(--pink); font: 800 14px/18px var(--text); }
-.deepText { color: var(--pink-deep); font: 800 14px/18px var(--text); }
-.eyebrowChip { color: var(--cream-chip); font: 900 13px/16px var(--text); letter-spacing: 0.06em; text-transform: uppercase; }
-.saidBig { font-size: 14px; line-height: 18px; }
-.saidInk { color: var(--ink); }
-.mintInk { color: var(--ink); }
+
+.headerDemo { margin-inline: calc(var(--side) * -1); }
+.profileRow { display: flex; align-items: center; gap: 14px; }
+.avatar { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border: var(--outline) solid var(--ink); border-radius: 50%; background: var(--sun); color: var(--ink); font: 800 24px/1 var(--display); }
+.saysRow { display: flex; align-items: center; gap: 10px; }
+.verdict { font: 800 30px/33px var(--display); letter-spacing: -0.02em; }

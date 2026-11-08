@@ -95,4 +95,6 @@ Built Nov 8, 2026. Check, not passed yet: `/kit` on Vishnu's phone.
 - [x] `/kit` shows every component and state
 - [x] `/call`, `/profile` and `/orb` checked pixel for pixel against screenshots from before the phase: unchanged
 
-Waiting for Vishnu: the six contrast proposals in `design/DECISIONS.md`, also rendered in the Contrast section of `/kit`.
+- [x] Contrast decided 8 Nov: pink button labels 19 px bold, white header text only at 19 px bold or larger with small meta lines in ink, `pink-deep` for small pink text, `cream-chip` eyebrows, ink "You said" and ink on the mint sticker. No colours changed
+- [x] Offline stays a prop on the avatar component, not in InterviewVM. Closed 8 Nov
+- [x] Deployed to production for the check

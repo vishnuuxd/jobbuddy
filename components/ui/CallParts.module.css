@@ -23,7 +23,7 @@
   background: var(--white);
   box-shadow: 0 5px 0 var(--pink);
 }
-.questionLabel { margin: 0; color: var(--pink); font: 800 13px/16px var(--text); }
+.questionLabel { margin: 0; color: var(--pink-deep); font: 800 13px/16px var(--text); }
 .questionText { margin: 0; color: var(--ink); font: 700 17px/24px var(--text); }
 
 .control {
@@ -45,6 +45,6 @@
 .control:active { transform: scale(0.93); }
 .control:focus-visible { outline: 3px solid var(--sun); outline-offset: 3px; }
 .control:disabled { opacity: 0.4; cursor: not-allowed; }
-.end { padding: 0 20px; background: var(--pink); font: 800 17px/22px var(--display); }
+.end { padding: 0 20px; background: var(--pink); font: 800 19px/24px var(--display); } /* Large text on pink */
 
 @media (prefers-reduced-motion: reduce) { .control { transition: none; } }
