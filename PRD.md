@@ -105,7 +105,9 @@ The call has three phases: opening, interview and close. The app tracks the phas
 
 **Opening.** The app speaks her first line, built from the sheet, through the first message override. Keep it short, like a real interviewer. The app picks one at random:
 
-- With a CV or job description: "Hi Vishnu, I'm Meera. Ten minute screen for the senior product designer role. I've seen your CV. Ready?"
+- With a CV and a job post: "Hi Vishnu, I'm Meera. Ten minutes on the senior product designer role. I've read your CV and the job post. Ready?"
+- With a CV only: "Hi Vishnu, I'm Meera. Ten minute screen for the senior product designer role. I've seen your CV. Ready?"
+- With a job post only: "Hi Vishnu, I'm Meera. Ten minutes on the senior product designer role. I've read the job post. Ready?"
 - Without: "Hi Vishnu, I'm Meera. Ten minutes on the senior product designer role today. Shall we start?"
 - No name given: "Hi, I'm Meera." in place of "Hi Vishnu, I'm Meera."
 
@@ -258,7 +260,7 @@ The app adds the delivery metrics and the completion status before saving. If th
 
 ## Agent spec
 
-One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Turn settings: eagerness Patient, take turn after silence 10 s, end conversation after silence 20 s, max duration 1200 s, with the message "We're out of time for today. Your scorecard's ready when you are." First message override is on in Security, because the app writes her opening line. The system prompt is below. Context such as the setup, the CV and job description text from the sheet, and live rule events arrives through `sendContextualUpdate`.
+One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Turn settings: eagerness Patient, take turn after silence 10 s, end conversation after silence 20 s, max duration 1200 s, with the message "We're out of time for today. Your scorecard's ready when you are." First message override is on in Security, because the app writes her opening line. The First message field in the dashboard is only a fallback: "Hi, I'm Meera. Shall we start?" It never asks for a CV or job description. The system prompt is below. Context such as the setup, the CV and job description text from the sheet, and live rule events arrives through `sendContextualUpdate`.
 
 **Client tools.** Configure them in the ElevenLabs dashboard with these exact names. None of them block the conversation.
 
