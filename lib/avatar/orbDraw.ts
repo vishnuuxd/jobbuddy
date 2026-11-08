@@ -34,10 +34,6 @@ export function restingPose(mood: Mood, posture: Posture): Pose {
     cool: 0,
     ripple: 0,
   };
-  if (mood === "reading") {
-    pose.scale *= 0.92;
-    pose.dim = 0.4;
-  }
   if (mood === "writing") pose.ripple = 1;
   if (mood === "skeptical") {
     pose.stretch = 0.05;

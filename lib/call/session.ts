@@ -11,7 +11,7 @@ export type CallState = {
   question: number;
   speaking: boolean;
   reactions: Reaction[];
-  held: "writing" | "reading" | null; // A mood that shows over everything for a moment
+  held: "writing" | null; // A mood that shows over everything for a moment
   id: string;
   startedAtMs: number;
   jdText?: string;
@@ -20,6 +20,8 @@ export type CallState = {
   flags: Flag[];
   metrics: Metric[];
   lateAdditions: number[];
+  /** A retry of one question: starts in the interview, and never moves past it. */
+  retryOf: { callId: string; questionIndex: number } | null;
 };
 
 const phaseOrder: Phase[] = ["idle", "opening", "interview", "done"];
@@ -39,7 +41,15 @@ const initialState: CallState = {
   flags: [],
   metrics: [],
   lateAdditions: [],
+  retryOf: null,
 };
+
+/** Main questions I've said something for. A scorecard needs two (PRD.md, Cut short). */
+export function answeredQuestions(state: Pick<CallState, "transcript">) {
+  return new Set(
+    state.transcript.filter((line) => line.speaker === "user" && line.questionIndex).map((line) => line.questionIndex),
+  ).size;
+}
 
 export function totalQuestions(setup: Setup | null) {
   return setup ? setup.questionCount : null;
@@ -77,7 +87,7 @@ export type CallSession = ReturnType<typeof createCallSession>;
 // Tracks the call and turns it into InterviewVM values. No animation here.
 export function createCallSession(
   vm: InterviewVM,
-  config: { writingHoldMs: number; readingHoldMs: number },
+  config: { writingHoldMs: number },
   clock: () => number = Date.now,
 ) {
   let state = initialState;
@@ -92,7 +102,7 @@ export function createCallSession(
     listeners.forEach((listener) => listener());
   }
 
-  function hold(mood: "writing" | "reading", ms: number) {
+  function hold(mood: "writing", ms: number) {
     clearTimeout(holdTimer);
     update({ held: mood });
     holdTimer = setTimeout(() => update({ held: null }), ms);
@@ -118,6 +128,26 @@ export function createCallSession(
       answeredSinceLastQuestion = false;
       questionThisTurn = false;
       update({ ...initialState, phase: "opening", id, startedAtMs: clock(), setup, ...texts });
+    },
+    /** Retry one question: no opening, and the label stays on that question. */
+    startRetry(
+      id: string,
+      setup: Setup,
+      retry: { callId: string; questionIndex: number },
+      texts: { cvText?: string; jdText?: string } = {},
+    ) {
+      answeredSinceLastQuestion = false;
+      questionThisTurn = false;
+      update({
+        ...initialState,
+        phase: "interview",
+        id,
+        startedAtMs: clock(),
+        setup,
+        ...texts,
+        question: retry.questionIndex,
+        retryOf: retry,
+      });
     },
     end() {
       answeredSinceLastQuestion = false;
@@ -150,10 +180,6 @@ export function createCallSession(
       update({ transcript: [...state.transcript, line] });
     },
 
-    attach(kind: "cv" | "jd", text: string) {
-      update(kind === "cv" ? { cvText: text } : { jdText: text });
-      hold("reading", config.readingHoldMs);
-    },
 
     setCvText(cvText: string) {
       update({ cvText });
@@ -214,7 +240,7 @@ export function createCallSession(
     // This gates on my reply, not on her words, because her message can arrive
     // before or after the tool call.
     nextQuestion() {
-      if (state.phase !== "interview") return false;
+      if (state.phase !== "interview" || state.retryOf) return false;
       if (state.question > 0 && !answeredSinceLastQuestion) return false;
       const total = totalQuestions(state.setup);
       if (total !== null && state.question >= total) return false;

@@ -16,7 +16,6 @@ const stills: Still[] = [
   { label: "talking, loud", mood: "talking", posture: "firm", mouth: 0.95 },
   { label: "skeptical", mood: "skeptical", posture: "firm" },
   { label: "writing", mood: "writing", posture: "firm" },
-  { label: "reading", mood: "reading", posture: "firm" },
   { label: "nod", mood: "listening", posture: "firm", trigger: "nod", at: 0.2 },
   { label: "smile", mood: "listening", posture: "firm", trigger: "smile", at: 0.5 },
   { label: "browRaise", mood: "listening", posture: "firm", trigger: "browRaise", at: 0.02 },

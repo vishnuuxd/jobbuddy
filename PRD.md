@@ -335,7 +335,7 @@ TOOL RULES
 
 The same method as Unstuck. Meera is flat and front facing, built from separate named vector parts, and rigged in Rive with the Rive CLI. The app never animates. It only sets view model values.
 
-**V2 placeholder: Meera's blob.** v1 shipped an orb to build and test fast. v2 replaces it with Meera's blob from `design/DESIGN.md`: a pink blob with a sun dot and ink eyes, built in `components/meera/Meera.tsx`. She reads the same InterviewVM values the rig will use (mood, mouthOpen and every trigger) through one avatar component, so the Rive rig drops into the same slot later and nothing else in the app changes. The mapping lives in `lib/avatar/meeraFace.ts` and is unit tested. The call screen moves from the orb to the blob in v2 phase 4.
+**V2 placeholder: Meera's blob.** v1 shipped an orb to build and test fast. v2 replaces it with Meera's blob from `design/DESIGN.md`: a pink blob with a sun dot and ink eyes, built in `components/meera/Meera.tsx`. She reads the same InterviewVM values the rig will use (mood, mouthOpen and every trigger) through one avatar component, so the Rive rig drops into the same slot later and nothing else in the app changes. The mapping lives in `lib/avatar/meeraFace.ts` and is unit tested. The call screen uses the blob from v2 part 4. The reading mood is retired with the mid call upload (8 Nov).
 
 | Signal | Blob |
 | --- | --- |
@@ -344,7 +344,7 @@ The same method as Unstuck. Meera is flat and front facing, built from separate 
 | talking | The mouth opens and closes with mouthOpen, her voice volume, and the body swells slightly |
 | skeptical | Worried eyes and a wavy mouth |
 | writing (flag) | Eyes down, notepad and pencil |
-| reading, glanceDown | Eyes drop and narrow |
+| glanceDown | Eyes drop and narrow |
 | checkWatch | Flat eyes and mouth, and a dotted sun ring around her for the length of the trigger |
 | browRaise | Wide eyes and a round, surprised mouth, briefly |
 | expectant | Lifts slightly and the eyes widen, holding |
@@ -377,7 +377,7 @@ The same method as Unstuck. Meera is flat and front facing, built from separate 
 
 | Property | Type | Values |
 | --- | --- | --- |
-| mood | enum | idle, intake, listening, skeptical, writing, reading, talking |
+| mood | enum | idle, intake, listening, skeptical, writing, talking |
 | viseme | enum | rest, closed, teeth, open, wide, round, pucker, fv, lth |
 | mouthOpen | number | 0 to 100 |
 | nod, smile, browRaise, glanceDown, handUp, checkWatch, sitUp, leanIn, expectant (brows up slightly, head tilted) | trigger | Fire once, then hand back |

@@ -10,7 +10,6 @@ test("each mood has its own face", () => {
   assert.equal(faceFor({ mood: "talking" }, {}, 0).mouth, "talk");
   assert.equal(faceFor({ mood: "skeptical" }, {}, 0).mouth, "wavy");
   assert.equal(faceFor({ mood: "writing" }, {}, 0).notepad, true);
-  assert.equal(faceFor({ mood: "reading" }, {}, 0).eyes, "down");
 });
 
 test("checkWatch shows the ring and a flat mouth, then lets go", () => {

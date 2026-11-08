@@ -24,9 +24,8 @@ export const liveConfig = {
   // the previous answer, longer is a restart.
   additionMaxMs: 15_000,
 
-  // How long the writing mood shows after a flag, and the reading mood after an upload.
+  // How long the writing mood shows after a flag.
   writingHoldMs: 2_500,
-  readingHoldMs: 4_000,
 
   // Her voice volume (0 to 1) times this gives mouthOpen (0 to 100).
   mouthOpenGain: 250,

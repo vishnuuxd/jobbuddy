@@ -42,7 +42,6 @@ const moodFaces: Record<Mood, Pick<Face, "eyes" | "mouth" | "notepad">> = {
   talking: { eyes: "tall", mouth: "talk", notepad: false },
   skeptical: { eyes: "worried", mouth: "wavy", notepad: false },
   writing: { eyes: "down", mouth: "none", notepad: true },
-  reading: { eyes: "down", mouth: "none", notepad: false },
 };
 
 const postureScale: Record<Posture, number> = { soft: 0.97, neutral: 1, firm: 1.02 };

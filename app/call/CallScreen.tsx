@@ -2,29 +2,41 @@
 
 import { useConversation } from "@elevenlabs/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { CallControls } from "@/components/CallControls";
-import { MeeraStage } from "@/components/MeeraStage";
+import { Meera } from "@/components/meera/Meera";
 import { SelfView } from "@/components/SelfView";
+import { Button } from "@/components/ui/Button";
+import { CallControl, CallPill, ProgressSegments, QuestionCard } from "@/components/ui/CallParts";
+import { Sticker } from "@/components/ui/Chip";
+import { CameraIcon, CheckIcon, MicIcon } from "@/components/ui/icons";
 import { createClientTools } from "@/lib/agent/clientTools";
-import { createInterviewVM } from "@/lib/avatar/interviewVM";
-import { AttachError, extractText } from "@/lib/attach/extract";
-import { setupUpdate } from "@/lib/call/context";
+import { createInterviewVM, type Trigger } from "@/lib/avatar/interviewVM";
+import { callCopy, type CallStage } from "@/lib/call/callCopy";
+import { callConfig } from "@/lib/call/config";
+import { oneMinuteLeftUpdate, retryFirstLine, retryUpdate, setupUpdate } from "@/lib/call/context";
 import { openingLine } from "@/lib/call/opening";
 import { clearPendingCall, readPendingCall, type PendingCall } from "@/lib/call/pending";
-import { createCallSession, toCallRecord, totalQuestions } from "@/lib/call/session";
+import { answeredQuestions, createCallSession, toCallRecord, totalQuestions } from "@/lib/call/session";
 import { useSelfView } from "@/lib/call/useSelfView";
 import { useVoiceVolume } from "@/lib/call/useVoiceVolume";
 import { liveConfig } from "@/lib/live/config";
 import { createLiveRules } from "@/lib/live/rules";
 import { saveCall } from "@/lib/store/db";
+import styles from "./call.module.css";
 
-type StartError = "mic" | "failed" | null;
-
-type AttachKind = "cv" | "jd";
-const attachNames = { cv: "CV", jd: "job description" };
+type Problem = "mic" | "failed" | "noSetup" | "dropped" | "cutShort" | null;
+type Reaction = { text: string; tone: "sun" | "mint" | "white" } | null;
 
 const saveEveryMs = 1_000;
+// How long a reaction sticker and the "checks the time" moment stay up. Display timing only.
+const stickerMs = 2_600;
+const watchingMs = 8_000;
+
+const stickers: Partial<Record<Trigger, Reaction>> = {
+  nod: { text: "Nice, keep going", tone: "mint" },
+  checkWatch: { text: "Getting long", tone: "sun" },
+};
 
 function createCall() {
   const vm = createInterviewVM();
@@ -34,36 +46,28 @@ function createCall() {
   return { vm, session, rules, sendRef, clientTools: createClientTools(session) };
 }
 
+const formatTime = (ms: number) => {
+  const seconds = Math.max(0, Math.round(ms / 1000));
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+};
+
 export function CallScreen() {
+  const router = useRouter();
   const [{ vm, session, rules, sendRef, clientTools }] = useState(createCall);
   const call = useSyncExternalStore(session.subscribe, session.get, session.get);
-  const [starting, setStarting] = useState(false);
-  const [startError, setStartError] = useState<StartError>(null);
-  // The SDK sets status to "error" on any error, even while the call carries on,
-  // so the screen follows the session itself, not status.
+  const [stage, setStage] = useState<CallStage>("connecting");
+  const [problem, setProblem] = useState<Problem>(null);
   const [inCall, setInCall] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [reaction, setReaction] = useState<Reaction>(null);
+  const [watching, setWatching] = useState(false);
+  const [endedAfterMs, setEndedAfterMs] = useState(0);
   const inCallRef = useRef(false);
-  const selfView = useSelfView();
-  const [attachKind, setAttachKind] = useState<AttachKind | null>(null);
-  const [choosingAttach, setChoosingAttach] = useState(false);
-  const [attachMessage, setAttachMessage] = useState<string | null>(null);
-  const fileInput = useRef<HTMLInputElement>(null);
-  const heldAttachment = useRef<{ kind: AttachKind; text: string } | null>(null);
+  const hangingUp = useRef(false);
   const herTurnStartedAt = useRef(0);
-  // The setup comes from the sheet on Home. Read once on mount, in the browser.
   const pendingRef = useRef<PendingCall | null>(null);
-  const startCallRef = useRef<() => Promise<void>>(async () => {});
   const autoStarted = useRef(false);
-  const [hasSetup, setHasSetup] = useState<boolean | null>(null);
-  useEffect(() => {
-    pendingRef.current = readPendingCall();
-    setHasSetup(pendingRef.current !== null);
-    // Once only, even when React runs effects twice in development.
-    if (pendingRef.current && !autoStarted.current) {
-      autoStarted.current = true;
-      void startCallRef.current();
-    }
-  }, []);
+  const selfView = useSelfView();
 
   function setSessionOpen(open: boolean) {
     inCallRef.current = open;
@@ -74,21 +78,39 @@ export function CallScreen() {
     clientTools,
     onConnect: () => {
       const pending = pendingRef.current!;
-      session.start(crypto.randomUUID(), pending.setup, { cvText: pending.cvText, jdText: pending.jdText });
+      const texts = { cvText: pending.cvText, jdText: pending.jdText };
+      if (pending.retry) {
+        session.startRetry(crypto.randomUUID(), pending.setup, pending.retry, texts);
+        conversation.sendContextualUpdate(setupUpdate(pending.setup, pending));
+        conversation.sendContextualUpdate(retryUpdate(pending.retry.question));
+        showReaction({ text: "Go on, land it", tone: "sun" });
+      } else {
+        session.start(crypto.randomUUID(), pending.setup, texts);
+        conversation.sendContextualUpdate(setupUpdate(pending.setup, pending));
+        showReaction({ text: "Hi there!", tone: "sun" });
+      }
       setSessionOpen(true);
-      conversation.sendContextualUpdate(setupUpdate(pending.setup, pending));
+      setStage("live");
     },
     onDisconnect: () => {
       rules.finish();
-      heldAttachment.current = null;
-      if (session.get().id) void saveCall(toCallRecord(session.get(), new Date().toISOString()));
-      clearPendingCall();
-      session.end();
+      const state = session.get();
+      const answered = answeredQuestions(state);
+      setEndedAfterMs(Date.now() - state.startedAtMs);
       setSessionOpen(false);
-      setChoosingAttach(false);
-      setAttachMessage(null);
       selfView.stop();
-      conversation.setMuted(false);
+
+      if (state.retryOf) {
+        // A retry is scored if I answered. Otherwise it was a false start.
+        if (answered >= 1) setStage("writing");
+        else router.replace(`/scorecard/${state.retryOf.callId}`);
+        return;
+      }
+      if (state.id) void saveCall(toCallRecord(state, new Date().toISOString()));
+      if (state.phase === "done" || answered >= 2) setStage("writing");
+      else if (hangingUp.current) setProblem("cutShort");
+      else setProblem("dropped");
+      clearPendingCall();
     },
     onModeChange: ({ mode }) => {
       if (mode === "speaking") {
@@ -110,62 +132,69 @@ export function CallScreen() {
     },
     onError: (message) => {
       console.warn("Call error", message);
-      if (!inCallRef.current) setStartError("failed");
+      if (!inCallRef.current) setProblem("failed");
     },
   });
 
   useVoiceVolume(vm, conversation.getOutputVolume, inCall);
   sendRef.current = conversation.sendContextualUpdate;
 
-
-  function deliverAttachment(kind: AttachKind, text: string) {
-    session.attach(kind, text);
-    session.react("glanceDown");
-    conversation.sendContextualUpdate(`The candidate attached their ${attachNames[kind]}:\n${text}`);
+  function showReaction(next: Reaction) {
+    setReaction(next);
   }
+  useEffect(() => {
+    if (!reaction) return;
+    const timer = setTimeout(() => setReaction(null), stickerMs);
+    return () => clearTimeout(timer);
+  }, [reaction]);
 
-  // The rules run on a timer, and the record saves as the call goes.
+  // Reaction stickers and the "checks the time" moment follow InterviewVM triggers. Reading only.
+  useEffect(
+    () =>
+      vm.onTrigger((name) => {
+        const sticker = stickers[name];
+        if (sticker) setReaction(sticker);
+        if (name === "checkWatch") setWatching(true);
+      }),
+    [vm],
+  );
+  useEffect(() => {
+    if (!watching) return;
+    const timer = setTimeout(() => setWatching(false), watchingMs);
+    return () => clearTimeout(timer);
+  }, [watching]);
+
+  // The rules run on a timer, and the record saves as the call goes. A retry isn't a call record.
   useEffect(() => {
     if (!inCall) return;
-    rules.setOnAnswerEnd(() => {
-      const held = heldAttachment.current;
-      heldAttachment.current = null;
-      if (held) deliverAttachment(held.kind, held.text);
-    });
     const rulesTimer = setInterval(rules.tick, 200);
-    const saveTimer = setInterval(() => void saveCall(toCallRecord(session.get())), saveEveryMs);
+    const saveTimer = setInterval(() => {
+      if (!session.get().retryOf) void saveCall(toCallRecord(session.get()));
+    }, saveEveryMs);
     return () => {
       clearInterval(rulesTimer);
       clearInterval(saveTimer);
     };
+  }, [inCall, rules, session]);
+
+  // At one minute left she's told to finish the current question and close.
+  useEffect(() => {
+    const setup = session.get().setup;
+    if (!inCall || !setup || session.get().retryOf) return;
+    const timer = setTimeout(
+      () => conversation.sendContextualUpdate(oneMinuteLeftUpdate),
+      setup.durationMin * 60_000 - callConfig.oneMinuteLeftMs,
+    );
+    return () => clearTimeout(timer);
     // sendContextualUpdate stays valid for the whole call.
   }, [inCall]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function pickAttachment(kind: AttachKind) {
-    setAttachKind(kind);
-    setChoosingAttach(false);
-    fileInput.current?.click();
-  }
-
-  async function onFileChosen(file: File | undefined) {
-    if (fileInput.current) fileInput.current.value = "";
-    if (!file || !attachKind) return;
-    try {
-      const text = await extractText(file);
-      setAttachMessage(null);
-      if (rules.answering()) heldAttachment.current = { kind: attachKind, text };
-      else deliverAttachment(attachKind, text);
-    } catch (error) {
-      setAttachMessage(error instanceof AttachError ? error.message : "I can't read that one.");
-    }
-  }
-
+  // After setPhase("done"), hang up once she's been quiet, so her last line isn't cut off.
   const callEnding = inCall && call.phase === "done";
   useEffect(() => {
     if (!callEnding) return;
     const startedAt = Date.now();
     let quietSince = startedAt;
-
     const timer = setInterval(() => {
       const now = Date.now();
       if (session.get().speaking) quietSince = now;
@@ -179,20 +208,18 @@ export function CallScreen() {
     // endSession stays valid for the whole call.
   }, [callEnding]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const total = totalQuestions(call.setup);
-  const connecting = starting || conversation.status === "connecting";
-
-  startCallRef.current = startCall;
   async function startCall() {
-    setStarting(true);
-    setStartError(null);
+    const pending = pendingRef.current;
+    if (!pending) return setProblem("noSetup");
+    setProblem(null);
+    setStage("connecting");
+    hangingUp.current = false;
 
     try {
       const mic = await navigator.mediaDevices.getUserMedia({ audio: true });
       mic.getTracks().forEach((track) => track.stop());
     } catch {
-      setStartError("mic");
-      setStarting(false);
+      setProblem("mic");
       return;
     }
 
@@ -200,79 +227,177 @@ export function CallScreen() {
       const res = await fetch("/api/agent-session", { cache: "no-store" });
       if (!res.ok) throw new Error(`Session route returned ${res.status}`);
       const { signedUrl } = (await res.json()) as { signedUrl: string };
-      const pending = pendingRef.current;
-      if (!pending) throw new Error("No setup");
-      conversation.startSession({
-        signedUrl,
-        connectionType: "websocket",
-        overrides: { agent: { firstMessage: openingLine(pending.setup) } },
-      });
+      const firstMessage = pending.retry ? retryFirstLine(pending.retry.question) : openingLine(pending.setup);
+      conversation.startSession({ signedUrl, connectionType: "websocket", overrides: { agent: { firstMessage } } });
     } catch {
-      setStartError("failed");
-    } finally {
-      setStarting(false);
+      setProblem("failed");
     }
   }
 
+  // Start straight away: the tap on the sheet is the gesture. Once only, even in development.
+  useEffect(() => {
+    pendingRef.current = readPendingCall();
+    if (!pendingRef.current) {
+      setProblem("noSetup");
+      return;
+    }
+    if (!autoStarted.current) {
+      autoStarted.current = true;
+      void startCall();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function hangUp() {
+    hangingUp.current = true;
+    conversation.endSession();
+  }
+
+  function toggleMute() {
+    conversation.setMuted(!muted);
+    setMuted(!muted);
+  }
+
+  const pending = pendingRef.current;
+  const retry = call.retryOf ?? (pending?.retry ? { callId: pending.retry.callId, questionIndex: pending.retry.questionIndex } : null);
+  const total = retry ? null : totalQuestions(call.setup ?? pending?.setup ?? null);
+  const lastAgentLine = [...call.transcript].reverse().find((line) => line.speaker === "agent")?.text;
+  const answered = answeredQuestions(call);
+  const copy = callCopy({
+    stage,
+    phase: call.phase,
+    speaking: call.speaking,
+    writingNote: call.held === "writing",
+    watching,
+    retry: retry ? { questionIndex: retry.questionIndex, hint: pending?.retry?.hint } : null,
+    question: call.question,
+    total,
+    answered,
+    lastAgentLine,
+    openingLine: pending && !pending.retry ? openingLine(pending.setup) : undefined,
+    retryQuestion: pending?.retry?.question,
+  });
+
+  if (problem) {
+    return <CallProblem problem={problem} onRetry={() => void startCall()} />;
+  }
+
+  const segments = total ?? 0;
+  const current = stage === "writing" ? segments + 1 : Math.max(call.question, 0);
+
   return (
-    <main className="call">
-      <MeeraStage vm={vm} />
-      {inCall && call.question > 0 && (
-        <p className="question-label">
-          Question {call.question}
-          {total !== null && ` of ${total}`}
-        </p>
-      )}
-      <SelfView stream={selfView.stream} />
+    <main className={styles.call}>
+      <div className={styles.top}>
+        {retry ? (
+          <Sticker tilt={-3}>Retry · Question {retry.questionIndex}</Sticker>
+        ) : segments > 0 ? (
+          <ProgressSegments total={segments} current={current || 0} />
+        ) : (
+          <span />
+        )}
+        <CallPill>{stage === "writing" ? `Call ended · ${formatTime(endedAfterMs)}` : copy.pill}</CallPill>
+      </div>
 
-      <input
-        ref={fileInput}
-        type="file"
-        hidden
-        accept=".pdf,.txt,.md,application/pdf,text/plain"
-        onChange={(event) => void onFileChosen(event.target.files?.[0])}
-      />
-      {inCall && attachMessage && (
-        <p className="attach-message" role="alert">
-          {attachMessage}
-        </p>
-      )}
-      {inCall && choosingAttach && (
-        <div className="attach-choice">
-          <button onClick={() => pickAttachment("cv")}>CV</button>
-          <button onClick={() => pickAttachment("jd")}>Job description</button>
+      <SelfView stream={selfView.stream} className={styles.selfView} />
+
+      <div className={styles.middle}>
+        <div className={styles.stage}>
+          <Meera vm={vm} size={240} />
+          {reaction && stage === "live" && (
+            <Sticker tone={reaction.tone} tilt={-5} onDark className={styles.reaction}>
+              {reaction.text}
+            </Sticker>
+          )}
         </div>
-      )}
+        <div className={styles.words} aria-live="polite">
+          <h1 className={styles.title}>{copy.title}</h1>
+          <p className={styles.sub}>{copy.sub}</p>
+        </div>
+      </div>
 
-      {inCall ? (
-        <CallControls
-          muted={conversation.isMuted}
-          cameraOn={selfView.isOn}
-          onToggleMute={() => conversation.setMuted(!conversation.isMuted)}
-          onAttach={() => setChoosingAttach(!choosingAttach)}
-          onToggleCamera={selfView.toggle}
-          onHangUp={() => conversation.endSession()}
-        />
+      {stage === "writing" ? (
+        <WritingSteps />
       ) : (
-        <div className="call-start">
-          {startError === "mic" && (
-            <p role="alert">
-              Meera needs your microphone. Allow it for this site in your browser settings, then
-              try again.
-            </p>
+        <>
+          {copy.cardText && (
+            <div className={styles.card}>
+              <QuestionCard label={copy.cardLabel ?? ""}>{copy.cardText}</QuestionCard>
+            </div>
           )}
-          {startError === "failed" && <p role="alert">Couldn't start the call.</p>}
-          {hasSetup === false ? (
-            <Link className="call-start-button" href="/">
-              Set up a call
-            </Link>
-          ) : (
-            <button className="call-start-button" onClick={startCall} disabled={connecting}>
-              {connecting ? "Connecting" : startError ? "Try again" : "Call Meera"}
-            </button>
-          )}
-        </div>
+          <div className={styles.controls}>
+            <CallControl label={muted ? "Unmute" : "Mute"} pressed={muted} onClick={toggleMute} disabled={!inCall}>
+              <MicIcon off={muted} />
+            </CallControl>
+            <CallControl
+              label={selfView.isOn ? "Turn camera off" : "Turn camera on"}
+              pressed={selfView.isOn}
+              onClick={selfView.toggle}
+            >
+              <CameraIcon />
+            </CallControl>
+            <CallControl label="End" end onClick={inCall ? hangUp : () => router.push("/")} />
+          </div>
+        </>
       )}
+    </main>
+  );
+}
+
+/** Screen 1.6: three honest steps. The first two are done by the app already. */
+function WritingSteps() {
+  return (
+    <ol className={styles.steps}>
+      <li>
+        <span className={styles.stepDone}>
+          <CheckIcon />
+        </span>
+        Reading back your answers
+      </li>
+      <li>
+        <span className={styles.stepDone}>
+          <CheckIcon />
+        </span>
+        Counting fillers and pace
+      </li>
+      <li className={styles.stepNow} aria-current="step">
+        <span className={styles.stepRing} />
+        Rewriting your weakest answers
+      </li>
+    </ol>
+  );
+}
+
+function CallProblem({ problem, onRetry }: { problem: Exclude<Problem, null>; onRetry: () => void }) {
+  const copy = {
+    mic: { title: "Meera can't hear you", sub: "Your mic is blocked for this site", action: "Try again" },
+    failed: { title: "Couldn't start the call", sub: "Something went wrong connecting", action: "Try again" },
+    noSetup: { title: "No call set up", sub: "Pick a role and a length first", action: null },
+    dropped: { title: "Call dropped", sub: "Your answers so far are saved", action: null },
+    cutShort: { title: "That was quick", sub: "Saved to History as incomplete", action: null },
+  }[problem];
+  return (
+    <main className={styles.call}>
+      <div className={styles.top} />
+      <div className={styles.middle}>
+        <Meera still={{ mood: "listening" }} size={240} offline={problem === "dropped"} />
+        <div className={styles.words}>
+          <h1 className={styles.title}>{copy.title}</h1>
+          <p className={styles.sub}>{copy.sub}</p>
+        </div>
+      </div>
+      <div className={styles.actions}>
+        {copy.action ? (
+          <Button variant="primary" onDark block onClick={onRetry}>
+            {copy.action}
+          </Button>
+        ) : (
+          <Button href="/" variant="primary" onDark block>
+            Set up a call
+          </Button>
+        )}
+        <Link href="/" className={styles.textLink}>
+          Back home
+        </Link>
+      </div>
     </main>
   );
 }

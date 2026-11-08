@@ -153,3 +153,23 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 - Screen showed: "Call Meera" on the sheet, then the call
 - Built instead: the button is disabled until a role and level are chosen, with a hint under it. The call connects straight away on arrival, because the tap on the sheet counts as the gesture for the mic and audio. Opening `/call` directly, without a setup, offers "Set up a call", which goes to Home
 - Why: known issue 12 (Call Meera disabled until role and seniority). No double tap to start
+
+## Part 4 · 1.3 to 1.5, 2.1: no timer on the call
+- Screen showed: "10 min", "6:12 left" in the pill (known issue 1)
+- Built instead: the pill says where the call is. "Opening", then "Question 2 of 3", then "Call ended · 9:40" once it's over. A retry says "Just this one"
+- Why: the PRD says no timer, only the question label. Meera closes at one minute left by herself
+
+## Part 4 · 1.3 to 1.6, 2.1: titles and stickers follow what's happening
+- Screen showed: fixed titles per screen
+- Built instead: the title and subline follow the call: "Meera's saying hi", "Meera's listening", "Meera's talking", "Meera's making a note" after a flag, and "Meera checks the time" for 8 seconds after checkWatch, with "Getting long · land the result". Stickers appear for 2.6 seconds: "Hi there!" at the start, "Nice, keep going" on a nod, "Getting long" on checkWatch and "Go on, land it" on a retry. The question card shows her latest line
+- Why: the screens are moments of one call, so the copy comes from the call's state. The 1.5 subline's answer timer ("1:48 into this answer") would need the live rules to expose their timer, and lib/live doesn't change
+
+## Part 4 · 1.6 Writing the scorecard
+- Screen showed: "3 answers · about 20 seconds" and three steps, two of them already ticked
+- Built instead: "3 answers", with no time estimate (known issue 7). The first two steps are ticked because the app has already done them (transcript and delivery numbers). The third spins until the scorecard is back
+- Why: every line on the screen is true
+
+## Part 4 · 1.3 to 1.5: self view
+- Screen showed: no self view tile
+- Built instead: the PRD's self view tile, off by default, sits top right under the pill when the camera is on
+- Why: PRD.md, Call: one tap to turn the camera on

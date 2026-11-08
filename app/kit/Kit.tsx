@@ -50,7 +50,6 @@ const stills: { label: string; still: MeeraStill }[] = [
   { label: "talking", still: { mood: "talking", mouthOpen: 70 } },
   { label: "skeptical", still: { mood: "skeptical" } },
   { label: "writing", still: { mood: "writing" } },
-  { label: "reading", still: { mood: "reading" } },
   { label: "checkWatch", still: { mood: "listening", trigger: "checkWatch" } },
   { label: "browRaise", still: { mood: "listening", trigger: "browRaise" } },
   { label: "expectant", still: { mood: "listening", trigger: "expectant" } },

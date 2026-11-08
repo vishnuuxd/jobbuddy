@@ -8,7 +8,7 @@ const sheetSetup = { role: "Product designer", seniority: "Senior", durationMin:
 
 function setup() {
   const vm = createInterviewVM();
-  const session = createCallSession(vm, { writingHoldMs: 5, readingHoldMs: 5 });
+  const session = createCallSession(vm, { writingHoldMs: 5 });
   const tools = createClientTools(session);
   session.start("call-1", sheetSetup, { cvText: "CV text" });
   const fired = [];
@@ -97,4 +97,24 @@ test("flag is ignored outside the interview and plays the writing mood inside it
   assert.equal(session.get().flags[0].source, "agent");
   await new Promise((done) => setTimeout(done, 15));
   assert.equal(vm.values().mood, "talking");
+});
+
+test("answered questions count main questions I spoke on", async () => {
+  const { answeredQuestions } = await import("../lib/call/session.ts");
+  const line = (speaker, questionIndex) => ({ speaker, text: "x", startSec: 0, endSec: 1, questionIndex });
+  assert.equal(answeredQuestions({ transcript: [line("agent", 1), line("user", undefined)] }), 0);
+  assert.equal(answeredQuestions({ transcript: [line("user", 1), line("user", 1), line("user", 2), line("agent", 3)] }), 2);
+});
+
+test("a retry starts in the interview on its question and ignores nextQuestion", () => {
+  const vm = createInterviewVM();
+  const session = createCallSession(vm, { writingHoldMs: 5 });
+  const tools = createClientTools(session);
+  session.startRetry("r", sheetSetup, { callId: "c", questionIndex: 2 });
+  assert.equal(session.get().phase, "interview");
+  assert.equal(session.get().question, 2);
+  session.noteUserMessage();
+  assert.equal(tools.nextQuestion({ index: 3 }), "ignored");
+  assert.equal(session.get().question, 2);
+  assert.equal(vm.values().mood, "listening");
 });

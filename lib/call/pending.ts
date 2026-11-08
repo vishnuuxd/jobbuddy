@@ -10,7 +10,7 @@ export type PendingCall = {
   cvText?: string;
   jdText?: string;
   /** Retry one question of an earlier call. */
-  retry?: { callId: string; questionIndex: number; question: string };
+  retry?: { callId: string; questionIndex: number; question: string; hint?: string };
   /** Pick up a dropped or cut short call. */
   resume?: { callId: string; question: number; lastQuestion?: string };
 };

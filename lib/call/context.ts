@@ -30,3 +30,10 @@ export function setupUpdate(setup: Setup, texts: { cvText?: string; jdText?: str
 
 export const oneMinuteLeftUpdate =
   "About a minute is left. Finish the current question and close. Don't start a new main question.";
+
+/** A retry of one question (PRD.md, Agent spec: CONTEXT FROM THE APP). */
+export function retryUpdate(question: string) {
+  return `RETRY. Ask only this question, with no intro and no follow up: "${question}" After their answer, say one short line and call setPhase("done").`;
+}
+
+export const retryFirstLine = (question: string) => `Take two. ${question}`;

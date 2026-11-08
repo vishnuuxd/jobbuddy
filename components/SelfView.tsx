@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-export function SelfView({ stream }: { stream: MediaStream | null }) {
+export function SelfView({ stream, className = "self-view" }: { stream: MediaStream | null; className?: string }) {
   const video = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -11,5 +11,5 @@ export function SelfView({ stream }: { stream: MediaStream | null }) {
 
   if (!stream) return null;
 
-  return <video ref={video} className="self-view" autoPlay muted playsInline aria-label="Your camera" />;
+  return <video ref={video} className={className} autoPlay muted playsInline aria-label="Your camera" />;
 }

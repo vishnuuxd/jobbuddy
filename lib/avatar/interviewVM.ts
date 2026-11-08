@@ -1,6 +1,6 @@
 // InterviewVM from PRD.md. The app only sets these values. Whatever sits in the
 // avatar slot, the orb now and the Rive rig later, only reads them.
-export const moods = ["idle", "intake", "listening", "skeptical", "writing", "reading", "talking"] as const;
+export const moods = ["idle", "intake", "listening", "skeptical", "writing", "talking"] as const;
 export const visemes = ["rest", "closed", "teeth", "open", "wide", "round", "pucker", "fv", "lth"] as const;
 export const triggers = [
   "nod",
