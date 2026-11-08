@@ -4,12 +4,16 @@ import { retrySchema, scorecardSchema, validateAnswer, validateScorecard } from 
 import type { Call, TranscriptLine } from "@/lib/store/types";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 // The current Flash model on this key, checked on 8 Nov 2026. GEMINI_MODEL overrides it.
 const defaultModel = "gemini-3.8-flash";
-// When the main model is busy or rate limited, one try on each of these, in order.
-const fallbackModels = ["gemini-flash-latest", "gemini-3.5-flash"];
+// When the main model is busy, rate limited or slow, one try on each of these, in order.
+// gemini-3.5-flash first: on 8 Nov it answered in seconds while the newer ones took minutes.
+const fallbackModels = ["gemini-3.5-flash", "gemini-flash-latest"];
+// A model that hasn't answered by then counts as busy, so the next one gets a turn.
+const perModelMs = 45_000;
+const totalMs = 110_000;
 
 type Body =
   | { kind: "call"; call: Call }
@@ -25,7 +29,7 @@ async function generate(prompt: string, schema: object) {
   const chain = [model, ...fallbackModels.filter((name) => name !== model)];
   let lastError: unknown;
   for (const [index, name] of chain.entries()) {
-    if (index > 0 && Date.now() - started > 35_000) break; // Leave time for one more full answer.
+    if (index > 0 && Date.now() - started > totalMs - 15_000) break; // Leave time for one more answer.
     try {
       return await generateWith(name, prompt, schema, started, index === 0 ? 2 : 1);
     } catch (error) {
@@ -50,7 +54,13 @@ async function generateWith(model: string, prompt: string, schema: object, start
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: { responseMimeType: "application/json", responseJsonSchema: schema, temperature: 0.4 },
       }),
-      signal: AbortSignal.timeout(Math.max(5_000, 55_000 - (Date.now() - started))),
+      signal: AbortSignal.timeout(Math.max(5_000, Math.min(perModelMs, totalMs - (Date.now() - started)))),
+    }).catch((error: unknown) => {
+      // Too slow counts as busy, so the next model gets a turn.
+      if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) {
+        throw new BusyError(`${model} took longer than ${perModelMs / 1000} s`);
+      }
+      throw error;
     });
     if (res.ok) {
       const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
@@ -59,7 +69,7 @@ async function generateWith(model: string, prompt: string, schema: object, start
     }
     const detail = (await res.text()).slice(0, 300);
     if (!retryable.has(res.status)) throw new Error(`Gemini returned ${res.status}: ${detail}`);
-    if (attempt >= maxAttempts || Date.now() - started > 35_000) throw new BusyError(`${model} returned ${res.status}: ${detail}`);
+    if (attempt >= maxAttempts || Date.now() - started > totalMs - 20_000) throw new BusyError(`${model} returned ${res.status}: ${detail}`);
     await new Promise((resolve) => setTimeout(resolve, 1_500 * attempt));
   }
 }

@@ -191,7 +191,7 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 
 ## Part 5 · 1.6 → 1.7: when the scorecard is slow or fails
 - Screen showed: the writing screen, then the scorecard
-- Built instead: the writing screen stays until Gemini answers (about 30 seconds in tests). If it fails, the call is saved as scoring_failed and the screen offers "Build scorecard". Gemini is retried when it's busy or rate limited, then tried once on gemini-flash-latest and once on gemini-3.5-flash, all inside the route's 60 second limit
+- Built instead: the writing screen stays until Gemini answers (about 30 seconds in tests). If it fails, the call is saved as scoring_failed and the screen offers "Build scorecard". Gemini is retried when it's busy or rate limited, then tried once on gemini-3.5-flash and once on gemini-flash-latest. A model that takes over 45 seconds counts as busy. All of this stays inside the route's 120 second limit
 - Why: PRD.md, Edge cases: Scorecard request fails
 
 ## Part 6 · 2.2 Retry result: which number leads
