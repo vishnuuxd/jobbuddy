@@ -86,7 +86,7 @@ Setup moves to a setup sheet, lengths of 5, 10 and 20 minutes replace the modes,
 
 ## v2 phase 1: Foundation
 
-Built Nov 8, 2026. Check, not passed yet: `/kit` on Vishnu's phone.
+Built Nov 8, 2026. Closed by Vishnu.
 
 - [x] Bricolage Grotesque and Nunito Sans through `next/font`, as variables only. Screens not yet restyled keep Inter
 - [x] Tokens in `app/tokens.css`: DESIGN.md colours, dark call colours from Paper, radii, shadows, spacing and type roles
@@ -98,3 +98,15 @@ Built Nov 8, 2026. Check, not passed yet: `/kit` on Vishnu's phone.
 - [x] Contrast decided 8 Nov: pink button labels 19 px bold, white header text only at 19 px bold or larger with small meta lines in ink, `pink-deep` for small pink text, `cream-chip` eyebrows, ink "You said" and ink on the mint sticker. No colours changed
 - [x] Offline stays a prop on the avatar component, not in InterviewVM. Closed 8 Nov
 - [x] Deployed to production for the check
+- [x] Attach control removed from the call parts and `/kit`
+- [x] Meera's opening line for the four cases (CV and job post, CV only, job post only, neither) in `lib/call/opening.ts`, with tests. Not wired yet: phase 3 sends it through the first message override
+
+## v2 phase 3: to do
+
+- Wire `openingLine` into the first message override when the sheet starts a call
+- Update the scanned PDF message in `lib/attach/extract.ts` to the PRD copy: "Looks like a scan, I can't read it. Paste the text instead, or go without a CV."
+
+## v2 phase 4: to do
+
+- Remove the old attach flow from the call screen: the attach button, the CV or job description chooser, the held upload and its contextual update (`app/call/CallScreen.tsx`, `components/CallControls.tsx`, `session.attach`)
+- Retire the reading mood and `readingHoldMs`, together with the attach flow so the current call keeps working until then. Update the PRD InterviewVM table and the blob mapping (keep glanceDown), the orb, `/kit` and the test
