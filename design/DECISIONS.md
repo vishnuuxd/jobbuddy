@@ -173,3 +173,23 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 - Screen showed: no self view tile
 - Built instead: the PRD's self view tile, off by default, sits top right under the pill when the camera is on
 - Why: PRD.md, Call: one tap to turn the camera on
+
+## Part 5 · 1.7 Scorecard: a way out
+- Screen showed: no close or back, and no tab bar (known issue 2)
+- Built instead: a round close button top left. Straight after a call it closes to Home. From History it's a back arrow. The header line reads "Today · Senior product designer · 10 min", as on 4.2
+- Why: every screen needs a way out
+
+## Part 5 · 1.7 Scorecard: badges in one place
+- Screen showed: badge stickers in the header and again under "Badges from this call" (known issue 6)
+- Built instead: badges and the streak only in the header, as stickers. The bottom section is gone
+- Why: the header is where the win is felt. Once is enough, and the page is shorter
+
+## Part 5 · 1.7 Scorecard: moments and actions
+- Screen showed: the first moment in full, the second short
+- Built instead: as shown. The weakest answer is in full, with You said, Try this and "Retry this answer". The next one or two are short, with what changed, the reason and "Retry →". The strongest answer is never a moment. Once a retry improved a moment it shows "Improved +N", which opens the before and after. The main button is "Retry the weakest answer" until that one's retried, then "Run this again". Save is PDF (the print view without buttons) and Markdown (a text button)
+- Why: PRD.md, Scorecard layout v2. Markdown is in the PRD's actions
+
+## Part 5 · 1.6 → 1.7: when the scorecard is slow or fails
+- Screen showed: the writing screen, then the scorecard
+- Built instead: the writing screen stays until Gemini answers (about 30 seconds in tests). If it fails, the call is saved as scoring_failed and the screen offers "Build scorecard". Gemini is retried twice when it's busy, then tried once more on its "flash latest" alias
+- Why: PRD.md, Edge cases: Scorecard request fails

@@ -69,3 +69,25 @@ export function personalBests(calls: Pick<Call, "status" | "scorecard">[]) {
   }
   return best;
 }
+
+/** The weakest answers to show as moments: two or three, never the strongest when there's a choice. */
+export function momentsFor(scorecard: { answers: ScoredAnswer[]; summary: { strongest: { questionIndex: number } } }) {
+  const byWeakest = [...scorecard.answers].sort((a, b) => answerTotal(a) - answerTotal(b) || a.questionIndex - b.questionIndex);
+  const others = byWeakest.filter((answer) => answer.questionIndex !== scorecard.summary.strongest.questionIndex);
+  const pool = others.length > 0 ? others : byWeakest;
+  return pool.slice(0, Math.min(3, Math.max(1, scorecard.answers.length - 1)));
+}
+
+/** Delivery numbers for the tiles: pace, fillers per answer, average answer length in seconds. */
+export function deliveryStats(metrics: { words: number; seconds: number; fillers: number }[]) {
+  const answered = metrics.filter((metric) => metric.seconds > 0);
+  if (answered.length === 0) return null;
+  const seconds = answered.reduce((sum, metric) => sum + metric.seconds, 0);
+  const words = answered.reduce((sum, metric) => sum + metric.words, 0);
+  const fillers = answered.reduce((sum, metric) => sum + metric.fillers, 0);
+  return {
+    wpm: Math.round((words / seconds) * 60),
+    fillersPerAnswer: Math.round((fillers / answered.length) * 10) / 10,
+    averageSeconds: Math.round(seconds / answered.length),
+  };
+}

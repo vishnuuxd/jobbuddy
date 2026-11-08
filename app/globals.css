@@ -74,3 +74,10 @@ button.hangup { background: #b3261e; border-color: #b3261e; color: #fff; }
 .orb-sheet { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 0 8px 16px; }
 .orb-sheet figure { margin: 0; text-align: center; font-size: 12px; font-weight: 600; }
 .orb-sheet canvas { display: block; width: 100%; aspect-ratio: 1; }
+
+/* Save as PDF prints the scorecard without its buttons. */
+@media print {
+  .noPrint { display: none !important; }
+  @page { margin: 12mm; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

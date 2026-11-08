@@ -55,3 +55,21 @@ test("v1 calls upgrade to the sheet's setup shape", () => {
   assert.deepEqual(upgraded.retries, []);
   assert.deepEqual(upgraded.lateAdditions, []);
 });
+
+test("moments are the weakest answers, not the strongest", async () => {
+  const { momentsFor, deliveryStats } = await import("../lib/progress/score.ts");
+  const call = scoredCall();
+  const moments = momentsFor(call.scorecard).map((answer) => answer.questionIndex);
+  assert.deepEqual(moments, [2, 3]); // Question 1 is the strongest in the fixture.
+  assert.deepEqual(deliveryStats([{ words: 140, seconds: 60, fillers: 2 }, { words: 140, seconds: 60, fillers: 1 }]), { wpm: 140, fillersPerAnswer: 1.5, averageSeconds: 60 });
+  assert.equal(deliveryStats([]), null);
+});
+
+test("markdown export has the take, the one thing and every skill", async () => {
+  const { scorecardMarkdown } = await import("../lib/scorecard/markdown.ts");
+  const md = scorecardMarkdown(scoredCall(), new Date(2026, 10, 8, 20));
+  assert.match(md, /^# Senior product designer/);
+  assert.match(md, /> Good energy!/);
+  assert.match(md, /## Your one thing: End with the result/);
+  assert.match(md, /- Structure: 2 of 5/);
+});

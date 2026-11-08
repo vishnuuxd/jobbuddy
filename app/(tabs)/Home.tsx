@@ -39,6 +39,18 @@ export function Home() {
     : null;
   const name = profile?.lastSetup?.name;
 
+  // The scorecard's "Run this again" and "New interview" land here with ?sheet=.
+  useEffect(() => {
+    if (!calls) return;
+    const params = new URLSearchParams(window.location.search);
+    const wanted = params.get("sheet");
+    if (!wanted) return;
+    const from = calls.find((call) => call.id === params.get("id"));
+    if (wanted === "again" && from?.setup) setSheet({ kind: "again", setup: from.setup, jdText: from.jdText });
+    else setSheet({ kind: "new" });
+    window.history.replaceState(null, "", "/");
+  }, [calls]);
+
   return (
     <main>
       <HeroHeader>

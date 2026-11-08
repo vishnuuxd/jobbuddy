@@ -22,10 +22,11 @@ import { useSelfView } from "@/lib/call/useSelfView";
 import { useVoiceVolume } from "@/lib/call/useVoiceVolume";
 import { liveConfig } from "@/lib/live/config";
 import { createLiveRules } from "@/lib/live/rules";
+import { buildScorecard } from "@/lib/scorecard/request";
 import { saveCall } from "@/lib/store/db";
 import styles from "./call.module.css";
 
-type Problem = "mic" | "failed" | "noSetup" | "dropped" | "cutShort" | null;
+type Problem = "mic" | "failed" | "noSetup" | "dropped" | "cutShort" | "scoreFailed" | null;
 type Reaction = { text: string; tone: "sun" | "mint" | "white" } | null;
 
 const saveEveryMs = 1_000;
@@ -67,6 +68,8 @@ export function CallScreen() {
   const herTurnStartedAt = useRef(0);
   const pendingRef = useRef<PendingCall | null>(null);
   const autoStarted = useRef(false);
+  const savedCall = useRef<Promise<unknown>>(Promise.resolve());
+  const [callId, setCallId] = useState<string | null>(null);
   const selfView = useSelfView();
 
   function setSessionOpen(open: boolean) {
@@ -106,7 +109,10 @@ export function CallScreen() {
         else router.replace(`/scorecard/${state.retryOf.callId}`);
         return;
       }
-      if (state.id) void saveCall(toCallRecord(state, new Date().toISOString()));
+      if (state.id) {
+        savedCall.current = saveCall(toCallRecord(state, new Date().toISOString()));
+        setCallId(state.id);
+      }
       if (state.phase === "done" || answered >= 2) setStage("writing");
       else if (hangingUp.current) setProblem("cutShort");
       else setProblem("dropped");
@@ -163,6 +169,21 @@ export function CallScreen() {
     const timer = setTimeout(() => setWatching(false), watchingMs);
     return () => clearTimeout(timer);
   }, [watching]);
+
+  // Writing: build the scorecard once the call is saved, then open it.
+  useEffect(() => {
+    if (stage !== "writing" || !callId || call.retryOf) return;
+    let cancelled = false;
+    void savedCall.current.then(async () => {
+      const result = await buildScorecard(callId);
+      if (cancelled) return;
+      if (result?.status === "completed") router.replace(`/scorecard/${callId}?fresh=1`);
+      else setProblem("scoreFailed");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [stage, callId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // The rules run on a timer, and the record saves as the call goes. A retry isn't a call record.
   useEffect(() => {
@@ -278,7 +299,15 @@ export function CallScreen() {
   });
 
   if (problem) {
-    return <CallProblem problem={problem} onRetry={() => void startCall()} />;
+    const rebuild = () => {
+      setProblem(null); // Back to the writing screen while it tries again.
+      if (callId) {
+        void buildScorecard(callId).then((result) =>
+          result?.status === "completed" ? router.replace(`/scorecard/${callId}?fresh=1`) : setProblem("scoreFailed"),
+        );
+      }
+    };
+    return <CallProblem problem={problem} onRetry={problem === "scoreFailed" ? rebuild : () => void startCall()} />;
   }
 
   const segments = total ?? 0;
@@ -373,6 +402,7 @@ function CallProblem({ problem, onRetry }: { problem: Exclude<Problem, null>; on
     noSetup: { title: "No call set up", sub: "Pick a role and a length first", action: null },
     dropped: { title: "Call dropped", sub: "Your answers so far are saved", action: null },
     cutShort: { title: "That was quick", sub: "Saved to History as incomplete", action: null },
+    scoreFailed: { title: "Scorecard didn't build", sub: "Your transcript is saved", action: "Build scorecard" },
   }[problem];
   return (
     <main className={styles.call}>

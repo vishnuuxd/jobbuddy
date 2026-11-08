@@ -24,6 +24,12 @@ export const liveConfig = {
   // the previous answer, longer is a restart.
   additionMaxMs: 15_000,
 
+  // Badges, worked out from each call (PRD.md, Scorecard: Gamification).
+  badges: {
+    noRambleMaxSeconds: 120, // No answer longer than this
+    fillerFreeMaxPerAnswer: 3, // Fewer fillers than this in every answer
+  },
+
   // How long the writing mood shows after a flag.
   writingHoldMs: 2_500,
 
