@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Profile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;700&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0b051d;text-decoration:none}a:hover{color:#2c2242}
+button{font:inherit}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #f9f8f5; font-family: Inter, system-ui, sans-serif; color: #0b051d; display: flex; flex-direction: column; gap: 18px">
+  <section style="background: #0b051d; color: #ffffff; padding: 60px 20px 28px; border-radius: 0 0 32px 32px; display: flex; align-items: center; gap: 16px">
+    <span aria-hidden="true" style="width: 68px; height: 68px; border-radius: 34px; background: #e6ffa9; color: #0b051d; display: flex; align-items: center; justify-content: center; font-family: 'Inter Tight', Inter, sans-serif; font-weight: 700; font-size: 30px">V</span>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <h1 style="margin: 0; font-family: 'Inter Tight', Inter, sans-serif; font-weight: 500; font-size: 40px; line-height: 1.05">Vishnu</h1>
+      <span style="font-size: 14px; color: #d9d5e6">4 day streak · 7 of 9 completed</span>
+    </div>
+  </section>
+
+  <div style="display: flex; flex-direction: column; gap: 10px; padding: 0 20px">
+    <h2 style="margin: 0; font-size: 14px; font-weight: 700">Saved CV</h2>
+    <div style="display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 16px; background: #ffffff; border: 1px solid #e2e2e7">
+      <span aria-hidden="true" style="width: 44px; height: 52px; border-radius: 10px; background: #aa89f2; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700">PDF</span>
+      <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 500">vishnu-cv.pdf</span><span style="font-size: 13px; color: #75727f">Added 2 Nov · used in every call</span></span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+      <button type="button" style="height: 48px; border-radius: 100px; background: #0b051d; color: #ffffff; border: 0; font-size: 15px; font-weight: 500; cursor: pointer">Replace</button>
+      <button type="button" style="height: 48px; border-radius: 100px; background: #fdecee; color: #b3192f; border: 1px solid #b3192f; font-size: 15px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b3192f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Remove</button>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px; margin: 0 20px; padding: 20px; border-radius: 16px; background: #e6ffa9">
+    <h2 style="margin: 0; font-family: 'Inter Tight', Inter, sans-serif; font-weight: 700; font-size: 20px">Everything stays on this phone</h2>
+    <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #373544">No account needed. Calls, scorecards and your CV live in this browser only. Calls are never recorded.</p>
+    <button type="button" style="align-self: flex-start; min-height: 44px; padding: 0; background: transparent; border: 0; color: #0b051d; font-size: 15px; font-weight: 700; text-decoration: underline; cursor: pointer">Delete all data</button>
+  </div>
+
+  <nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-around; padding: 10px 16px 28px; background: #ffffff; border-top: 1px solid #e2e2e7">
+    <a href="Main.dc.html" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 100px; color: #615f6d; font-size: 15px; font-weight: 500">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#615f6d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>Home
+    </a>
+    <a href="History.dc.html" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 100px; color: #615f6d; font-size: 15px; font-weight: 500">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#615f6d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>History
+    </a>
+    <a href="Profile.dc.html" aria-current="page" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 100px; background: #0b051d; color: #ffffff; font-size: 15px; font-weight: 500">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.3 7.5-5.3s6.3 1.7 7.5 5.3"/></svg>Profile
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

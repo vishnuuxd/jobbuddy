@@ -28,7 +28,7 @@ Version 2 is a showcase build: four key flows with polished, delightful UI, reco
 - **Meera comes after the flows.** An original character, built to Duolingo's level of motion quality, not their look. Her expressions come from what the settled flows need.
 - **No call recording in v2.** Replaying the audio of a moment is a later stretch goal.
 - **Decision for the case study:** the orb shipped in v1 to build and test fast, before investing in a character.
-- **Visual direction: Tropical.** Hot pink, sun yellow and ink, chunky type, 2 px ink outlines and hard offset shadows. Twenty reference screens live in `design/screens` and the visual rules in `design/DESIGN.md`. The screens are a direction, not a spec. Claude Code refines them while building and logs each change in `design/DECISIONS.md`.
+- **Visual direction: Plum (from 9 Nov, replacing Tropical).** Deep plum headers on a warm off white page, lime and lavender accent cards, one pink pill for the main action, hairline borders and no hard shadows. Inter Tight for headlines, Inter for text. The eight reference screens and the tokens live in `design/plum`. The Tropical screens in `design/screens` are kept for layout and flow only. The screens are a direction, not a spec. Claude Code refines them while building and logs each change in `design/DECISIONS.md`.
 
 **Video plan, 2 to 3 minutes.** First practice, about 60 seconds. Daily practice, about 15 seconds. Checking progress, about 15 seconds. Retrying an old call, about 20 seconds. Then how it was built and what was cut.
 
@@ -74,7 +74,7 @@ All setup happens here, before the call. Nothing is asked by voice.
 
 **History**
 
-- At the top, the completion rate: "7 of 9 interviews completed".
+- At the top, the streak, with a row of the last 7 days and a nudge like "Practise today to make it 5. Your best is 9 days." The completion rate lives on Profile, not here.
 - Every past call, newest first: its name, date and time, length, and overall score. Scored rows have no gauge, word or summary line.
 - **Call names:** seniority, role and a number, with no separators: "Senior Product Designer 12". Role in title case. The number counts calls for that role and seniority, starting at 1, and is saved when the call starts, so deleting a call never renames the others. Retries stay under the original call and get no number of their own.
 - The past call screen uses the name as its title next to the back button. Length and date go in a small line under it.
@@ -94,7 +94,7 @@ Six journeys. Four of them carry the video: first practice, daily practice, chec
 
 1. **First practice.** Home, tap Meera, setup sheet, call, scorecard, retry the weakest answer, see the improvement, and the streak starts.
 2. **Daily practice.** Home shows the streak and last time's weak spot. "Practice this" starts a 5 minute call focused on that skill, with the sheet prefilled.
-3. **Checking progress.** History with the completion rate, personal bests per skill, and badges.
+3. **Checking progress.** History with the streak, personal bests per skill, and badges.
 4. **Retrying an old call.** History, a past call, retry an answer that was weak back then, and see the before and after. The past call's scorecard keeps Retry on its moments, so this needs no new screen.
 5. **Night before an interview.** Paste the job description, choose 20 minutes, review the moments, retry two answers.
 6. **When things go wrong.** Cut short, mic denied, call dropped or scorecard failed. Each has a clear way back: Try again, Reconnect or Build scorecard.
@@ -183,11 +183,12 @@ The SDK has no method that makes her cut in while I'm still talking. So the v1 r
 
 1. **Overall score and Meera's take.** A gauge with the overall score at the top, then one honest sentence in her voice.
 2. **Your one thing.** The main pattern with evidence, like "2 of 3 answers ended before the result", and one line on why it matters.
-3. **Moments, two or three.** The weakest answers only. Each shows the question, a short quote of my words, the rewrite with blanks for missing numbers, and Retry.
-4. **What went well.** One real strength.
-5. **Skills.** Five bars, with a marker for my personal best.
-6. **Delivery and wins.** Pace, fillers, average answer length, badges from this call, the streak.
-7. **Actions.** Retry the weakest answer, new interview, save.
+3. **Skills.** Five bars, with a marker for my personal best.
+4. **Delivery.** Pace, fillers and average answer length.
+5. **Moments, two or three.** The weakest answers only. Each shows the question, a short quote of my words, the rewrite with blanks for missing numbers, and Retry.
+6. **What went well.** One real strength.
+7. **Wins.** Badges from this call and the streak, as plain text with a small icon, never as pills.
+8. **Actions.** Retry the weakest answer, new interview, save.
 
 **Overall score.** One number for the whole interview, out of 5.
 
