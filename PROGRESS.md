@@ -134,8 +134,8 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 
 ## 9 Nov 2026
 
-- [x] The call ends itself after Meera's closing line. Once setPhase("done") has fired, the app waits until her latest line's audio has finished playing, then 1 second, then hangs up. It's never timed from the tool call. In the mocked session with 2 s of audio after an early setPhase("done"), the call ended at 3.8 s (audio ended near 2.7 s). The old `endCallQuietMs` and `endCallMaxWaitMs` in `lib/live/config.ts` are no longer used, but are left in place because lib/live doesn't change
-- [x] Overall score out of 5 from the saved scorecard (`lib/progress/overall.ts`), with the PRD band words, "+N after retries", the 1.7b gauge with its load sweep, and small gauges in History
+- [x] The call ends itself after Meera's closing line. Once setPhase("done") has fired, the app waits until her latest line's audio has finished playing, then 1 second, then hangs up. It's never timed from the tool call. In the mocked session with 2 s of audio after an early setPhase("done"), the call ended at 3.8 s (audio ended near 2.7 s). `endCallQuietMs` was later removed and `endCallMaxWaitMs` reused for the safety caps (below)
+- [x] Overall score out of 5 from the saved scorecard (`lib/progress/overall.ts`), with the PRD band words, "+N after retries", and the 1.7b gauge with its load sweep. History's small gauges were later removed (below)
 - [x] Call names: "Senior Product Designer 12", numbered when the call starts (one past the highest for that role and seniority). Dexie v3 numbers existing calls in date order, tested by upgrading a real v2 database in Chrome
 - [x] History rows trimmed at Vishnu's request: name, day and time ("Today, 4:12 pm · 10 min"), and score out of 5. The PRD History lines are updated to match
 - [x] Paper: added "4.1b History · built" (the 390 px History screenshot) at the end of the 4.x row on "v2 key flows · Tropical". A one-time exception to Paper being read only, approved by Vishnu on 9 Nov. Nothing else in the file was changed
@@ -147,4 +147,13 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 - [x] PRD layout changes: the new scorecard order, the History header with the streak and the last 7 days, the completion rate on Profile only, badges and band words as plain text, and a red destructive style for Remove, Delete all data and Delete this call
 - [x] `design/DESIGN.md` rewritten for Plum. Departures are logged in `design/DECISIONS.md`
 - [x] No behaviour changes: lib/live, the ElevenLabs wiring, scoring and Dexie are untouched. New display helpers: best streak, the last 7 days and the streak note (`lib/home/format.ts`), with tests
-- [x] Merged to main and deployed to production at Vishnu's request
+- [x] Merged to main (`cd051b4`) and deployed to production at Vishnu's request. `ui-plum` and the old `day-1-call-screen` branch are deleted, both fully merged. `main` is the only branch
+
+## Still open, as of 9 Nov 2026
+
+- **No real voice call on the v2 build yet.** The call, retry, resume, focus skill and one minute left flows are tested against a scripted mock session only
+- **ElevenLabs dashboard:** paste the updated system prompt from PRD.md, delete the setSetup tool, set the setPhase names to opening, interview and done, and turn on first message override
+- **The mid-answer cut in (test 5) is still unproven.** If it fails, the long answer ladder stops at checkWatch
+- **Gemini is slow at times.** The scorecard took 34 to 60 s in real tests, with fallbacks when the newest Flash models are busy
+- **Meera's Rive rig is deferred.** The blob stands in, behind InterviewVM
+- **Day 2 evening testing (three calls, tune the config, record the video) hasn't started**
