@@ -336,3 +336,8 @@ Plum replaces Tropical. The entries above describe the Tropical build and stay a
 - Screen showed: nothing in Plum
 - Built instead: the Tropical layouts on plum. The streak flame is lime with a plum number and has no outline. The error badges (mic, "?!") are white with no outline or rotation. All of them use the pink primary button
 - Why: README.md: screens without a reference keep their layout and take the new tokens
+
+## Plum · no reference: app icon
+- Screen showed: nothing, there's no icon reference
+- Built instead: Meera's lavender body, plum eyes and the lime dot on plum, drawn from the Meera component's paths by `scripts/make-icons.mjs`. No mouth, and her "wide" eyes (19 × 30) rather than the resting ones, so the eyes still read at home screen size. The maskable icon keeps her inside the 80% safe circle
+- Why: Vishnu asked for the blob, eyes and dot on plum. The iPhone status bar is translucent so the plum headers show through it, since "black" would be a pure black bar

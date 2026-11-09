@@ -149,6 +149,12 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 - [x] No behaviour changes: lib/live, the ElevenLabs wiring, scoring and Dexie are untouched. New display helpers: best streak, the last 7 days and the streak note (`lib/home/format.ts`), with tests
 - [x] Merged to main (`cd051b4`) and deployed to production at Vishnu's request. `ui-plum` and the old `day-1-call-screen` branch are deleted, both fully merged. `main` is the only branch
 
+## Installable app, 9 Nov 2026
+
+- [x] PWA: `app/manifest.ts` (standalone, plum background and theme), icons in `public/icons` made by `node scripts/make-icons.mjs` (192, 512, 512 maskable, 180 apple-touch-icon), and iPhone full screen metadata in `app/layout.tsx` with a translucent status bar over the plum headers
+- [x] Chrome reports no manifest errors. The mic works in standalone display mode (checked in Chrome with a fake device), and `npm run test:e2e` passes. No service worker: Chrome and Safari don't need one to install, and the app needs the network for calls anyway
+- [ ] Install from the home screen on Vishnu's iPhone and Android phone, then do one call from the icon
+
 ## Still open, as of 9 Nov 2026
 
 - **No real voice call on the v2 build yet.** The call, retry, resume, focus skill and one minute left flows are tested against a scripted mock session only
