@@ -57,5 +57,6 @@ export function callCopy(input: CopyInput) {
   if (input.watching) return { title: "Meera checks the time", sub: "Getting long · land the result", pill: label, ...card };
   if (input.writingNote) return { title: "Meera's making a note", sub: label, pill: label, ...card };
   if (input.speaking) return { title: "Meera's talking", sub: label, pill: label, ...card };
-  return { title: "Meera's listening", sub: label, pill: label, ...card };
+  // The pill already says which question it is, so the subline can be kind (Plum Call reference).
+  return { title: "Meera's listening", sub: "Take your time", pill: label, ...card };
 }

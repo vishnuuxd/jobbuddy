@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { SelectChip, Sticker } from "@/components/ui/Chip";
+import { SelectChip, Tag } from "@/components/ui/Chip";
 import { Sheet } from "@/components/ui/Sheet";
 import { AttachError, extractText } from "@/lib/attach/extract";
 import { trimWords } from "@/lib/call/context";
@@ -121,9 +121,9 @@ export function SetupSheet({ open, start, onClose }: Props) {
       largeTitle
       eyebrow={
         focus ? (
-          <Sticker tilt={-3}>Focus · {focus.label}</Sticker>
+          <Tag tone="lime">Focus · {focus.label}</Tag>
         ) : title.sticker ? (
-          <Sticker tilt={-3}>{title.sticker}</Sticker>
+          <Tag tone="lime">{title.sticker}</Tag>
         ) : null
       }
     >
@@ -215,7 +215,7 @@ export function SetupSheet({ open, start, onClose }: Props) {
             />
             {cv ? (
               <div className={styles.cvOn}>
-                <span className={styles.attachTitle}>{newCv ? "CV attached" : "Using your saved CV"}</span>
+                <span className={styles.attachTitle}>{newCv ? "CV attached" : "Using your CV"}</span>
                 <span className={styles.attachMeta}>
                   <span className={styles.fileName}>{cv.fileName}</span>
                   <button type="button" className={styles.inlineButton} onClick={() => fileInput.current?.click()}>
@@ -254,7 +254,7 @@ export function SetupSheet({ open, start, onClose }: Props) {
                 onClick={() => setJdOpen(!jdOpen)}
               >
                 <span className={styles.attachTitle}>+ Job post</span>
-                <span className={styles.attachMeta}>Optional</span>
+                <span className={styles.attachMeta}>Optional, paste it</span>
               </button>
             )}
           </div>
@@ -308,7 +308,7 @@ export function SetupSheet({ open, start, onClose }: Props) {
           </label>
         )}
 
-        <Button type="submit" variant="primary" block disabled={!ready} loading={starting}>
+        <Button type="submit" variant="primary" size="big" block disabled={!ready} loading={starting}>
           Call Meera · {minutes} min
         </Button>
         {!ready && <p className={styles.hint}>Pick a role and a level to start.</p>}

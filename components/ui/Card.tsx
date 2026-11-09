@@ -1,23 +1,14 @@
 import type { ComponentProps } from "react";
 import styles from "./Card.module.css";
 
-export type CardKind = "hero" | "calm" | "cream" | "mint" | "pink" | "placeholder";
+/** white: plain card. lime: highlight (Your one thing). lavender: accent (What went well).
+    pink: soft attention. dashed: placeholder. plum: a card on a plum background. */
+export type CardKind = "white" | "lime" | "lavender" | "pink" | "dashed" | "plum";
 
-type Props = ComponentProps<"div"> & {
-  kind?: CardKind;
-  /** Ink outline on a tint card, for the one that matters most on screen. */
-  outlined?: boolean;
-  /** Hard ink shadow on a tint card. */
-  raised?: boolean;
-};
-
-export function Card({ kind = "calm", outlined, raised, className, ...rest }: Props) {
-  const cls = [styles.card, styles[kind], outlined && styles.outlined, raised && styles.raised, className]
-    .filter(Boolean)
-    .join(" ");
-  return <div {...rest} className={cls} />;
+export function Card({ kind = "white", className, ...rest }: ComponentProps<"div"> & { kind?: CardKind }) {
+  return <div {...rest} className={[styles.card, styles[kind], className].filter(Boolean).join(" ")} />;
 }
 
-export function Eyebrow({ tone = "cream", children }: { tone?: "cream" | "mint" | "pink" | "muted"; children: React.ReactNode }) {
+export function Eyebrow({ tone = "dark", children }: { tone?: "dark" | "muted"; children: React.ReactNode }) {
   return <p className={`${styles.eyebrow} ${styles[`e-${tone}`]}`}>{children}</p>;
 }

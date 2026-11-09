@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 import { Meera } from "@/components/meera/Meera";
 import { Button } from "@/components/ui/Button";
 import { Card, Eyebrow } from "@/components/ui/Card";
-import { Sticker } from "@/components/ui/Chip";
+import { Badge, StatusPill } from "@/components/ui/Chip";
 import { HeroHeader, HeroMeta } from "@/components/ui/HeroHeader";
-import { ArrowIcon, FlameIcon, StarIcon } from "@/components/ui/icons";
+import { BackIcon, CloseIcon, FlameIcon, MedalIcon } from "@/components/ui/icons";
 import { ScoreGauge } from "@/components/ui/ScoreGauge";
 import { SkillBar } from "@/components/ui/SkillBar";
 import { StatTile } from "@/components/ui/StatTile";
@@ -99,7 +99,7 @@ export function ScorecardScreen({ id }: { id: string }) {
       <HeroHeader>
         <div className={styles.headTop}>
           <button type="button" className={`${styles.close} noPrint`} aria-label={fresh ? "Close, back to Home" : "Back"} onClick={close}>
-            {fresh ? <CloseMark /> : <BackMark />}
+            {fresh ? <CloseIcon /> : <BackIcon />}
           </button>
           <CallHeading call={call} now={now} />
         </div>
@@ -110,28 +110,13 @@ export function ScorecardScreen({ id }: { id: string }) {
             {score.lift > 0 && <p className={styles.lift}>+{score.lift.toFixed(1)} after retries</p>}
           </div>
         )}
-        <div className={styles.says}>
-          <Meera still={{ mood: "listening" }} size={36} tone="light" />
-          <HeroMeta>Meera says</HeroMeta>
-        </div>
-        <h1 className={styles.take}>{card.summary.meeraTake}</h1>
-        {(badges.length > 0 || streak > 0) && (
-          <div className={styles.stickers}>
-            {badges.map((id, index) => {
-              const badge = badgeList.find((item) => item.id === id)!;
-              return (
-                <Sticker key={id} tone={badge.tone} tilt={index % 2 ? 2 : -3}>
-                  {badge.name}
-                </Sticker>
-              );
-            })}
-            {streak > 0 && (
-              <Sticker tone="white" tilt={2} icon={<span className={styles.flame}><FlameIcon /></span>}>
-                Day {streak} streak
-              </Sticker>
-            )}
+        <div className={styles.saysBlock}>
+          <div className={styles.says}>
+            <Meera still={{ mood: "listening" }} size={34} />
+            <span className={styles.saysLabel}>Meera says</span>
           </div>
-        )}
+          <h1 className={styles.take}>{card.summary.meeraTake}</h1>
+        </div>
       </HeroHeader>
 
       <div className={styles.body}>
@@ -153,89 +138,104 @@ export function ScorecardScreen({ id }: { id: string }) {
         {tab === "transcript" ? (
           <Transcript call={call} />
         ) : (
-        <>
-        <Card kind="cream" outlined raised>
-          <Eyebrow>Your one thing</Eyebrow>
-          <p className={styles.oneThing}>{card.summary.oneThing.pattern}</p>
-          <p className="t-body">
-            {card.summary.oneThing.evidence} {card.summary.oneThing.whyItMatters}
-          </p>
-        </Card>
+          <>
+            <Card kind="lime" className={styles.oneThingCard}>
+              <Eyebrow>Your one thing</Eyebrow>
+              <h2 className={styles.oneThing}>{card.summary.oneThing.pattern}</h2>
+              <p className={styles.oneThingText}>
+                {card.summary.oneThing.evidence} {card.summary.oneThing.whyItMatters}
+              </p>
+            </Card>
 
-        <section className={styles.section} aria-labelledby="moments-title">
-          <div className={styles.sectionHead}>
-            <h2 id="moments-title" className={styles.h2}>
-              Moments to fix
-            </h2>
-            <span className={styles.quiet}>
-              {moments.length} of {card.answers.length} answers
-            </span>
-          </div>
-          {moments.map((moment, index) => (
-            <Moment key={moment.questionIndex} call={call} answer={moment} full={index === 0} onRetry={() => retry(moment)} />
-          ))}
-        </section>
+            <section className={styles.section} aria-labelledby="skills-title">
+              <h2 id="skills-title" className={styles.h2}>
+                Skills
+              </h2>
+              <Card kind="white" className={styles.skills}>
+                {skills.map((skill) => (
+                  <SkillBar key={skill} label={skillNames[skill]} score={scores[skill]} best={bests[skill]} />
+                ))}
+                <p className={styles.caption}>The dark tick is your best so far.</p>
+              </Card>
+              {stats && (
+                <div className={styles.tiles} aria-label="Delivery">
+                  <StatTile value={String(stats.wpm)} label="words / min" />
+                  <StatTile value={String(stats.fillersPerAnswer)} label="fillers each" />
+                  <StatTile value={clock(stats.averageSeconds)} label="avg answer" />
+                </div>
+              )}
+            </section>
 
-        <Card kind="mint" className={styles.well}>
-          <StarIcon />
-          <div>
-            <Eyebrow tone="mint">What went well</Eyebrow>
-            <p className={styles.wellText}>{card.summary.strongest.why}</p>
-          </div>
-        </Card>
+            <section className={styles.section} aria-labelledby="moments-title">
+              <div className={styles.sectionHead}>
+                <h2 id="moments-title" className={styles.h2}>
+                  Moments to fix
+                </h2>
+                <span className={styles.quiet}>
+                  {moments.length} of {card.answers.length} answers
+                </span>
+              </div>
+              {moments.map((moment, index) => (
+                <Moment key={moment.questionIndex} call={call} answer={moment} full={index === 0} onRetry={() => retry(moment)} />
+              ))}
+            </section>
 
-        <section className={styles.section} aria-labelledby="skills-title">
-          <h2 id="skills-title" className={styles.label}>
-            Skills <span className={styles.quietInline}>· the dark tick is your best</span>
-          </h2>
-          {skills.map((skill) => (
-            <SkillBar key={skill} label={skillNames[skill]} score={scores[skill]} best={bests[skill]} />
-          ))}
-        </section>
+            <Card kind="lavender" className={styles.well}>
+              <Eyebrow>What went well</Eyebrow>
+              <p className={styles.wellText}>{card.summary.strongest.why}</p>
+            </Card>
 
-        {stats && (
-          <section className={styles.section} aria-labelledby="delivery-title">
-            <h2 id="delivery-title" className={styles.label}>
-              Delivery
-            </h2>
-            <div className={styles.tiles}>
-              <StatTile value={String(stats.wpm)} label="words / min" />
-              <StatTile value={String(stats.fillersPerAnswer)} label="fillers each" />
-              <StatTile value={clock(stats.averageSeconds)} label="avg answer" />
+            {(badges.length > 0 || streak > 0) && (
+              <section className={styles.wins} aria-labelledby="wins-title">
+                <h2 id="wins-title" className={styles.label}>
+                  Wins from this call
+                </h2>
+                <ul className={styles.winList}>
+                  {badges.map((id) => (
+                    <li key={id}>
+                      <Badge icon={<MedalIcon />}>{badgeList.find((item) => item.id === id)!.name}</Badge>
+                    </li>
+                  ))}
+                  {streak > 0 && (
+                    <li>
+                      <Badge icon={<FlameIcon size={18} />}>{streak} day streak</Badge>
+                    </li>
+                  )}
+                </ul>
+              </section>
+            )}
+
+            <div className={`${styles.actions} noPrint`}>
+              {weakest && !bestRetry(call, weakest.questionIndex) ? (
+                <Button variant="primary" size="big" block onClick={() => retry(weakest)}>
+                  Retry the weakest answer
+                </Button>
+              ) : (
+                <Button href={`/?sheet=again&id=${call.id}`} variant="primary" size="big" block>
+                  Run this again
+                </Button>
+              )}
+              <Button href="/?sheet=new" variant="ink" size="small" block>
+                New interview
+              </Button>
+              <div className={styles.saveRow}>
+                <Button variant="text" onClick={() => window.print()}>
+                  Save as PDF →
+                </Button>
+                <Button variant="text" onClick={saveMarkdown}>
+                  Save as Markdown →
+                </Button>
+              </div>
             </div>
-          </section>
-        )}
-
-        <div className={`${styles.actions} noPrint`}>
-          {weakest && !bestRetry(call, weakest.questionIndex) ? (
-            <Button variant="primary" block onClick={() => retry(weakest)}>
-              Retry the weakest answer
-            </Button>
-          ) : (
-            <Button href={`/?sheet=again&id=${call.id}`} variant="primary" block>
-              Run this again
-            </Button>
-          )}
-          <div className={styles.pair}>
-            <Button href="/?sheet=new" variant="secondary" size="small">
-              New interview
-            </Button>
-            <Button variant="quiet" size="small" onClick={() => window.print()}>
-              Save as PDF
-            </Button>
-          </div>
-          <Button variant="text" onClick={saveMarkdown}>
-            Save as Markdown
-          </Button>
-        </div>
-        </>
+          </>
         )}
       </div>
     </main>
   );
 }
 
-const flagTones: Record<string, string> = { no_result: "sun", hedging: "pink", rambling: "sun", filler: "pink", off_question: "white", pace: "white" };
+// Flagged lines: lime for missing results and rambling, pink for hedging and fillers, grey otherwise.
+const flagTones: Record<string, "lime" | "pink" | "grey"> = { no_result: "lime", rambling: "lime", hedging: "pink", filler: "pink", off_question: "grey", pace: "grey" };
 
 /** Screen 4.3: every line, with flagged moments highlighted by type. */
 function Transcript({ call }: { call: Call }) {
@@ -250,11 +250,11 @@ function Transcript({ call }: { call: Call }) {
             <p className={styles.agentText}>{item.text}</p>
           </li>
         ) : item.flag ? (
-          <li key={index} className={`${styles.flagged} ${styles[`flag-${flagTones[item.flag.type] ?? "white"}`]}`}>
+          <li key={index} className={`${styles.flagged} ${styles[`flag-${flagTones[item.flag.type] ?? "grey"}`]}`}>
             <p className={styles.flagHead}>
-              <Sticker tone={flagTones[item.flag.type] === "pink" ? "pink" : flagTones[item.flag.type] === "sun" ? "sun" : "white"} tilt={0}>
+              <StatusPill tone="plum">
                 {flagNames[item.flag.type] ?? item.flag.type} · {clock(Math.round(item.startSec))}
-              </Sticker>
+              </StatusPill>
               <span className={styles.flagSource}>{item.flag.source === "agent" ? "Flagged by Meera" : "Spotted live"}</span>
             </p>
             <p className={styles.flagText}>{item.text}</p>
@@ -294,29 +294,27 @@ function Moment({ call, answer, full, onRetry }: { call: Call; answer: ScoredAns
 
   if (!full) {
     return (
-      <Card kind="calm" className={styles.moment}>
+      <Card kind="white" className={styles.moment}>
         <p className={styles.momentHead}>
           Question {answer.questionIndex} · {answer.question}
         </p>
         <p className="t-body">{answer.rewrite?.whatChanged || answer.flagged?.quote}</p>
-        <div className={styles.momentFoot}>
-          {answer.flagged?.whyItMatters ? <span className={styles.why}>Why: {answer.flagged.whyItMatters}</span> : <span />}
-          {improved ? (
-            <Link href={retryLink} className={styles.improvedLink}>
-              Improved +{change}
-            </Link>
-          ) : (
-            <Button variant="text" className={styles.retryLink} onClick={onRetry}>
-              Retry <ArrowIcon />
-            </Button>
-          )}
-        </div>
+        {answer.flagged?.whyItMatters && <p className={styles.why}>Why: {answer.flagged.whyItMatters}</p>}
+        {improved ? (
+          <Link href={retryLink} className={styles.retryLink}>
+            Improved +{change} · see before and after →
+          </Link>
+        ) : (
+          <button type="button" className={styles.retryLink} aria-label={`Retry question ${answer.questionIndex}`} onClick={onRetry}>
+            Retry this answer →
+          </button>
+        )}
       </Card>
     );
   }
 
   return (
-    <Card kind="calm" className={styles.moment}>
+    <Card kind="white" className={styles.moment}>
       <p className={styles.momentHead}>
         Question {answer.questionIndex} · {answer.question}
       </p>
@@ -334,7 +332,7 @@ function Moment({ call, answer, full, onRetry }: { call: Call; answer: ScoredAns
       )}
       {improved ? (
         <div className={styles.pair}>
-          <Button href={retryLink} variant="secondary" size="small" className={styles.improved}>
+          <Button href={retryLink} variant="ink" size="small">
             Improved +{change}
           </Button>
           <Button variant="quiet" size="small" onClick={onRetry}>
@@ -342,7 +340,7 @@ function Moment({ call, answer, full, onRetry }: { call: Call; answer: ScoredAns
           </Button>
         </div>
       ) : (
-        <Button variant="primary" size="small" block onClick={onRetry}>
+        <Button variant="ink" size="small" block onClick={onRetry}>
           Retry this answer
         </Button>
       )}
@@ -360,7 +358,7 @@ function NoScorecard({ call, onClose, startTab }: { call: Call; onClose: () => v
       <HeroHeader>
         <div className={styles.headTop}>
           <button type="button" className={styles.close} aria-label="Back" onClick={onClose}>
-            <BackMark />
+            <BackIcon />
           </button>
           <CallHeading call={call} now={new Date()} />
         </div>
@@ -375,6 +373,7 @@ function NoScorecard({ call, onClose, startTab }: { call: Call; onClose: () => v
             {failed && (
               <Button
                 variant="primary"
+                size="big"
                 block
                 loading={building}
                 onClick={async () => {
@@ -400,14 +399,3 @@ function NoScorecard({ call, onClose, startTab }: { call: Call; onClose: () => v
     </main>
   );
 }
-
-const BackMark = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-    <path d="M11 3.5L5.5 9l5.5 5.5" fill="none" stroke="var(--ink)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-const CloseMark = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-    <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="var(--ink)" strokeWidth="2.6" strokeLinecap="round" />
-  </svg>
-);

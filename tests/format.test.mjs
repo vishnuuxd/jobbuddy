@@ -57,3 +57,17 @@ test("History rows add the time of day", async () => {
   const endedAt = new Date(2026, 10, 8, 16, 22).toISOString();
   assert.equal(callMetaWithTime({ startedAt, endedAt }, now), "Today, 4:12 pm · 10 min");
 });
+
+test("best streak, the last 7 days and the note under the streak", async () => {
+  const { bestStreak, lastSevenDays, streakNote } = await import("../lib/home/format.ts");
+  const done = (n) => ({ status: "completed", startedAt: daysAgo(n) });
+  const calls = [done(1), done(2), done(3), done(6), done(7), done(8), done(9), done(10), { status: "incomplete", startedAt: daysAgo(0) }];
+  assert.equal(bestStreak(calls), 5);
+  assert.equal(bestStreak([]), 0);
+  const week = lastSevenDays(calls, now);
+  assert.deepEqual(week.map((day) => day.label), ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Today"]);
+  assert.deepEqual(week.map((day) => day.done), [true, false, false, true, true, true, false]);
+  assert.equal(streakNote(3, 5, false), "Practise today to make it 4. Your best is 5 days.");
+  assert.equal(streakNote(4, 4, true), "You practised today. Come back tomorrow to make it 5.");
+  assert.equal(streakNote(0, 2, false), "One completed call today starts a streak. Your best is 2 days.");
+});

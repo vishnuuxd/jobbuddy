@@ -71,16 +71,57 @@ export function streakDays(calls: Pick<Call, "status" | "startedAt">[], now: Dat
   return streak;
 }
 
-export type Pill = { tone: "mint" | "cream" | "pink" | "grey"; label: string } | null;
+export type Pill = { tone: "lime" | "grey" | "pink" | "plum"; label: string } | null;
 
 /** "+1 Structure" after a retry that improved, otherwise the weakest skill and its score. */
 export function callPill(call: Pick<Call, "status" | "scorecard" | "retries">): Pill {
   if (call.status === "incomplete") return { tone: "grey", label: "Incomplete" };
   if (call.status === "scoring_failed") return { tone: "pink", label: "No scorecard yet" };
   const gain = bestGain(call);
-  if (gain) return { tone: "mint", label: `+${gain.amount} ${skillNames[gain.skill]}` };
+  if (gain) return { tone: "lime", label: `+${gain.amount} ${skillNames[gain.skill]}` };
   const scores = callSkillScores(call);
   if (!scores) return null;
   const weakest = weakestSkill(scores);
-  return { tone: "cream", label: `${skillNames[weakest]} ${scores[weakest]}` };
+  return { tone: "grey", label: `${skillNames[weakest]} ${scores[weakest]}` };
+}
+
+const completedDays = (calls: Pick<Call, "status" | "startedAt">[]) =>
+  new Set(calls.filter((call) => call.status === "completed").map((call) => dayStart(new Date(call.startedAt))));
+
+/** The longest run of days in a row with a completed call, ever. */
+export function bestStreak(calls: Pick<Call, "status" | "startedAt">[]) {
+  const days = [...completedDays(calls)].sort((a, b) => a - b);
+  let best = 0;
+  let run = 0;
+  let previous: number | null = null;
+  for (const day of days) {
+    // Days are local midnights: one day apart is 20 to 28 hours, through clock changes.
+    run = previous !== null && day - previous < 30 * 3_600_000 ? run + 1 : 1;
+    best = Math.max(best, run);
+    previous = day;
+  }
+  return best;
+}
+
+/** The last 7 days, oldest first, ending today, and whether each had a completed call. */
+export function lastSevenDays(calls: Pick<Call, "status" | "startedAt">[], now: Date) {
+  const days = completedDays(calls);
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (6 - index));
+    const today = index === 6;
+    return {
+      key: date.toISOString(),
+      label: today ? "Today" : date.toLocaleDateString("en-GB", { weekday: "short" }),
+      done: days.has(dayStart(date)),
+      today,
+    };
+  });
+}
+
+/** The line under the History streak. */
+export function streakNote(streak: number, best: number, practisedToday: boolean) {
+  const bestPart = best > streak ? ` Your best is ${best} days.` : "";
+  if (streak === 0) return `One completed call today starts a streak.${bestPart}`;
+  if (practisedToday) return `You practised today. Come back tomorrow to make it ${streak + 1}.${bestPart}`;
+  return `Practise today to make it ${streak + 1}.${bestPart}`;
 }

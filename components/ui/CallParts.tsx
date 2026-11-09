@@ -29,7 +29,7 @@ export function QuestionCard({ label, children }: { label: string; children: Rea
 
 type ControlProps = ComponentProps<"button"> & { label: string; end?: boolean; pressed?: boolean };
 
-/** Round call control on ink: mic and camera. `end` makes the pink End button. No attach: CVs and job posts come from the setup sheet. */
+/** Round call control on plum: mic and camera. `end` makes the pink "End call" pill. No attach: CVs and job posts come from the setup sheet. */
 export function CallControl({ label, end, pressed, className, children, ...rest }: ControlProps) {
   return (
     <button
@@ -39,7 +39,14 @@ export function CallControl({ label, end, pressed, className, children, ...rest 
       {...rest}
       className={`${styles.control} ${end ? styles.end : ""} ${className ?? ""}`}
     >
-      {end ? label : children}
+      {end ? (
+        <>
+          {children}
+          {label}
+        </>
+      ) : (
+        children
+      )}
     </button>
   );
 }

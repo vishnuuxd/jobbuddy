@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { CallList } from "@/components/CallRow";
 import { Button } from "@/components/ui/Button";
-import { Sticker } from "@/components/ui/Chip";
+import { Badge } from "@/components/ui/Chip";
 import { HeroGreeting, HeroHeader } from "@/components/ui/HeroHeader";
+import { MedalIcon, TrashIcon } from "@/components/ui/icons";
 import { Sheet } from "@/components/ui/Sheet";
-import { callTitle } from "@/lib/home/format";
+import { bestStreak, callTitle, lastSevenDays, streakDays, streakNote } from "@/lib/home/format";
 import { liveConfig } from "@/lib/live/config";
 import { badgeCounts, badgeList } from "@/lib/progress/badges";
 import { personalBests, skillNames } from "@/lib/progress/score";
@@ -23,7 +24,9 @@ export function History() {
   const [menuFor, setMenuFor] = useState<Call | null>(null);
   useEffect(() => setNow(new Date()), []);
 
-  const done = calls?.filter((call) => call.status === "completed").length ?? 0;
+  const streak = calls && now ? streakDays(calls, now) : 0;
+  const week = calls && now ? lastSevenDays(calls, now) : [];
+  const practisedToday = week.at(-1)?.done ?? false;
   const bests = calls ? personalBests(calls) : {};
   const topBest = Math.max(0, ...Object.values(bests).map(Number));
   const counts = calls ? badgeCounts(calls, liveConfig.badges) : null;
@@ -38,15 +41,30 @@ export function History() {
   return (
     <main>
       <HeroHeader>
-        <HeroGreeting>History</HeroGreeting>
-        {calls && (
-          <p className={styles.bigRate}>
-            <span className={styles.bigNumber}>
-              {done} of {calls.length}
-            </span>
-            <span className={styles.bigLabel}>interviews completed</span>
-          </p>
-        )}
+        <div className={styles.streakHead}>
+          <HeroGreeting>History</HeroGreeting>
+          {calls && now && (
+            <>
+              <p className={styles.streakLine}>
+                <span className={styles.streakNumber}>{streak}</span>
+                <span className={styles.streakWords}> day streak</span>
+              </p>
+              <p className={styles.streakNote}>{streakNote(streak, bestStreak(calls), practisedToday)}</p>
+              <ol className={styles.week} aria-label="The last 7 days">
+                {week.map((day) => (
+                  <li key={day.key} className={day.today ? styles.weekToday : undefined}>
+                    <span
+                      className={`${styles.weekDot} ${day.done ? styles.weekDone : day.today ? styles.weekOpen : ""}`}
+                      aria-hidden="true"
+                    />
+                    {day.label}
+                    <span className="visually-hidden">{day.done ? ", practised" : ", no call"}</span>
+                  </li>
+                ))}
+              </ol>
+            </>
+          )}
+        </div>
       </HeroHeader>
 
       <div className={styles.content}>
@@ -84,21 +102,25 @@ export function History() {
                 <h2 id="badges-title" className={styles.sectionHead}>
                   Badges · {earned} of {badgeList.length}
                 </h2>
-                <div className={styles.badges}>
-                  {badgeList.map((badge, index) =>
+                <ul className={styles.badges}>
+                  {badgeList.map((badge) =>
                     counts[badge.id] > 0 ? (
-                      <Sticker key={badge.id} tone={badge.tone} tilt={index % 2 ? 2 : -2}>
-                        {badge.name}
-                        {counts[badge.id] > 1 ? ` ×${counts[badge.id]}` : ""}
-                      </Sticker>
+                      <li key={badge.id}>
+                        <Badge icon={<MedalIcon />}>
+                          {badge.name}
+                          {counts[badge.id] > 1 ? ` ×${counts[badge.id]}` : ""}
+                        </Badge>
+                      </li>
                     ) : (
-                      <span key={badge.id} className={styles.locked}>
-                        {badge.name}
-                        <span className="visually-hidden">, not earned yet</span>
-                      </span>
+                      <li key={badge.id} className={styles.locked}>
+                        <Badge icon={<MedalIcon />}>
+                          {badge.name}
+                          <span className={styles.notYet}> · not yet</span>
+                        </Badge>
+                      </li>
                     ),
                   )}
-                </div>
+                </ul>
               </section>
             )}
 
@@ -113,7 +135,7 @@ export function History() {
                 actionFor={(call) => (
                   <>
                     {call.status === "scoring_failed" && (
-                      <Button variant="secondary" size="compact" className={styles.build} loading={building === call.id} onClick={() => void rebuild(call)}>
+                      <Button variant="ink" size="compact" className={styles.build} loading={building === call.id} onClick={() => void rebuild(call)}>
                         Build scorecard
                       </Button>
                     )}
@@ -132,13 +154,15 @@ export function History() {
         <div className={styles.stackTight}>
           <p className={styles.quiet}>Deleting removes the call, its scorecard and retries from this phone. It can't be undone.</p>
           <Button
-            variant="primary"
+            variant="danger"
+            size="big"
             block
             onClick={async () => {
               if (menuFor) await deleteCall(menuFor.id);
               setMenuFor(null);
             }}
           >
+            <TrashIcon />
             Delete this call
           </Button>
           <Button variant="quiet" size="small" block onClick={() => setMenuFor(null)}>

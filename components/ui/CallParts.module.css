@@ -1,50 +1,48 @@
 .segments { display: flex; gap: 6px; }
-.segment { width: 28px; height: 10px; border-radius: 5px; }
-.done { background: var(--mint); }
-.current { background: var(--sun); }
-.upcoming { background: var(--ink-line); }
+.segment { width: 28px; height: 8px; border-radius: 4px; }
+.done { background: var(--lime); }
+.current { background: var(--lavender); }
+.upcoming { background: var(--plum-line); }
 
 .pill {
-  padding: 5px 12px;
+  padding: 6px 12px;
   border-radius: var(--r-pill);
-  background: var(--ink-raised);
+  background: var(--plum-raised);
   color: var(--white);
-  font: 800 14px/18px var(--text);
+  font: 500 14px/18px var(--text);
 }
 
-/* The 6 px corner points at Meera, who speaks from above-left. */
 .question {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 5px;
-  padding: 16px 18px;
-  border-radius: 22px 22px 22px 6px;
+  gap: 6px;
+  padding: 18px 20px;
+  border-radius: var(--r-card);
   background: var(--white);
-  box-shadow: 0 5px 0 var(--pink);
 }
-.questionLabel { margin: 0; color: var(--pink-deep); font: 800 13px/16px var(--text); }
-.questionText { margin: 0; color: var(--ink); font: 700 17px/24px var(--text); }
+.questionLabel { margin: 0; color: var(--muted); font: 700 13px/16px var(--text); }
+.questionText { margin: 0; color: var(--plum); font: 500 18px/1.35 var(--text); }
 
 .control {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 58px;
-  height: 58px;
+  gap: 8px;
+  min-width: 56px;
+  height: 56px;
   padding: 0;
   border: 0;
-  border-radius: 20px;
-  background: var(--ink-raised);
+  border-radius: var(--r-pill);
+  background: var(--plum-raised);
   color: var(--white);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: transform var(--quick) var(--spring);
 }
-.control[aria-pressed="true"] { background: var(--white); color: var(--ink); }
+.control[aria-pressed="true"] { background: var(--white); color: var(--plum); }
 .control:active { transform: scale(0.93); }
-.control:focus-visible { outline: 3px solid var(--sun); outline-offset: 3px; }
+.control:focus-visible { outline: 3px solid var(--lavender); outline-offset: 3px; }
 .control:disabled { opacity: 0.4; cursor: not-allowed; }
-.end { padding: 0 20px; background: var(--pink); font: 800 19px/24px var(--display); } /* Large text on pink */
+.end { padding: 0 28px; background: var(--pink); color: var(--plum); font: 700 17px/22px var(--text); }
 
 @media (prefers-reduced-motion: reduce) { .control { transition: none; } }

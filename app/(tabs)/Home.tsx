@@ -6,12 +6,13 @@ import { SetupSheet, type SheetStart } from "@/components/setup/SetupSheet";
 import { Button } from "@/components/ui/Button";
 import { Card, Eyebrow } from "@/components/ui/Card";
 import { Meera } from "@/components/meera/Meera";
-import { Sticker } from "@/components/ui/Chip";
+import { Tag } from "@/components/ui/Chip";
+import { FlameIcon } from "@/components/ui/icons";
+import Link from "next/link";
 import { HeroGreeting, HeroHeader } from "@/components/ui/HeroHeader";
 import { InterviewerPlaceholder } from "@/components/ui/InterviewerPlaceholder";
 import { createInterviewVM } from "@/lib/avatar/interviewVM";
-import { greeting, streakDays } from "@/lib/home/format";
-import { skillNames } from "@/lib/progress/score";
+import { callTitle, greeting, streakDays } from "@/lib/home/format";
 import { useCalls, useProfile } from "@/lib/store/db";
 import styles from "./tabs.module.css";
 
@@ -51,46 +52,50 @@ export function Home() {
     window.history.replaceState(null, "", "/");
   }, [calls]);
 
+  const latest = recent?.[0];
+
   return (
     <main>
       <HeroHeader>
         <div className={styles.heroTop}>
           <HeroGreeting>{now ? `${greeting(now)}${name ? `, ${name}` : ""}` : "Hello"}</HeroGreeting>
-          {streak > 0 && <Sticker tilt={3}>Day {streak} streak</Sticker>}
+          {streak > 0 && (
+            <Tag icon={<FlameIcon />}>
+              {streak} day streak
+            </Tag>
+          )}
         </div>
-        <h1 className="t-hero">Who are you practising with?</h1>
-      </HeroHeader>
+        <h1 className="t-hero">Ready for your next interview?</h1>
 
-      <div className={styles.content}>
         <button
           type="button"
           className={styles.meeraCard}
-          aria-label="Call Meera, HR screen, direct and fair. Taking calls."
+          aria-label="Call Meera, HR screen, direct and fair"
           onClick={() => setSheet({ kind: "new" })}
         >
-          <Meera vm={vm} size={92} />
+          <Meera vm={vm} size={64} />
           <span className={styles.meeraText}>
             <span className={styles.meeraName}>Meera</span>
             <span className={styles.meeraStyle}>HR screen · direct, fair</span>
-            <span className={styles.live}>
-              <span className={styles.dot} /> Taking calls
-            </span>
+          </span>
+          <span className={styles.callPill} aria-hidden="true">
+            Call
           </span>
         </button>
 
         <div className={styles.placeholders}>
           <InterviewerPlaceholder name="Arjun" />
-          <InterviewerPlaceholder name="Lena" variant={1} />
+          <InterviewerPlaceholder name="Lena" />
         </div>
+      </HeroHeader>
 
+      <div className={styles.content}>
         {practice && (
-          <Card kind="cream" outlined>
+          <Card kind="lime">
             <Eyebrow>From your last call</Eyebrow>
+            <p className="t-card">{practice.label}</p>
             <div className={styles.practiceRow}>
-              <div className={styles.practiceText}>
-                <p className="t-card">{practice.label}</p>
-                <p className={styles.practiceMeta}>5 min call on {skillNames[practice.skill].toLowerCase()}</p>
-              </div>
+              <p className={styles.practiceMeta}>A 5 minute call, focused on this</p>
               <Button
                 variant="ink"
                 size="compact"
@@ -104,31 +109,34 @@ export function Home() {
           </Card>
         )}
 
-        <section aria-labelledby="recent-title">
-          <h2 id="recent-title" className={styles.sectionHead}>
-            Recent calls
-          </h2>
+        <section className={styles.stackTight} aria-labelledby="recent-title">
+          <div className={styles.sectionRow}>
+            <h2 id="recent-title" className={styles.h2}>
+              Recent calls
+            </h2>
+            {recent && recent.length > 0 && (
+              <Link href="/history" className={styles.seeAll}>
+                See all →
+              </Link>
+            )}
+          </div>
           {!recent || !now ? (
             <div className={styles.loading} />
           ) : recent.length === 0 ? (
             <p className={styles.quiet}>Your calls show up here.</p>
           ) : (
-            <CallList
-              calls={recent}
-              now={now}
-              actionFor={(call, index) =>
-                index === 0 && call.setup ? (
-                  <Button
-                    variant="text"
-                    className={styles.again}
-                    aria-label={`Run this again: ${call.setup.seniority} ${call.setup.role}`}
-                    onClick={() => setSheet({ kind: "again", setup: call.setup!, jdText: call.jdText })}
-                  >
-                    Run this again
-                  </Button>
-                ) : null
-              }
-            />
+            <>
+              <CallList calls={recent} now={now} showScore />
+              {latest?.setup && (
+                <Button
+                  variant="text"
+                  className={styles.again}
+                  onClick={() => setSheet({ kind: "again", setup: latest.setup!, jdText: latest.jdText })}
+                >
+                  Run {callTitle(latest)} again →
+                </Button>
+              )}
+            </>
           )}
         </section>
       </div>

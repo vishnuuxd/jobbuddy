@@ -20,7 +20,7 @@ export function CallRow({ call, now, action, extra, showScore }: Props) {
   const body = (
     <>
       <span className={styles.text}>
-        <span className={styles.title}>{callTitle(call)}</span>
+        <span className={`${styles.title} ${call.status === "incomplete" ? styles.dim : ""}`}>{callTitle(call)}</span>
         <span className={styles.meta}>
           {meta}
           {extra}

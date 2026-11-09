@@ -1,24 +1,21 @@
+/* Plum cards: 16 px radius, hairline border on white, no shadow. */
 .card {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 16px var(--card-pad);
-  border: var(--outline) solid transparent;
+  gap: 8px;
+  padding: var(--card-pad);
+  border: 1px solid transparent;
   border-radius: var(--r-card);
   background: var(--white);
-  color: var(--ink);
+  color: var(--plum);
 }
-.hero { border-color: var(--ink); border-radius: var(--r-main); box-shadow: var(--shadow-big); margin-bottom: 5px; }
-.calm { border-color: var(--border); }
-.cream { background: var(--cream); }
-.mint { background: var(--mint-tint); }
+.white { border-color: var(--line); }
+.lime { background: var(--lime); }
+.lavender { background: var(--lavender); }
 .pink { background: var(--pink-tint); }
-.placeholder { border-style: dashed; border-color: var(--dashed); border-radius: var(--r-big); }
-.outlined { border-color: var(--ink); }
-.raised { box-shadow: var(--shadow-big); margin-bottom: 5px; }
+.dashed { border-style: dashed; border-color: var(--soft); }
+.plum { background: var(--plum-raised); color: var(--white); }
 
-.eyebrow { margin: 0; font: 900 13px/16px var(--text); letter-spacing: 0.06em; text-transform: uppercase; }
-.e-cream { color: var(--cream-chip); } /* cream-ink is 3.26:1 on cream */
-.e-mint { color: var(--mint-deep); }
-.e-pink { color: var(--pink-deep); }
+.eyebrow { margin: 0; font: 700 12px/16px var(--text); letter-spacing: 0.06em; text-transform: uppercase; }
+.e-dark { color: var(--plum-line); }
 .e-muted { color: var(--muted); }

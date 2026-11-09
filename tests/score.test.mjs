@@ -43,7 +43,7 @@ test("pills: incomplete, failed, improved, weakest", () => {
   assert.equal(callPill({ status: "scoring_failed", retries: [] }).label, "No scorecard yet");
   assert.equal(callPill(scoredCall()).label, "Structure 2");
   const improved = scoredCall({ retries: [{ questionIndex: 2, at: "a", answer: answer(2, scores(4, 3, 3, 4, 3)), transcript: [] }] });
-  assert.deepEqual(callPill(improved), { tone: "mint", label: "+1 Structure" });
+  assert.deepEqual(callPill(improved), { tone: "lime", label: "+1 Structure" });
 });
 
 test("v1 calls upgrade to the sheet's setup shape", () => {

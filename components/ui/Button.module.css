@@ -1,85 +1,62 @@
+/* Plum buttons: pills, no outlines or offset shadows. Pink for the one main action,
+   plum for secondary actions, outline for options, red only for destructive ones. */
 .button {
-  --edge: var(--ink);
-  --drop: 5px;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   min-height: 44px;
-  margin: 0 0 var(--drop);
-  padding: 0 20px;
-  border: var(--outline) solid var(--edge);
-  border-radius: var(--r-button);
-  box-shadow: 0 var(--drop) 0 var(--edge);
-  color: var(--ink);
+  padding: 0 22px;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  color: var(--plum);
   background: var(--white);
-  font: 800 17px/22px var(--display);
+  font: 500 15px/20px var(--text);
   text-align: center;
   text-decoration: none;
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  transition:
-    transform var(--quick) var(--spring),
-    box-shadow var(--quick) var(--spring);
+  transition: transform var(--quick) var(--spring), opacity var(--quick) ease-out;
 }
 
 .block { display: flex; width: 100%; }
+.label { display: inline-flex; align-items: center; gap: 8px; } /* Icon and text side by side */
 
 /* Sizes */
-.big { height: 58px; border-radius: var(--r-big); font-size: 19px; line-height: 24px; }
-.small { --drop: 4px; height: 50px; border-radius: var(--r-button); }
-.compact {
-  --drop: 0px;
-  height: 44px;
-  padding: 0 14px;
-  border-radius: var(--r-small);
-  font: 900 14px/18px var(--text);
-}
+.big { height: 56px; font-size: 17px; font-weight: 700; }
+.small { height: 48px; }
+.compact { height: 44px; padding: 0 18px; white-space: nowrap; }
 
 /* Variants */
-.primary { background: var(--pink); color: var(--white); }
-/* White on pink is 3.37:1, so every pink button label is 19 px bold: large text, passes AA. */
-.primary.small { font-size: 19px; line-height: 24px; }
-.secondary { background: var(--white); }
-.quiet { --edge: var(--border); --drop: 0px; background: var(--white); font: 800 15px/20px var(--text); }
-.ink { --drop: 0px; background: var(--ink); color: var(--white); }
+.primary { background: var(--pink); color: var(--plum); }
+.secondary,
+.ink { background: var(--plum); color: var(--white); }
+.quiet { border-color: var(--plum-line); background: var(--white); }
+.danger { border-color: var(--danger); background: var(--danger-tint); color: var(--danger); font-weight: 700; }
 .text {
-  --drop: 0px;
   min-width: 44px;
   height: 44px;
   padding: 0 4px;
-  border-color: transparent;
   background: none;
-  font: 900 15px/20px var(--text);
-}
-
-.onDark { --edge: var(--white); }
-.onDark.text,
-.onDark.quiet { color: var(--white); }
-.onDark.quiet { --edge: var(--ink-line); background: var(--ink-raised); }
-
-/* Pressed: the button drops by its shadow. data-pressed forces it for /kit. */
-.button:active:not(:disabled):not([aria-busy]),
-.button[data-pressed] {
-  transform: translateY(var(--drop));
-  box-shadow: 0 0 0 var(--edge);
-}
-
-.button:focus-visible {
-  outline: 3px solid var(--sun);
-  outline-offset: 3px;
-}
-
-.button:disabled {
-  border-color: var(--border);
-  box-shadow: 0 var(--drop) 0 var(--border);
-  background: var(--line);
   color: var(--muted);
-  cursor: not-allowed;
 }
-.text:disabled { border-color: transparent; background: none; box-shadow: none; }
+
+/* On plum backgrounds */
+.onDark.secondary,
+.onDark.ink,
+.onDark.quiet { border-color: transparent; background: var(--plum-raised); color: var(--white); }
+.onDark.text { color: var(--on-plum-soft); }
+
+/* Pressed: a small press-in. data-pressed forces it for /kit. */
+.button:active:not(:disabled):not([aria-busy]),
+.button[data-pressed] { transform: scale(0.97); opacity: 0.85; }
+
+.button:focus-visible { outline: 3px solid var(--lavender); outline-offset: 3px; }
+
+.button:disabled { border-color: transparent; background: var(--line); color: var(--soft); cursor: not-allowed; }
+.text:disabled { background: none; }
 
 /* Loading keeps its width and shows a spinner over the hidden label. */
 .button[aria-busy] { cursor: progress; }
@@ -87,10 +64,10 @@
 .spinner {
   position: absolute;
   inset: 0;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   margin: auto;
-  border: 3px solid currentColor;
+  border: 2.5px solid currentColor;
   border-right-color: transparent;
   border-radius: 50%;
   animation: spin 700ms linear infinite;

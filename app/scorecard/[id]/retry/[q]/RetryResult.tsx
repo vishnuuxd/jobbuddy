@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { StatusPill, Sticker } from "@/components/ui/Chip";
+import { StatusPill } from "@/components/ui/Chip";
+import { MedalIcon } from "@/components/ui/icons";
 import { setPendingCall } from "@/lib/call/pending";
 import { answerTotal, momentsFor, retryChange, skillNames } from "@/lib/progress/score";
 import { useCall } from "@/lib/store/db";
@@ -52,24 +53,35 @@ export function RetryResult({ id, questionIndex }: { id: string; questionIndex: 
 
   return (
     <main className={styles.page}>
-      <header className={`${styles.hero} ${improved ? styles.win : ""}`}>
+      <header className={styles.hero}>
         {improved && <Confetti />}
         {newComeback && (
-          <Sticker tilt={-3} className={styles.badge}>
-            New badge · Comeback
-          </Sticker>
+          <p className={styles.badge}>
+            <span className={styles.badgeIcon} aria-hidden="true">
+              <MedalIcon size={22} />
+            </span>
+            <span>
+              You earned the <strong>Comeback</strong> badge
+            </span>
+          </p>
         )}
-        <div className={styles.headline}>
-          <h1 className={styles.title}>{improved ? "You landed it this time." : "Not quite yet."}</h1>
-          <Sticker tone="white" tilt={4}>
-            {total > 0 ? `+${total}` : total} overall
-          </Sticker>
-        </div>
-        <p className={styles.sub}>
-          {improved
-            ? `${skillNames[top]} went from ${original.scores[top]} to ${latest.answer.scores[top]} on ${original.question.toLowerCase()}.`
-            : "Same as before or a little lower. One more go, ending with what changed."}
+        <p className={styles.change}>
+          {improved ? (
+            <>
+              <span className={styles.big}>+{perSkill[top]}</span>
+              <span className={styles.changeLabel}>
+                {skillNames[top]}, {original.scores[top]} → {latest.answer.scores[top]}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className={styles.big}>{total > 0 ? `+${total}` : total}</span>
+              <span className={styles.changeLabel}>overall, across five skills</span>
+            </>
+          )}
         </p>
+        <h1 className={styles.title}>{improved ? "You landed it this time." : "Not quite yet."}</h1>
+        {!improved && <p className={styles.sub}>One more go, ending with what changed.</p>}
       </header>
 
       <div className={styles.body}>
@@ -90,7 +102,7 @@ export function RetryResult({ id, questionIndex }: { id: string; questionIndex: 
                 {original.scores[skill]} → <strong>{latest.answer.scores[skill]}</strong>
               </span>
               {perSkill[skill] > 0 ? (
-                <StatusPill tone="mint">+{perSkill[skill]}</StatusPill>
+                <StatusPill tone="plum">+{perSkill[skill]}</StatusPill>
               ) : perSkill[skill] < 0 ? (
                 <StatusPill tone="pink">{perSkill[skill]}</StatusPill>
               ) : (
@@ -101,12 +113,12 @@ export function RetryResult({ id, questionIndex }: { id: string; questionIndex: 
         </ul>
 
         <div className={styles.actions}>
-          <Button href={`/scorecard/${id}`} variant="primary" block>
+          <Button href={`/scorecard/${id}`} variant="primary" size="big" block>
             Back to scorecard
           </Button>
           {next && (
             <Button variant="text" onClick={retryNext}>
-              Retry Question {next.questionIndex} next
+              Retry Question {next.questionIndex} next →
             </Button>
           )}
         </div>
@@ -115,14 +127,14 @@ export function RetryResult({ id, questionIndex }: { id: string; questionIndex: 
   );
 }
 
-/** A few static shapes from 2.2. They pop in once, and stay still under reduced motion. */
+/** A few dots in the Plum palette. They pop in once, and stay still under reduced motion. */
 function Confetti() {
   return (
     <div className={styles.confetti} aria-hidden="true">
-      <span style={{ top: 34, right: 70, width: 14, height: 14, background: "var(--sun)", borderRadius: 7 }} />
-      <span style={{ top: 70, right: 24, width: 22, height: 8, background: "var(--white)", rotate: "35deg" }} />
-      <span style={{ top: 112, right: 112, width: 11, height: 11, background: "var(--mint)", rotate: "20deg" }} />
-      <span style={{ top: 140, right: 40, width: 12, height: 12, background: "var(--ink)", borderRadius: 6 }} />
+      <span style={{ top: 40, right: 70, width: 14, height: 14, background: "var(--lime)", borderRadius: 7 }} />
+      <span style={{ top: 78, right: 26, width: 10, height: 10, background: "var(--white)", borderRadius: 5 }} />
+      <span style={{ top: 120, right: 110, width: 8, height: 8, background: "var(--plum)", borderRadius: 4 }} />
+      <span style={{ top: 150, right: 44, width: 12, height: 12, background: "var(--pink)", borderRadius: 6 }} />
     </div>
   );
 }

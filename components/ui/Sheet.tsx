@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { useKeyboardInset } from "@/lib/ui/useVisualViewport";
+import { CloseIcon } from "./icons";
 import styles from "./Sheet.module.css";
 
 type Props = {
@@ -62,9 +63,14 @@ export function Sheet({ open, onClose, title, showTitle, largeTitle, eyebrow, ch
         {/* Title and content scroll together, so a long sheet keeps its fields in view. */}
         <div className={styles.body}>
           {eyebrow && <div className={styles.eyebrow}>{eyebrow}</div>}
-          <h2 id={titleId} className={showTitle ? `${styles.title} ${largeTitle ? styles.large : ""}` : "visually-hidden"}>
-            {title}
-          </h2>
+          <div className={styles.titleRow}>
+            <h2 id={titleId} className={showTitle ? `${styles.title} ${largeTitle ? styles.large : ""}` : "visually-hidden"}>
+              {title}
+            </h2>
+            <button type="button" className={styles.close} aria-label="Close" onClick={onClose}>
+              <CloseIcon />
+            </button>
+          </div>
           <div className={styles.content}>{children}</div>
         </div>
       </div>

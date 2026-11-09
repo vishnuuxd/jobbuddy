@@ -1,143 +1,114 @@
-# JobBuddy design: Tropical
+# JobBuddy design: Plum
 
-The visual rules for v2. Read this with `PRD.md` and the screens in `design/screens`.
+The visual rules for v2, from 9 Nov 2026. Plum replaces Tropical. Read this with `PRD.md`, `design/plum/README.md` and the eight reference screens in `design/plum`.
 
 ## How to use this
 
 - **PRD.md decides what the app does.** Flows, rules, data, copy that carries meaning.
-- **This file and `design/screens` decide how it looks and feels.**
+- **This file and the screens in `design/plum` decide how it looks and feels.** The Tropical screens in `design/screens` are history: use them only for layouts Plum doesn't draw.
 - **Inside those limits, you own the UI and UX details.** Layout, spacing, hierarchy, copy, states, motion. The screens are a direction, not a spec. Fix problems you find instead of copying them.
 - **Log every departure** from a reference screen in `design/DECISIONS.md`.
 - **If a screen and the PRD disagree, the PRD wins.** Log it. If the fix changes behaviour, ask Vishnu first.
-- The status bar in the screens is part of the mockup. Don't build it.
+- **Never change a colour without asking Vishnu,** even to fix contrast. Propose options instead.
+- The status bar in the mockups isn't built.
 
 ## Feel
 
-Loud, warm and a little cheeky. Duolingo energy with adult copy. Meera is a character, not a widget.
+Calm, grown up and still warm. Deep plum for the moments that matter, bone for planning, and a few bright accents used sparingly. Meera is a character, not a widget.
 
-- **Light screens for planning:** Home, setup, scorecard, History, Profile. Pink hero headers on scorecard, History and Profile.
-- **Dark ink screens for being on a call:** opening, listening, long answer, writing the scorecard, retry call, and errors that happen around a call.
-- **Full pink for celebration:** the streak screen and the top of the retry result.
+- **Plum headers** on Home, History, Profile and the scorecard: full bleed, 32 px bottom radius.
+- **Plum screens for being on a call:** opening, listening, long answer, writing, retry call, the streak screen and the errors around a call.
+- **Lavender for accents:** Meera, What went well, the retry result header, the selected length.
+- **Lime for highlights:** Your one thing, From your last call, the streak, done states, the gauge fill.
+- **Pink for the one main action per screen,** with plum text.
 
 ## Tokens
 
-Pulled from the Paper file. Use these names as CSS variables or Tailwind theme keys.
-
-### Colour
+In `app/tokens.css`. Use the names, never raw hex.
 
 | Token | Hex | Use |
 | --- | --- | --- |
-| `pink` | #FF3D7F | Primary buttons, hero headers, Meera, active tab icon |
-| `pink-deep` | #D61F5E | Text on pink tint ("You said", Remove, Delete) |
-| `pink-tint` | #FFE8EF | "You said" bubble, hedging flag |
-| `sun` | #FFB800 | Stickers, streak, badges, selected length, Meera's dot |
-| `cream` | #FFF4D6 | "Your one thing" card, "From your last call", flag highlight |
-| `cream-ink` | #B07F00 | Eyebrow text on cream |
-| `cream-chip` | #8A6400 | Chip text on cream |
-| `ink` | #1A1530 | Text, outlines, hard shadows, call background |
-| `body` | #3B3552 | Long text on light screens |
-| `muted` | #6B6580 | Secondary text, inactive tabs |
-| `line` | #F1EEF6 | Dividers, tab bar top line, skill bar track |
-| `border` | #E4E1EC | Soft card outlines |
-| `dashed` | #C9C4D6 | Placeholder and locked outlines |
-| `mint` | #00A86B | Positive dots, done progress, filled skill bars |
-| `mint-deep` | #00764B | Text on mint tint |
-| `mint-tint` | #E6F7F0 | "Try this", "What went well", saved CV, Improved |
-| `white` | #FFFFFF | Surfaces |
+| `plum` | #0B051D | Text, dark headers, call background, dark buttons, active tab |
+| `plum-raised` | #2C2242 | Cards and controls on plum, gauge track |
+| `plum-line` | #373544 | Outlines on plum, dim progress segments, chip outlines, body text on lime |
+| `lavender` | #AA89F2 | Meera, accent cards, selected length, the current progress segment |
+| `lime` | #E6FFA9 | Highlight cards, streak, done states, gauge fill |
+| `lime-tint` | #F2FFD2 | "Try this" bubble |
+| `pink` | #FFA8CD | The one primary action per screen, with plum text |
+| `pink-tint` | #FFE4EF | "You said" bubble, hedging lines in the transcript |
+| `bone` | #F9F8F5 | Page background, the setup sheet |
+| `white` | #FFFFFF | Cards, tab bar |
+| `line` | #E2E2E7 | Hairline borders, tracks |
+| `muted` | #615F6D | Secondary text |
+| `soft` | #75727F | Captions, meta lines, dashed outlines |
+| `on-plum-muted` | #B3AFC2 | Secondary text on plum |
+| `on-plum-soft` | #D9D5E6 | Greetings and labels on plum |
+| `danger` | #B3192F | Destructive actions only |
+| `danger-tint` | #FDECEE | Background of destructive buttons |
 
-Dark call screens use a lighter ink for control buttons, pills and the offline Meera (around #2A2442 and #3A3550 in the mockups). Pick exact values, check contrast, and log them.
+Every text and background pair is listed with its contrast ratio on `/kit`.
 
 ### Type
 
-- **Bricolage Grotesque, 800:** headlines, buttons, big numbers, Meera's name. Letter spacing -0.02em on 26 px and up.
-- **Nunito Sans, 600 to 900:** everything else.
-- Load both with `next/font`.
+- **Inter Tight** (400, 500, 700) for headlines and numbers. Large sizes use 500, with tight line height (1.05 to 1.2).
+- **Inter** (400, 500, 700) for everything else.
+- Both load with `next/font/google` as `--display` and `--text`.
 
 | Role | Size / line height | Font |
 | --- | --- | --- |
-| Hero headline | 34 / 36 | Bricolage 800 |
-| Screen title | 26 / 30 | Bricolage 800 |
-| Card title | 20 / 24 | Bricolage 800 |
-| Button | 17 / 22 | Bricolage 800 |
-| Body | 15 / 22 | Nunito 600 |
-| Small | 13 / 18 | Nunito 600 to 700 |
-| Eyebrow | 13 / 16, uppercase, 0.06em | Nunito 900 |
-| Label in a list | 15 / 20 | Nunito 800 |
+| Hero headline | 40 to 44 / 1.05 | Inter Tight 500 |
+| Section title ("Skills", "Moments to fix") | 30 / 1.05 | Inter Tight 500 |
+| Card title | 20 to 26 / 1.1 | Inter Tight 700 |
+| Big numbers (score, streak, retry change) | 72 to 90 | Inter Tight 700 |
+| Body | 15 / 1.45 | Inter 400 |
+| Button | 15 (17 on big buttons) | Inter 500 (700 on big) |
+| Small, meta | 13 | Inter 400 |
+| Eyebrow | 12, uppercase, 0.06em | Inter 700 |
 
-### Shape and depth
+### Shape
 
-- **Outlines:** 2 px. Ink on things you act on or that matter most, `border` on calm cards, dashed `dashed` on placeholders and locked items.
-- **Hard shadow, never a blur:** `0 5px 0 ink` on primary cards and big buttons, `0 4px 0 ink` on smaller buttons.
-- **Radius:** hero header bottom 32, main card 24, cards 22, big buttons 18, buttons and bubbles 16, small buttons 14, chips and pills 999.
-- **Bubbles:** 16 on three corners, 4 on the corner that points at the speaker.
-- **Stickers:** sun or white pill, ink outline, rotated 2 to 4 degrees. Used for the streak, badges and Meera's reactions. Keep them rare so they stay special.
+- **Cards:** 16 px radius, hairline `line` border on white, no shadow.
+- **Buttons and chips:** pills (radius 100). Pink for the one main action, plum for secondary actions, outline for options, red tint with a red border for destructive ones.
+- **Selected chips:** plum fill, white text. **Selected length tile:** lavender.
+- **Tab bar:** white with a hairline top. The active tab is a plum pill with its icon and label.
+- **No hard offset shadows, rotated stickers or 2 px outlines.** Those were Tropical.
 
 ### Spacing
 
-Screen side padding 22. Card padding 16 to 18. Gap between sections 18 to 24. Respect safe areas top and bottom.
+Screen side padding 20. Card padding 20 (16 on compact cards). Gap between sections 16, with 12 more above section titles. Respect safe areas top and bottom.
 
 ## Components
 
-Build these first, in the Foundation phase, with every state on a `/kit` page.
+All in `components/ui`, with every state on `/kit`.
 
-- **Button.** Primary (pink, ink outline, hard shadow, white Bricolage). Secondary (white, ink outline, hard shadow). Quiet (white, `border` outline, no shadow). Text button. States: pressed (moves down by the shadow, shadow goes to 0), disabled, loading. None of these states are designed yet.
-- **Chip.** Selectable chip, status pill (tinted background, deep text), sticker.
-- **Card.** Hero card (ink outline and shadow), calm card (`border` outline), tint card (cream, mint, pink tint).
-- **Meera.** An asymmetric pink blob with a sun dot at the top right and ink eyes. She only reads InterviewVM values; the app never animates her directly. Expressions in the screens: hi (smile), listening, long answer (flat mouth, dotted sun ring), writing (notepad), worried (wavy mouth), surprised (round mouth), offline (grey, dash eyes). A reaction sticker can sit near her. This is the placeholder until the rig.
-- **Interviewer placeholder.** Dashed outline, grey blob, "Not taking calls". Not tappable.
-- **Tab bar.** Docked, white, 2 px `line` top border. Home, History, Profile. Active: icon filled pink with ink stroke, label ink 900. Inactive: `muted` 700. Hidden on the call, writing, scorecard, retry, streak and error screens.
-- **Sheet.** White, rounded top, grabber, over a pink background. Must work with the keyboard open.
-- **Call frame.** Ink background. Progress segments at the top (mint done, sun current, dim upcoming). Status pill top right. Meera in the middle, a title and a subline under her. Question card in white with a pink shadow edge. Controls: mic, camera, and a pink End. The attach button in the screens is dropped: the CV and job description come from the setup sheet.
-- **Skill bar.** `line` track. Fill by score: pink at 1 to 2, sun at 3, mint at 4 to 5. An ink tick marks the personal best.
-- **Stat tile.** Big Bricolage number, small label, soft background.
-- **Hero header.** Pink, bottom radius 32, white text.
+- **Button.** `primary` (pink), `secondary` and `ink` (plum), `quiet` (outline), `text`, `danger`. Sizes `big` (56), `small` (48), `compact` (44). States: pressed (a small press-in), disabled, loading. `onDark` for plum backgrounds.
+- **SelectChip.** Outline pill, plum when selected. `tile` makes equal-width chips. `dashed` for "+ Other".
+- **StatusPill.** Small pills for status: `plum`, `lime`, `grey`, `pink`.
+- **Tag.** A flat pill for the streak and Meera's reactions. Never rotated, never outlined.
+- **Badge.** Plain text with a small icon, for badges and wins. Never a pill, so it never reads as a button.
+- **Card.** `white`, `lime`, `lavender`, `pink`, `dashed`, `plum`.
+- **Meera.** Lavender body, plum eyes and mouth, a lime dot, directly on plum. Reads InterviewVM only. The expressions are in the PRD Character section.
+- **ScoreGauge.** Plum-raised track, lime fill, white knob with a plum ring. Sweeps from 0 on every load, and shows the final state under reduced motion.
+- **Sheet, HeroHeader, TabBar, SkillBar, StatTile, call parts.** As above, on Plum tokens.
 
 ## Screen map
 
-| File | Screen | PRD section |
+| Plum file | Screen | Notes |
 | --- | --- | --- |
-| 1.1-home | Home | Screens and flows: Home |
-| 1.2-setup-sheet | Setup sheet | Setup sheet |
-| 1.3-call-opening | Call, opening line | Call behavior: Opening |
-| 1.4-call-listening | Call, listening | Live reactions |
-| 1.5-call-long-answer | Call, long answer ladder | Live reactions: Layer 1 |
-| 1.6-writing-scorecard | Writing the scorecard | Call |
-| 1.7-scorecard | Scorecard | Scorecard: Layout v2 |
-| 2.1-retry-call | Retry call | Scorecard: The retry |
-| 2.2-retry-result | Retry result | Scorecard: The retry |
-| 2.3-streak-starts | Streak screen | Scorecard: Gamification |
-| 3.1-setup-practice-this | Sheet, Practice this | User journeys 2 |
-| 3.2-setup-night-before | Sheet, night before | User journeys 5 |
-| 4.1-history | History | History |
-| 4.2-past-call-scorecard | Past call, scorecard tab | History |
-| 4.3-past-call-transcript | Past call, transcript tab | History |
-| 4.4-profile | Profile | Profile |
-| 5.1-mic-denied | Mic denied | Edge cases |
-| 5.2-call-dropped | Call dropped | Edge cases |
-| 5.3-cut-short | Cut short | Call behavior: Cut short |
-| 5.4-scorecard-failed | Scorecard failed | Edge cases |
+| Main.dc.html | Home | Meera's card sits in the plum header |
+| Setup.dc.html | Setup sheet | Bone sheet over plum, with a close button |
+| Call.dc.html | Call, listening | Mic and camera left, "End call" right |
+| Writing.dc.html | Writing the scorecard | |
+| Scorecard.dc.html | Scorecard | The PRD's v2 order |
+| Retry.dc.html | Retry result | Lavender header |
+| History.dc.html | History | The streak and the last 7 days, no completion rate |
+| Profile.dc.html | Profile | The completion rate lives here only |
 
-## Known issues in the reference screens
-
-Fix these as you build, and log what you did.
-
-1. **Timer on the call.** Screens 1.3 to 1.5 and 2.1 show time left. The PRD says no timer, only "Question 2 of 3". Follow the PRD until Vishnu decides.
-2. **No way out of the scorecard.** Screen 1.7 has no close or back, and the tab bar is hidden there. Add one.
-3. **"Interview tomorrow" sticker** on 3.2. The app never learns an interview date. Use what it knows (job post added, 20 minutes) or drop the sticker.
-4. **Three selection styles in one sheet.** Role selected is pink, level is ink, length is sun. Unify them, or make the difference mean something.
-5. **Name field missing** from the setup sheet. The PRD keeps it as optional and remembered.
-6. **Badges shown twice** on the scorecard: stickers in the header and "Badges from this call". Pick one place.
-7. **"About 20 seconds"** on 1.6 has to be a real estimate or go.
-8. **Retry result headline.** "+2" sits above a per skill list. Decide which number leads and why.
-9. **"Run this again"** sits on the Recent calls header. The PRD puts it on the most recent call. Make the target clear.
-10. **Mic denied steps** say "tap the lock in the address bar". That differs by browser. Detect it or write steps that hold on iOS Safari and Chrome.
-11. **Streak day row** starts on Sunday. Use the real days.
-12. **Missing states:** pressed, disabled and loading buttons, "Call Meera" disabled until role and seniority are set, first run Home with no calls, empty History, Profile with no CV, deleting a call from History.
-13. **Contrast on dark screens.** Check muted text on ink against WCAG AA.
+**No Plum reference:** call opening, long answer, retry call, the streak screen, the past call transcript and the four error screens. They keep their Tropical layouts on the Plum tokens.
 
 ## What to look for while building
 
-- One clear primary action per screen.
+- One clear primary action per screen, in pink.
 - Every state: loading, empty, error, disabled, pressed.
 - Tap targets of at least 44 px.
 - Copy in plain words. Meera sounds like a person, not a product.

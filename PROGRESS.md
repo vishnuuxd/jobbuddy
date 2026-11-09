@@ -140,3 +140,11 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 - [x] History rows trimmed at Vishnu's request: name, day and time ("Today, 4:12 pm · 10 min"), and score out of 5. The PRD History lines are updated to match
 - [x] Paper: added "4.1b History · built" (the 390 px History screenshot) at the end of the 4.x row on "v2 key flows · Tropical". A one-time exception to Paper being read only, approved by Vishnu on 9 Nov. Nothing else in the file was changed
 - [x] Auto end safety caps, counted from setPhase("done"): if her audio hasn't started within 3 s, or hasn't finished within 15 s, the call ends anyway. `endCallMaxWaitMs` in `lib/live/config.ts` now holds both caps (`noAudioMs`, `unfinishedMs`), and `endCallQuietMs` is removed, since nothing used it (call timing, not live thresholds, as agreed on 9 Nov). Unit tests cover the caps, and `npm run test:e2e` runs the no audio, too long and normal cases against a mocked session (dev server needed)
+
+## Plum, 9 Nov 2026
+
+- [x] Restyled the whole app to Plum (`design/plum`), on branch `ui-plum`: tokens, Inter Tight and Inter, every component, Meera recoloured (lavender, plum, lime). No hard shadows, 2 px outlines or rotated stickers
+- [x] PRD layout changes: the new scorecard order, the History header with the streak and the last 7 days, the completion rate on Profile only, badges and band words as plain text, and a red destructive style for Remove, Delete all data and Delete this call
+- [x] `design/DESIGN.md` rewritten for Plum. Departures are logged in `design/DECISIONS.md`
+- [x] No behaviour changes: lib/live, the ElevenLabs wiring, scoring and Dexie are untouched. New display helpers: best streak, the last 7 days and the streak note (`lib/home/format.ts`), with tests
+- [x] Merged to main and deployed to production at Vishnu's request

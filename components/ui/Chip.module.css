@@ -1,65 +1,58 @@
-/* Selectable chip. Every selected chip is ink with white text: pink is kept for primary actions. */
+/* Selectable chip: outline pill, plum fill with white text when selected. */
 .select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 44px;
-  padding: 0 14px;
-  border: var(--outline) solid var(--border);
+  padding: 0 16px;
+  border: 1px solid var(--plum-line);
+  border-radius: var(--r-pill);
   background: var(--white);
-  color: var(--ink);
-  font: 700 15px/18px var(--text);
+  color: var(--plum);
+  font: 500 15px/18px var(--text);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: transform var(--quick) var(--spring);
 }
-.pill { border-radius: var(--r-pill); }
-.tile { flex: 1 1 0; border-radius: var(--r-small); }
-.dashed { border-style: dashed; border-color: var(--dashed); color: var(--muted); }
-.select[aria-checked="true"] { border-color: var(--ink); background: var(--ink); color: var(--white); font-weight: 800; }
+.pill { }
+.tile { flex: 1 1 0; padding: 0 4px; }
+.dashed { border-style: dashed; border-color: var(--soft); color: var(--muted); }
+.select[aria-checked="true"] { border-color: var(--plum); background: var(--plum); color: var(--white); }
 .select:active { transform: scale(0.96); }
-.select:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
-.select:disabled { color: var(--muted); background: var(--line); cursor: not-allowed; }
+.select:focus-visible { outline: 3px solid var(--lavender); outline-offset: 2px; }
+.select:disabled { color: var(--soft); background: var(--line); border-color: var(--line); cursor: not-allowed; }
 
 /* Status pill */
 .status {
   display: inline-flex;
-  white-space: nowrap;
-  border-radius: var(--r-pill);
   align-items: center;
   padding: 4px 10px;
-  font: 900 13px/16px var(--text);
-}
-.mint { background: var(--mint-tint); color: var(--mint-deep); }
-.cream { background: var(--cream); color: var(--cream-chip); }
-.pink { background: var(--pink-tint); color: var(--pink-deep); }
-.grey { background: var(--line); color: var(--muted); }
-
-/* Sticker: rare, tilted, outlined */
-.sticker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 12px;
-  border: var(--outline) solid var(--ink);
   border-radius: var(--r-pill);
-  color: var(--ink);
-  font: 900 13px/16px var(--text);
+  font: 700 13px/16px var(--text);
   white-space: nowrap;
 }
-.withIcon { padding: 6px 14px 6px 6px; font-size: 14px; line-height: 18px; }
-.stickerIcon {
+.lime { background: var(--lime); color: var(--plum); }
+.plum { background: var(--plum); color: var(--white); }
+.grey { background: var(--line); color: var(--plum); }
+.pink { background: var(--pink-tint); color: var(--plum); }
+
+/* Tag: flat, for the streak and Meera's reactions */
+.tag {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border: var(--outline) solid var(--ink);
-  border-radius: 50%;
-  background: var(--white);
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--r-pill);
+  font: 700 14px/18px var(--text);
+  white-space: nowrap;
 }
-.s-sun { background: var(--sun); }
-.s-white { background: var(--white); }
-.s-mint { background: var(--mint); } /* White on mint is 3.08:1, ink is 5.71 */
-.s-pink { background: var(--pink); color: var(--white); }
-.stickerOnDark { border-color: var(--white); }
+.t-lime { background: var(--lime); color: var(--plum); }
+.t-white { background: var(--white); color: var(--plum); }
+.t-pink { background: var(--pink); color: var(--plum); }
+.t-plum { background: var(--plum-raised); color: var(--white); }
+
+/* Badge: plain text with a small icon */
+.badge { display: inline-flex; align-items: center; gap: 6px; font: 700 14px/18px var(--text); }
+.badgeIcon { display: inline-flex; flex: none; }
+
+@media (prefers-reduced-motion: reduce) { .select { transition: none; } }

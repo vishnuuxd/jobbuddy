@@ -257,3 +257,82 @@ Ratios are WCAG 2: 4.5 for normal text, 3 for large (24 px, or 18.66 px bold). N
 ## 9 Nov · 4.1 History rows: simpler, at Vishnu's request
 - Replaces the earlier "History rows: score" entry. Rows now show the name, day and time, length, and the score as "3.5/5". No small gauge, band word or summary line. The gauge and word stay on the scorecard
 - Why: Vishnu asked for only what's needed to find a call in the list
+
+# Plum, from 9 Nov 2026
+
+Plum replaces Tropical. The entries above describe the Tropical build and stay as history. These entries compare the build with the eight references in `design/plum`.
+
+## Plum · all screens: tokens, fonts and components
+- Screen showed: the Plum tokens, Inter Tight and Inter, pill buttons, hairline cards
+- Built instead: as shown. Every Tropical token is gone from `app/tokens.css`, and every component in `components/ui` is restyled. Stickers became flat `Tag`s with no rotation. Badges became plain `Badge` text with a medal icon. Hard shadows and 2 px outlines are removed everywhere
+- Why: README.md, Shape
+
+## Plum · Scorecard.dc.html: badges as text
+- Screen showed: "No ramble" and "4 day streak" as filled pills under "Badges from this call"
+- Built instead: plain text with a small medal or flame icon, under "Wins from this call"
+- Why: PRD.md (Scorecard layout, 7. Wins) and the README say badges are plain text, never pills. The PRD wins
+
+## Plum · Scorecard.dc.html: tabs and save
+- Screen showed: no Scorecard and Transcript tabs. One "Save as PDF →" link
+- Built instead: the tabs stay, as a white pill track with a plum selected tab. "Save as PDF →" and "Save as Markdown →" sit side by side
+- Why: PRD.md: past calls show the full transcript, and Save covers PDF and Markdown
+
+## Plum · Scorecard.dc.html: moments
+- Screen showed: the weakest answer in full, with a plum "Retry this answer" button. The next one short, with an underlined "Retry this answer →"
+- Built instead: as shown. The short one's link reads "Retry question 3" to screen readers, so the two retry buttons have different names. An improved moment shows "Improved +N" in plum and "Retry again" as an outline button
+- Why: two buttons with the same name are ambiguous with a screen reader
+
+## Plum · Main.dc.html: Run this again
+- Screen showed: no "Run this again"
+- Built instead: a quiet text link under the recent calls: "Run Senior Product Designer 12 again →". Recent calls show their score, like History
+- Why: PRD.md, Home: "Run this again" on the most recent call. As a link under the list it doesn't compete with the score on the row
+
+## Plum · Main.dc.html: placeholder cards
+- Screen showed: "Arjun · soon" and "Lena · soon"
+- Built instead: as shown, with "not taking calls yet" added for screen readers
+- Why: "soon" alone doesn't say they can't be called
+
+## Plum · History.dc.html: badges kept
+- Screen showed: no badges section
+- Built instead: "Badges · 2 of 4" stays, under personal bests, as plain text with a medal icon. Badges not earned yet are soft grey with "· not yet"
+- Why: PRD.md, journey 3: checking progress shows badges in History
+
+## Plum · History.dc.html: the streak note
+- Screen showed: "Practise today to make it 5. Your best is 9 days."
+- Built instead: the note follows the data. "Practise today to make it N." if today has no call yet, "You practised today. Come back tomorrow to make it N." if it has, and "One completed call today starts a streak." at 0. "Your best is N days." only shows when the best beats the current streak. The 7 dots are lime for days with a completed call. Today is dashed lavender until it has one
+- Why: the copy has to be true on every day, not only the day in the mockup
+
+## Plum · History.dc.html: Build scorecard
+- Screen showed: a small plum "Build scorecard" pill
+- Built instead: a plum compact button with 13 px text, still 44 px tall, next to the "⋯" menu
+- Why: at full size it pushed the call name onto two lines
+
+## Plum · Profile.dc.html: destructive actions
+- Screen showed: "Remove" in red, "Delete all data" as an underlined plum link
+- Built instead: both "Remove" and "Delete all data" use the red destructive style (red tint, red border, red text, trash icon), and so do the "Delete this call" and "Delete everything?" confirmations
+- Why: Vishnu asked for one red destructive style on 9 Nov. Destructive actions should look the same everywhere
+
+## Plum · Call.dc.html: copy and stickers
+- Screen showed: "Take your time" under "Meera's listening", and a "Nice, keep going" sticker rotated -4°
+- Built instead: "Take your time" while listening, because the pill already names the question. The other states keep their own sublines. Reaction tags are flat: lime for "Nice, keep going" and "Go on, land it", pink for "Getting long", white for "Hi there!"
+- Why: README.md: no rotated stickers
+
+## Plum · Writing.dc.html: no "See your scorecard" button
+- Screen showed: a "See your scorecard" button under the steps
+- Built instead: no button. The screen moves to the scorecard by itself when it's ready
+- Why: the button would do nothing until the scorecard exists. Waiting on the model is the only thing to do there
+
+## Plum · Retry.dc.html: the number
+- Screen showed: "+2" with "Structure, 2 → 4", then "You landed it this time."
+- Built instead: as shown. The big number is the biggest single skill gain. When nothing improved it shows the overall change with "overall, across five skills", and "Not quite yet." A few lime, white, plum and pink dots pop in when it went up. Skill changes are plum pills, "same" is grey, a drop is pink
+- Why: PRD.md asks for a celebration if it went up. This supersedes the Tropical "+3 overall" sticker decision
+
+## Plum · Setup.dc.html: name field and roles
+- Screen showed: five role chips, no name field
+- Built instead: the PRD's seven roles plus "+ Other", and the optional name after the length, as before. The sheet's close button sits beside the title
+- Why: PRD.md, Setup sheet
+
+## Plum · no reference: streak, errors, call opening and retry call
+- Screen showed: nothing in Plum
+- Built instead: the Tropical layouts on plum. The streak flame is lime with a plum number and has no outline. The error badges (mic, "?!") are white with no outline or rotation. All of them use the pink primary button
+- Why: README.md: screens without a reference keep their layout and take the new tokens

@@ -3,18 +3,18 @@
   inset: auto 0 var(--keyboard, 0px);
   width: 100%;
   max-width: 560px;
-  max-height: calc(100dvh - var(--keyboard, 0px) - 64px);
+  max-height: calc(100dvh - var(--keyboard, 0px) - 48px);
   margin: 0 auto;
   padding: 0;
   border: 0;
-  border-radius: 28px 28px 0 0;
-  background: var(--white);
-  color: var(--ink);
+  border-radius: var(--r-hero) var(--r-hero) 0 0;
+  background: var(--bone);
+  color: var(--plum);
   overflow: hidden;
   transition: bottom 160ms ease-out;
 }
 .sheet[open] { display: flex; animation: rise 280ms var(--spring); }
-.sheet::backdrop { background: var(--pink); animation: fade 200ms ease-out; }
+.sheet::backdrop { background: rgb(11 5 29 / 0.92); animation: fade 200ms ease-out; }
 
 /* The dialog itself catches backdrop taps, so the panel fills it edge to edge. */
 .panel {
@@ -24,13 +24,29 @@
   min-height: 0;
   padding: 12px var(--side) calc(env(safe-area-inset-bottom, 0px) + 24px);
 }
-.grabber { flex: none; align-self: center; width: 40px; height: 5px; border-radius: 3px; background: var(--border); }
+.grabber { flex: none; align-self: center; width: 40px; height: 5px; border-radius: 3px; background: var(--line); }
 .eyebrow { margin-top: 6px; }
-.panel .eyebrow + .title { margin-top: 10px; }
-.panel .title.large { font-size: 34px; line-height: 36px; }
-.panel .title { margin: 6px 0 0; font: 800 26px/30px var(--display); letter-spacing: -0.02em; }
+.panel .eyebrow + .titleRow { margin-top: 10px; }
+.panel .title.large { font-size: 40px; line-height: 1.05; font-weight: 500; letter-spacing: -0.01em; }
+.titleRow { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-top: 6px; }
+.panel .title { margin: 0; font: 700 24px/1.15 var(--display); }
+.close {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: var(--hairline);
+  border-radius: 22px;
+  background: var(--white);
+  color: var(--plum);
+  cursor: pointer;
+}
+.close:focus-visible { outline: 3px solid var(--lavender); outline-offset: 2px; }
 .body { min-height: 0; margin-top: 12px; overflow-y: auto; overscroll-behavior: contain; }
-.content { margin-top: 18px; }
+.content { margin-top: 20px; }
 
 @keyframes rise { from { transform: translateY(100%); } }
 @keyframes fade { from { opacity: 0; } }

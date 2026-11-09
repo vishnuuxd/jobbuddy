@@ -2,13 +2,14 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import styles from "./Button.module.css";
 
-export type ButtonVariant = "primary" | "secondary" | "quiet" | "ink" | "text";
+/** primary: pink, the one main action. secondary and ink: plum. quiet: outline. text: a link-like button. danger: destructive only. */
+export type ButtonVariant = "primary" | "secondary" | "quiet" | "ink" | "text" | "danger";
 export type ButtonSize = "big" | "small" | "compact";
 
 type Common = {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  /** On ink screens: white outline and white shadow. */
+  /** On plum backgrounds: plum-raised secondary buttons, light text buttons. */
   onDark?: boolean;
   loading?: boolean;
   /** Stretch to the width of its container. */
@@ -42,7 +43,7 @@ export function buttonClass({
 function Label({ loading, children }: { loading?: boolean; children: ReactNode }) {
   return (
     <>
-      <span className={loading ? styles.hiddenLabel : undefined}>{children}</span>
+      <span className={`${styles.label} ${loading ? styles.hiddenLabel : ""}`}>{children}</span>
       {loading && <span className={styles.spinner} aria-hidden="true" />}
     </>
   );

@@ -1,11 +1,12 @@
+/* Dark header: full bleed plum with a 32 px bottom radius. */
 .hero {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: calc(env(safe-area-inset-top, 0px) + 24px) var(--side) 26px;
+  gap: 20px;
+  padding: calc(env(safe-area-inset-top, 0px) + 28px) var(--side) 28px;
   border-radius: 0 0 var(--r-hero) var(--r-hero);
-  background: var(--pink);
+  background: var(--plum);
   color: var(--white);
 }
-.greeting { margin: 0; color: var(--white); font: 800 19px/24px var(--text); }
-.meta { margin: 0; color: var(--ink); font: 800 14px/18px var(--text); }
+.greeting { margin: 0; color: var(--on-plum-soft); font: 500 16px/22px var(--text); }
+.meta { margin: 0; color: var(--on-plum-muted); font: 400 14px/20px var(--text); }

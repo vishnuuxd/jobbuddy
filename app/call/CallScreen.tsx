@@ -7,8 +7,8 @@ import { Meera, type MeeraStill } from "@/components/meera/Meera";
 import { SelfView } from "@/components/SelfView";
 import { Button } from "@/components/ui/Button";
 import { CallControl, CallPill, ProgressSegments, QuestionCard } from "@/components/ui/CallParts";
-import { Sticker } from "@/components/ui/Chip";
-import { CameraIcon, CheckIcon, MicIcon } from "@/components/ui/icons";
+import { Tag } from "@/components/ui/Chip";
+import { CameraIcon, CheckIcon, CloseIcon, MicIcon } from "@/components/ui/icons";
 import { createClientTools } from "@/lib/agent/clientTools";
 import { createInterviewVM, type Trigger } from "@/lib/avatar/interviewVM";
 import { callCopy, type CallStage } from "@/lib/call/callCopy";
@@ -37,7 +37,7 @@ import type { Call } from "@/lib/store/types";
 import styles from "./call.module.css";
 
 type Problem = "mic" | "failed" | "noSetup" | "dropped" | "cutShort" | "scoreFailed" | null;
-type Reaction = { text: string; tone: "sun" | "mint" | "white" } | null;
+type Reaction = { text: string; tone: "lime" | "pink" | "white" } | null;
 
 const saveEveryMs = 1_000;
 // How long a reaction sticker and the "checks the time" moment stay up. Display timing only.
@@ -45,8 +45,8 @@ const stickerMs = 2_600;
 const watchingMs = 8_000;
 
 const stickers: Partial<Record<Trigger, Reaction>> = {
-  nod: { text: "Nice, keep going", tone: "mint" },
-  checkWatch: { text: "Getting long", tone: "sun" },
+  nod: { text: "Nice, keep going", tone: "lime" },
+  checkWatch: { text: "Getting long", tone: "pink" },
 };
 
 function createCall() {
@@ -106,11 +106,11 @@ export function CallScreen() {
         session.startRetry(crypto.randomUUID(), pending.setup, pending.retry, texts);
         conversation.sendContextualUpdate(setupUpdate(pending.setup, pending));
         conversation.sendContextualUpdate(retryUpdate(pending.retry.question));
-        showReaction({ text: "Go on, land it", tone: "sun" });
+        showReaction({ text: "Go on, land it", tone: "lime" });
       } else {
         session.start(crypto.randomUUID(), pending.setup, texts, callNumber.current);
         conversation.sendContextualUpdate(setupUpdate(pending.setup, pending));
-        showReaction({ text: "Hi there!", tone: "sun" });
+        showReaction({ text: "Hi there!", tone: "white" });
       }
       setSessionOpen(true);
       setStage("live");
@@ -419,7 +419,7 @@ export function CallScreen() {
     <main className={styles.call}>
       <div className={styles.top}>
         {retry ? (
-          <Sticker tilt={-3}>Retry · Question {retry.questionIndex}</Sticker>
+          <Tag tone="lime">Retry · Question {retry.questionIndex}</Tag>
         ) : segments > 0 ? (
           <ProgressSegments total={segments} current={current || 0} />
         ) : (
@@ -434,9 +434,9 @@ export function CallScreen() {
         <div className={styles.stage}>
           <Meera vm={vm} size={240} />
           {reaction && stage === "live" && (
-            <Sticker tone={reaction.tone} tilt={-5} onDark className={styles.reaction}>
+            <Tag tone={reaction.tone} className={styles.reaction}>
               {reaction.text}
-            </Sticker>
+            </Tag>
           )}
         </div>
         <div className={styles.words} aria-live="polite">
@@ -455,6 +455,7 @@ export function CallScreen() {
             </div>
           )}
           <div className={styles.controls}>
+            <div className={styles.controlGroup}>
             <CallControl label={muted ? "Unmute" : "Mute"} pressed={muted} onClick={toggleMute} disabled={!inCall}>
               <MicIcon off={muted} />
             </CallControl>
@@ -465,7 +466,10 @@ export function CallScreen() {
             >
               <CameraIcon />
             </CallControl>
-            <CallControl label="End" end onClick={inCall ? hangUp : () => router.push("/")} />
+            </div>
+            <CallControl label="End call" end onClick={inCall ? hangUp : () => router.push("/")}>
+              <CloseIcon />
+            </CallControl>
           </div>
         </>
       )}
@@ -581,7 +585,7 @@ function CallProblem({ problem, total, question, answered, lastQuestion, primary
       </div>
       <div className={styles.actions}>
         {note && <p className={styles.note}>{note}</p>}
-        <Button variant="primary" onDark block onClick={primary.run}>
+        <Button variant="primary" size="big" onDark block onClick={primary.run}>
           {primary.label}
         </Button>
         <button type="button" className={styles.textLink} onClick={secondary.run}>

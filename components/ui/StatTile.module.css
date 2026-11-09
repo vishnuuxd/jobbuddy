@@ -1,5 +1,5 @@
-.tile { display: flex; flex: 1 1 0; flex-direction: column; padding: 12px; border-radius: var(--r-button); }
-.soft { background: var(--tile); }
-.mint { background: var(--mint-tint); }
-.value { color: var(--ink); font: 800 24px/28px var(--display); }
-.label { color: var(--muted); font: 700 13px/16px var(--text); }
+.tile { display: flex; flex: 1 1 0; flex-direction: column; gap: 2px; min-width: 0; padding: 14px; border-radius: var(--r-card); }
+.soft { border: var(--hairline); background: var(--white); }
+.mint { background: var(--lime); }
+.value { color: var(--plum); font: 700 26px/1.1 var(--display); }
+.label { color: var(--muted); font: 400 12px/16px var(--text); }

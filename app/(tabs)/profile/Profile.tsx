@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { HeroHeader, HeroMeta } from "@/components/ui/HeroHeader";
+import { TrashIcon } from "@/components/ui/icons";
 import { Sheet } from "@/components/ui/Sheet";
 import { AttachError, extractText } from "@/lib/attach/extract";
 import { completion, streakDays } from "@/lib/home/format";
@@ -25,7 +26,8 @@ export function Profile() {
   const cv = profile?.cv;
   const name = profile?.lastSetup?.name?.trim();
   const streak = calls && now ? streakDays(calls, now) : 0;
-  const meta = [streak > 0 ? `Day ${streak} streak` : null, calls ? completion(calls).replace(" interviews", "").replace(" interview", "") : null]
+  // The completion rate lives here only (PRD.md, Profile).
+  const meta = [streak > 0 ? `${streak} day streak` : null, calls ? completion(calls).replace(" interviews", "").replace(" interview", "") : null]
     .filter(Boolean)
     .join(" · ");
 
@@ -50,7 +52,7 @@ export function Profile() {
             {(name?.[0] ?? "Y").toUpperCase()}
           </span>
           <div>
-            <h1 className="t-title">{name || "You"}</h1>
+            <h1 className={styles.profileName}>{name || "You"}</h1>
             <HeroMeta>{meta || " "}</HeroMeta>
           </div>
         </div>
@@ -72,7 +74,7 @@ export function Profile() {
             <div className={styles.loading} />
           ) : cv ? (
             <>
-              <Card kind="hero" className={styles.cvCard}>
+              <Card kind="white" className={styles.cvCard}>
                 <span className={styles.pdf} aria-hidden="true">
                   {/\.pdf$/i.test(cv.fileName) ? "PDF" : "TXT"}
                 </span>
@@ -82,10 +84,11 @@ export function Profile() {
                 </span>
               </Card>
               <div className={styles.pair}>
-                <Button variant="quiet" size="small" onClick={pick}>
+                <Button variant="ink" size="small" onClick={pick}>
                   Replace
                 </Button>
-                <Button variant="quiet" size="small" className={styles.danger} onClick={() => void setSavedCv(undefined)}>
+                <Button variant="danger" size="small" onClick={() => void setSavedCv(undefined)}>
+                  <TrashIcon />
                   Remove
                 </Button>
               </div>
@@ -105,10 +108,11 @@ export function Profile() {
           )}
         </section>
 
-        <Card kind="calm" className={styles.local}>
-          <p className={styles.localTitle}>Everything stays on this phone</p>
-          <p className={styles.cvMeta}>No account needed. Calls, scorecards and your CV live in this browser only.</p>
-          <Button variant="text" className={styles.deleteAll} onClick={() => setConfirming(true)}>
+        <Card kind="lime" className={styles.local}>
+          <h2 className="t-card">Everything stays on this phone</h2>
+          <p className={styles.localText}>No account needed. Calls, scorecards and your CV live in this browser only. Calls are never recorded.</p>
+          <Button variant="danger" size="compact" className={styles.deleteAll} onClick={() => setConfirming(true)}>
+            <TrashIcon />
             Delete all data
           </Button>
         </Card>
@@ -118,13 +122,15 @@ export function Profile() {
         <div className={styles.stackTight}>
           <p className={styles.quiet}>Every call, scorecard and retry, your saved CV and your remembered setup. It can't be undone.</p>
           <Button
-            variant="primary"
+            variant="danger"
+            size="big"
             block
             onClick={async () => {
               await deleteAllData();
               setConfirming(false);
             }}
           >
+            <TrashIcon />
             Delete all data
           </Button>
           <Button variant="quiet" size="small" block onClick={() => setConfirming(false)}>
