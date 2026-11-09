@@ -30,7 +30,8 @@ export function History() {
   const bests = calls ? personalBests(calls) : {};
   const topBest = Math.max(0, ...Object.values(bests).map(Number));
   const counts = calls ? badgeCounts(calls, liveConfig.badges) : null;
-  const earned = counts ? badgeList.filter((badge) => counts[badge.id] > 0).length : 0;
+  // Only earned badges are shown.
+  const earned = counts ? badgeList.filter((badge) => counts[badge.id] > 0) : [];
 
   async function rebuild(call: Call) {
     setBuilding(call.id);
@@ -100,27 +101,22 @@ export function History() {
             {counts && (
               <section className={styles.stackTight} aria-labelledby="badges-title">
                 <h2 id="badges-title" className={styles.sectionHead}>
-                  Badges · {earned} of {badgeList.length}
+                  Badges
                 </h2>
-                <ul className={styles.badges}>
-                  {badgeList.map((badge) =>
-                    counts[badge.id] > 0 ? (
+                {earned.length > 0 ? (
+                  <ul className={styles.badges}>
+                    {earned.map((badge) => (
                       <li key={badge.id}>
                         <Badge icon={<MedalIcon />}>
                           {badge.name}
                           {counts[badge.id] > 1 ? ` ×${counts[badge.id]}` : ""}
                         </Badge>
                       </li>
-                    ) : (
-                      <li key={badge.id} className={styles.locked}>
-                        <Badge icon={<MedalIcon />}>
-                          {badge.name}
-                          <span className={styles.notYet}> · not yet</span>
-                        </Badge>
-                      </li>
-                    ),
-                  )}
-                </ul>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={styles.quiet}>Badges you earn on calls show up here.</p>
+                )}
               </section>
             )}
 

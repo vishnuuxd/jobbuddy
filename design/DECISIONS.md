@@ -294,7 +294,7 @@ Plum replaces Tropical. The entries above describe the Tropical build and stay a
 
 ## Plum · History.dc.html: badges kept
 - Screen showed: no badges section
-- Built instead: "Badges · 2 of 4" stays, under personal bests, as plain text with a medal icon. Badges not earned yet are soft grey with "· not yet"
+- Built instead: "Badges" stays, under personal bests, as plain text with a medal icon. Only earned badges are listed (changed 9 Nov at Vishnu's request: the "· not yet" rows and the "of 4" count are gone). With none earned, a quiet line says they show up here
 - Why: PRD.md, journey 3: checking progress shows badges in History
 
 ## Plum · History.dc.html: the streak note

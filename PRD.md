@@ -80,6 +80,7 @@ All setup happens here, before the call. Nothing is asked by voice.
 - The past call screen uses the name as its title next to the back button. Length and date go in a small line under it.
 - Tap to open the scorecard and the full transcript, with flagged moments highlighted. Retry stays on each moment, so I can retry an old answer and see the before and after.
 - Delete a call by swiping or from its menu.
+- Badges: only the ones I've earned, with a count when earned more than once. Badges not earned yet aren't listed.
 
 **Profile**
 

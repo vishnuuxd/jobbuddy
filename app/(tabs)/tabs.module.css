@@ -65,8 +65,6 @@
 .bestLabel { max-width: 100%; color: var(--muted); font: 400 11px/14px var(--text); overflow-wrap: anywhere; text-align: center; }
 .bestTop .bestLabel { color: var(--plum-line); }
 .badges { display: flex; flex-wrap: wrap; gap: 10px 18px; padding: 0; list-style: none; }
-.locked { color: var(--soft); }
-.notYet { font-weight: 400; }
 .build.build { flex: none; padding: 0 12px; font-size: 13px; } /* Smaller, so the call name keeps its line */
 .more { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted); font: 700 20px/1 var(--text); cursor: pointer; }
 .more:focus-visible { outline: 3px solid var(--lavender); outline-offset: 2px; }
