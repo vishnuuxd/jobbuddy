@@ -28,6 +28,9 @@ const T = {
   drift: { maxLook: 0.15 }, // of the pupil range
   pupilRange: 7, // px, from expressions.json: look x/y of 1 is 7 px
   mouthOpenScale: [0.92, 1.08],
+  // When a chunk of her audio has no alignment, the viseme comes from mouthOpen (0 to 100):
+  // below the first number rest, below the second teeth, otherwise open.
+  fallbackBands: [8, 30],
 };
 // Everything in RIG.md's first build: day 1 (the four triggers and five visemes) plus day 2.
 // The future triggers (think, impressed, laugh, reassure, surprised) stay out, as RIG.md says.
@@ -250,6 +253,9 @@ for (const t of TRIGGERS) prop(t, 'ViewModelPropertyTrigger');
 // Not an InterviewVM value: the avatar component sets it from prefers-reduced-motion, like offline.
 // It turns off breathing, nod and lean movement. Expressions and blinks stay (RIG.md).
 prop('reducedMotion', 'ViewModelPropertyBoolean');
+// InterviewVM.lipSync: true while the audio playing has alignment, so viseme is driven by letters.
+// False, the rig picks the viseme from mouthOpen.
+prop('lipSync', 'ViewModelPropertyBoolean');
 
 const CONVERTERS = { mouthOpen: newId() };
 const converters = [
@@ -553,6 +559,11 @@ const boolCond = (name, value) =>
     el('TransitionPropertyViewModelComparator', {}, [el('BindablePropertyBoolean', {}, [el('DataBindContext', { sourcePathIds: `${VM.id}-${VM.props[name].id}`, propertyKey: 634 })])]),
     el('TransitionValueBooleanComparator', { value: value ? 'true' : 'false' }),
   ]);
+const numCond = (name, op, value) =>
+  el('TransitionViewModelCondition', { opValue: op }, [
+    el('TransitionPropertyViewModelComparator', {}, [el('BindablePropertyNumber', {}, [el('DataBindContext', { sourcePathIds: `${VM.id}-${VM.props[name].id}`, propertyKey: 636 })])]),
+    el('TransitionValueNumberComparator', { value }),
+  ]);
 const triggerCond = (name) =>
   el('TransitionViewModelCondition', {}, [
     el('TransitionPropertyViewModelComparator', {}, [el('BindablePropertyTrigger', {}, [el('DataBindContext', { sourcePathIds: `${VM.id}-${VM.props[name].id}`, propertyKey: 686 })])]),
@@ -628,13 +639,28 @@ layers.push(layer('Mouth', ({ state, entry }) => {
   expr.children.push(transition(talk.attrs.id, { ms: T.mouthFadeMs, conds: [enumCond('mood', 'Mood', 'talking')] }));
   talk.children.push(transition(expr.attrs.id, { ms: T.mouthFadeMs, conds: [enumCond('mood', 'Mood', 'talking', 'notEqual')] }));
 }));
-// 5. Viseme: one state per viseme, a 40 ms crossfade between them.
+// 5. Viseme: one state per viseme, a 40 ms crossfade between them. With lipSync on, the viseme
+// value picks the state. Off (no alignment for this audio), mouthOpen picks rest, teeth or open.
 layers.push(layer('Viseme', ({ state, entry }) => {
   const vs = Object.fromEntries(SCOPE.visemes.map((v) => [v, state(visemeAnims[v])]));
+  const [lo, hi] = T.fallbackBands;
+  const bands = {
+    rest: [numCond('mouthOpen', 'lessThan', lo)],
+    teeth: [numCond('mouthOpen', 'greaterThanOrEqual', lo), numCond('mouthOpen', 'lessThan', hi)],
+    open: [numCond('mouthOpen', 'greaterThanOrEqual', hi)],
+  };
+  const auto = Object.fromEntries(Object.keys(bands).map((v) => [v, state(visemeAnims[v])]));
   entry.children.push(transition(vs.rest.attrs.id));
-  for (const from of SCOPE.visemes) for (const to of SCOPE.visemes) {
-    if (from !== to) vs[from].children.push(transition(vs[to].attrs.id, { ms: T.mouthFadeMs, conds: [enumCond('viseme', 'Viseme', to)] }));
+  const on = boolCond('lipSync', true), off = () => boolCond('lipSync', false);
+  for (const from of [...Object.values(vs), ...Object.values(auto)]) {
+    for (const to of SCOPE.visemes) {
+      if (from !== vs[to]) from.children.push(transition(vs[to].attrs.id, { ms: T.mouthFadeMs, conds: [boolCond('lipSync', true), enumCond('viseme', 'Viseme', to)] }));
+    }
+    for (const [band, conds] of Object.entries(bands)) {
+      if (from !== auto[band]) from.children.push(transition(auto[band].attrs.id, { ms: T.mouthFadeMs, conds: [off(), ...conds] }));
+    }
   }
+  void on;
 }));
 // 6. Head reactions: nod and leanIn. Both are movement, so reduced motion skips them.
 layers.push(layer('Head', ({ state, any, entry }) => {

@@ -57,11 +57,11 @@ const STATES = [
   { group: 'Moods', name: 'listening', note: 'listening', steps: [still, [0, 'mood=listening'], [settle]], ref: E.listening },
   { group: 'Moods', name: 'skeptical', note: 'skeptical', steps: [still, [0, 'mood=skeptical'], [settle]], ref: E.skeptical },
   { group: 'Moods', name: 'writing', note: 'writing', steps: [still, [0, 'mood=writing'], [settle]], ref: E.writing },
-  { group: 'Moods', name: 'talking', note: 'talking, viseme open', steps: [still, [0, 'mood=talking'], [0, 'viseme=open'], [0, 'mouthOpen=50'], [settle]], ref: E.talking },
+  { group: 'Moods', name: 'talking', note: 'talking, viseme open', steps: [still, [0, 'mood=talking'], [0, 'lipSync=true'], [0, 'viseme=open'], [0, 'mouthOpen=50'], [settle]], ref: E.talking },
   { group: 'Triggers', name: 'smile', note: 'warmSmile, mid hold', steps: [...at('listening'), ...fire('smile', 700)], ref: E.warmSmile },
   { group: 'Triggers', name: 'browRaise', note: 'interested, mid hold', steps: [...at('listening'), ...fire('browRaise', 600)], ref: E.interested },
   { group: 'Triggers', name: 'expectant', note: 'expectant, holding', steps: [...at('listening'), ...fire('expectant', 1000)], ref: E.expectant },
-  { group: 'Triggers', name: 'expectant, she speaks', note: 'hands over to talking', steps: [...at('listening'), ...fire('expectant', 600), [0, 'viseme=open'], [0, 'mouthOpen=50'], [0, 'mood=talking'], [settle]], ref: E.talking },
+  { group: 'Triggers', name: 'expectant, she speaks', note: 'hands over to talking', steps: [...at('listening'), ...fire('expectant', 600), [0, 'lipSync=true'], [0, 'viseme=open'], [0, 'mouthOpen=50'], [0, 'mood=talking'], [settle]], ref: E.talking },
   { group: 'Triggers', name: 'glanceDown', note: 'writing eyes only, mid hold', steps: [...at('listening'), ...fire('glanceDown', 600)], ref: withEyes(E.listening, E.writing) },
   { group: 'Triggers', name: 'leanIn', note: 'interested eyes, mid hold', steps: [...at('listening'), ...fire('leanIn', 900)], ref: withEyes(E.listening, E.interested) },
   { group: 'Triggers', name: 'checkWatch', note: 'pupils 0.6, 0.8, lids 0.6', steps: [...at('listening'), ...fire('checkWatch', 900)], ref: checkWatchFace },
@@ -69,7 +69,7 @@ const STATES = [
   { group: 'Triggers', name: 'nod, reduced motion', note: 'no movement', steps: [...at('listening'), ...fire('nod', 180)], ref: E.listening },
   ...VISEMES.map((v) => ({
     group: 'Visemes', name: `viseme_${v}`, note: 'talking face', crop: MOUTH,
-    steps: [still, [0, 'mood=talking'], [0, `viseme=${v}`], [0, 'mouthOpen=50'], [settle]], ref: talkingWith(v),
+    steps: [still, [0, 'mood=talking'], [0, 'lipSync=true'], [0, `viseme=${v}`], [0, 'mouthOpen=50'], [settle]], ref: talkingWith(v),
   })),
   // Whole figure: motions the reference sheet can't show, so no reference.
   { group: 'Motion', name: 'rest', note: 'listening, breathing', crop: FULL, steps: [[0, 'mood=listening'], [settle]] },
