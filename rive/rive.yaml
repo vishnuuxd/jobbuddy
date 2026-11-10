@@ -1,0 +1,15 @@
+# Meera's rig. The scene is generated: node rig/make-rig.js writes meera.rml.
+name: meera
+main: Meera
+exclude:
+  - rig
+  - source
+  - parts
+  - reference
+  - contact
+  - build
+output:
+  dir: .
+logs:
+  file: build/rive.log
+  problems: build/problems.log
