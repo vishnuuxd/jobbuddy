@@ -5,13 +5,12 @@ import { CallList } from "@/components/CallRow";
 import { SetupSheet, type SheetStart } from "@/components/setup/SetupSheet";
 import { Button } from "@/components/ui/Button";
 import { Card, Eyebrow } from "@/components/ui/Card";
-import { Meera } from "@/components/meera/Meera";
+import { MeeraStatic } from "@/components/meera/MeeraStatic";
 import { Tag } from "@/components/ui/Chip";
 import { FlameIcon } from "@/components/ui/icons";
 import Link from "next/link";
 import { HeroGreeting, HeroHeader } from "@/components/ui/HeroHeader";
 import { InterviewerPlaceholder } from "@/components/ui/InterviewerPlaceholder";
-import { createInterviewVM } from "@/lib/avatar/interviewVM";
 import { callTitle, greeting, streakDays } from "@/lib/home/format";
 import { useCalls, useProfile } from "@/lib/store/db";
 import styles from "./tabs.module.css";
@@ -24,7 +23,6 @@ function useNow() {
 }
 
 export function Home() {
-  const [vm] = useState(createInterviewVM); // Idle: she just breathes.
   const calls = useCalls();
   const now = useNow();
   const profile = useProfile();
@@ -73,7 +71,7 @@ export function Home() {
           aria-label="Call Meera, HR screen, direct and fair"
           onClick={() => setSheet({ kind: "new" })}
         >
-          <Meera vm={vm} size={64} />
+          <MeeraStatic size={64} />
           <span className={styles.meeraText}>
             <span className={styles.meeraName}>Meera</span>
             <span className={styles.meeraStyle}>HR screen · direct, fair</span>

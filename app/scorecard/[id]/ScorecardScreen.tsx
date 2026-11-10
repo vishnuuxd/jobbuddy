@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Meera } from "@/components/meera/Meera";
+import { MeeraStatic } from "@/components/meera/MeeraStatic";
 import { Button } from "@/components/ui/Button";
 import { Card, Eyebrow } from "@/components/ui/Card";
 import { Badge, StatusPill } from "@/components/ui/Chip";
@@ -112,7 +112,7 @@ export function ScorecardScreen({ id }: { id: string }) {
         )}
         <div className={styles.saysBlock}>
           <div className={styles.says}>
-            <Meera still={{ mood: "listening" }} size={34} />
+            <MeeraStatic size={34} />
             <span className={styles.saysLabel}>Meera says</span>
           </div>
           <h1 className={styles.take}>{card.summary.meeraTake}</h1>

@@ -185,8 +185,18 @@ export function CallScreen() {
       lips.tick();
       frame = requestAnimationFrame(tick);
     });
-    return () => cancelAnimationFrame(frame);
-  }, [inCall, lips]);
+    // A hidden tab stops frames, so the last shape would stay on screen: rest now instead.
+    const onHide = () => {
+      if (document.visibilityState !== "hidden") return;
+      lips.stop();
+      vm.set({ mouthOpen: 0 });
+    };
+    document.addEventListener("visibilitychange", onHide);
+    return () => {
+      cancelAnimationFrame(frame);
+      document.removeEventListener("visibilitychange", onHide);
+    };
+  }, [inCall, lips, vm]);
   sendRef.current = conversation.sendContextualUpdate;
 
   function scoreFailed() {

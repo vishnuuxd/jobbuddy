@@ -351,3 +351,8 @@ Plum replaces Tropical. The entries above describe the Tropical build and stay a
 - Screen showed: the blob, with dash eyes when offline, and the same blob at every size
 - Built instead: the Rive rig. Below 160 px (Home's card at 64, the scorecard's "Meera says" at 34) she shows her head only, in a round avatar, the halo filling the circle: the whole bust is unreadable at those sizes. Offline greys her out at rest, since the rig has no dash eyes. Still previews keep breathing and blinking instead of freezing
 - Why: rive/RIG.md, "Done when": she reads clearly at the smallest size the app shows her
+
+## Static Meera outside the call (11 Nov)
+- Screen showed: Meera's animated rig on Home's card and the scorecard's "Meera says"
+- Built instead: a still image of her neutral pose (public/meera.svg, made by rive/source/build.js from the parts), square crop at viewBox 50 20 300 300, lavender filling the frame. Shown round, like the other interviewer avatars. The animated rig stays on the call, writing and retry screens only
+- Why: Vishnu's phone test. The animation belongs to the call; elsewhere it's decoration, and those screens no longer load the Rive runtime. Checked at 40, 64 and 160 px

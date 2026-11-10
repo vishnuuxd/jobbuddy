@@ -1,5 +1,7 @@
 const m = require('./meera.js'); const rig = require('./rig.js'); const fs = require('fs');
-const { chromium } = require('playwright');
+// playwright if installed, else playwright-core with the local Chrome (what the app repo has).
+const { chromium } = (() => { try { return require('playwright'); } catch { const pw = require('playwright-core'); const launch = pw.chromium.launch.bind(pw.chromium); return { chromium: { launch: (o = {}) => launch({ executablePath: process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', ...o }) } }; } })();
+const S = require('../rig/svg.js');
 const out = __dirname + '/..'; fs.mkdirSync(out + '/reference', { recursive: true });
 const key = n => n.toLowerCase().replace(/\s+(\w)/g, (_, c) => c.toUpperCase());
 const json = {
@@ -24,6 +26,29 @@ const json = {
 };
 fs.writeFileSync(out + '/expressions.json', JSON.stringify(json, null, 2));
 fs.writeFileSync(out + '/parts/meera-parts.svg', rig.pose(rig.NEUTRAL));
+
+// Static Meera for screens outside the call: the neutral pose, head and a little shoulder,
+// lavender filling the whole square. Hidden layers (other mouths, closed eyes) are left out.
+// Written to rive/static/meera.svg and copied to the app's public/meera.svg.
+function staticMeera() {
+  const tree = S.parseXml(rig.pose(rig.NEUTRAL));
+  const isIdentity = (t) => S.parseTransform(t).every((n, i) => Math.abs(n - S.I[i]) < 1e-9);
+  const esc = (v) => String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  const write = (e) => {
+    if (e.attrs.opacity === '0' || e.attrs.id === 'halo') return '';
+    const attrs = Object.entries(e.attrs)
+      .filter(([k, v]) => !k.startsWith('data-') && !(k === 'opacity' && v === '1') && !(k === 'transform' && isIdentity(v)))
+      .map(([k, v]) => ` ${k}="${esc(v)}"`).join('');
+    const kids = e.children.map(write).join('');
+    return kids ? `<${e.tag}${attrs}>${kids}</${e.tag}>` : `<${e.tag}${attrs}/>`;
+  };
+  const meera = tree.children.find((c) => c.attrs.id === 'meera');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="50 20 300 300" width="300" height="300" role="img" aria-label="Meera"><rect x="50" y="20" width="300" height="300" fill="${m.C.halo}"/>${write(meera)}</svg>\n`;
+}
+fs.mkdirSync(out + '/static', { recursive: true });
+fs.writeFileSync(out + '/static/meera.svg', staticMeera());
+fs.mkdirSync(out + '/../public', { recursive: true });
+fs.copyFileSync(out + '/static/meera.svg', out + '/../public/meera.svg');
 (async () => {
   const crop = s => s.replace('viewBox="0 0 400 440" width="400" height="440"','viewBox="80 40 240 240" width="200" height="200"');
   const tiles = rig.expressionValues.map(e => `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;font:600 14px Inter,sans-serif;color:#0B051D"><div style="background:#0B051D;border-radius:16px;padding:6px">${crop(rig.pose(e.values))}</div>${key(e.name)}</div>`).join('');
