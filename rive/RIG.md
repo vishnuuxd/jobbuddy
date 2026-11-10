@@ -140,3 +140,11 @@ The PRD fallback holds. Day 1: parts imported, moods, blink, five visemes (rest,
 - The contact sheet matches `reference/expressions.png`, state by state.
 - She runs in the call screen in place of the blob, reading the same InterviewVM values, with no other app changes.
 - On a phone, at the size the call screen uses, she reads clearly at the smallest size the app shows her.
+
+## In the Rive editor
+
+The rig is in Rive at https://editor.rive.app/file/meera/2718334 (file 2718334 in Personal Files).
+
+`npm run rig:push` updates that file. It copies `rive/` to a temporary folder, links the copy's `rive.yaml` to file 2718334, pushes from there, and deletes the copy, so the repo's source never changes. Every push updates the same file and adds a revision, or reports "already up to date". It asks before overwriting; `npm run rig:push -- --yes` skips the question, and `-- --name="label"` names the revision.
+
+Edits made in the editor are overwritten by the next push. The source of truth stays `rive/rig/make-rig.js`.

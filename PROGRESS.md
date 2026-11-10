@@ -174,13 +174,19 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 - [x] The contact sheet matches the reference within 0.12%, state by state (`rive/contact/stage2.png`)
 - [x] PROGRESS.md and PRD.md reflect the four live fixes and the ElevenLabs dashboard changes
 
+## Phone test fixes, 11 Nov 2026
+
+- [x] Meera's rig is live
+- [x] Lip sync stalls fixed (`d43d6aa`): letters group into shapes of at least 60 ms without a word collapsing into one shape, no shape holds past 250 ms, a stalled timeline is dropped until the next chunk, and the mouth rests at once when her audio stops or the tab hides
+- [x] Outside the call flow, Meera is a static image (`public/meera.svg`, made by `rive/source/build.js`), shown round. The animated rig stays on the call, writing and retry screens, and on `/kit`
+- [x] The rig is in Rive for case study visuals: https://editor.rive.app/file/meera/2718334. `npm run rig:push` updates it without touching the repo
+
 ## Next
 
-- Vishnu's phone test of the rig: lip sync, expressions, blinks and breathing, and the small sizes (Home's card, the scorecard's "Meera says")
+- Vishnu's phone retest
+- Then final testing and the video
 
 ## Still open, as of 11 Nov 2026
 
-- **Final testing**
-- **The video**
 - **Future triggers:** think, impressed, laugh, reassure and surprised. The poses exist in `rive/expressions.json`; the wiring (rig states, the react tool's list and the app) isn't built
 - Optional: connect the Vercel project to GitHub so pushes deploy themselves. Until then, each update needs `vercel deploy --prod`
