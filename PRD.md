@@ -206,7 +206,7 @@ The SDK has no method that makes her cut in while I'm still talking. So the v1 r
 - Retries never change the original score. When a retry improves an answer, "+0.4 after retries" shows beside it.
 - Incomplete calls and failed scorecards have no score. They keep their Incomplete or Build scorecard label.
 
-**Building it.** The server route tries the fastest working Gemini model first, with fallbacks, and has 120 s. The client gives up at 130 s, a bit over the route's limit, so a lost request never spins forever. A timeout or any failure saves the call as scoring\_failed: "Build scorecard" shows again with a clear message, and the transcript is kept. If the transcript is long, what goes to Gemini is trimmed by shortening Meera's lines first. My answers are never cut.
+**Building it.** The server route tries the fastest working Gemini model first, with fallbacks, and has 120 s. The client gives up at 130 s, a bit over the route's limit, so a lost request never spins forever. A timeout or any failure saves the call as scoring\_failed: "Build scorecard" shows again with "Try again after some time.", and the transcript is kept. If the transcript is long, what goes to Gemini is trimmed by shortening Meera's lines first. My answers are never cut.
 - History shows each call's score in its row, as a number out of 5. The gauge and the word are on the scorecard only.
 
 **The retry.** Tapping Retry starts a short call with only that question and the same setup. Afterwards: my old answer next to the new one, the score change per skill, and a celebration if it went up. The moment card then shows "Improved". The score change is worked out by comparing the retry's scores with the original answer's, so nothing extra is stored.
@@ -491,7 +491,7 @@ rive/           RML source, build script, meera.riv
 | Upload is not a PDF or text | The setup sheet or Profile says: "I can't read that one. A PDF or plain text works." |
 | Scanned PDF with no text | The setup sheet or Profile says: "Looks like a scan, I can't read it. Paste the text instead, or go without a CV." |
 | Very long CV or job description | Trimmed to the first 4,000 words before it goes to the agent |
-| Scorecard request fails or takes over 130 s | Status scoring\_failed. Transcript is saved. "Build scorecard" shows again with a clear message, never a spinner that doesn't end |
+| Scorecard request fails or takes over 130 s | Status scoring\_failed. Transcript is saved. "Build scorecard" shows again with "Try again after some time.", never a spinner that doesn't end |
 | Hang up with fewer than two answers | No scorecard. Saved as incomplete |
 | Non English answer | She asks once to continue in English |
 

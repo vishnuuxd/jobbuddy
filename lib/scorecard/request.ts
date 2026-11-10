@@ -7,12 +7,8 @@ import type { Call, Retry, TranscriptLine } from "../store/types";
 // route always gets to answer first. Past this, the request is lost: give up, never spin.
 export const scorecardTimeoutMs = 130_000;
 
-const timedOut = (error: unknown) => error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
-
-export type BuildResult = { call: Call; timedOut: boolean };
-
 /** Builds the scorecard for a saved call, and saves the result: completed, or scoring_failed with the transcript kept. */
-export async function buildScorecard(callId: string): Promise<BuildResult | null> {
+export async function buildScorecard(callId: string): Promise<Call | null> {
   const call = await getCall(callId);
   if (!call) return null;
   try {
@@ -26,11 +22,11 @@ export async function buildScorecard(callId: string): Promise<BuildResult | null
     const { scorecard } = (await res.json()) as Pick<Call, "scorecard">;
     const done: Call = { ...call, scorecard, status: "completed" };
     await saveCall(done);
-    return { call: done, timedOut: false };
-  } catch (error) {
+    return done;
+  } catch {
     const failed: Call = { ...call, status: "scoring_failed" };
     await saveCall(failed);
-    return { call: failed, timedOut: timedOut(error) };
+    return failed;
   }
 }
 

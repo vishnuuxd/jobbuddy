@@ -76,7 +76,6 @@ export function CallScreen() {
   const [reaction, setReaction] = useState<Reaction>(null);
   const [watching, setWatching] = useState(false);
   const [endedAfterMs, setEndedAfterMs] = useState(0);
-  const [scoreTimedOut, setScoreTimedOut] = useState(false);
   const inCallRef = useRef(false);
   const hangingUp = useRef(false);
   const herTurnStartedAt = useRef(0);
@@ -174,8 +173,7 @@ export function CallScreen() {
   useVoiceVolume(vm, conversation.getOutputVolume, inCall);
   sendRef.current = conversation.sendContextualUpdate;
 
-  function scoreFailed(timedOut: boolean) {
-    setScoreTimedOut(timedOut);
+  function scoreFailed() {
     setProblem("scoreFailed");
   }
 
@@ -215,7 +213,7 @@ export function CallScreen() {
       if (saved) {
         clearPendingCall();
         router.replace(`/scorecard/${retry.callId}/retry/${retry.questionIndex}?fresh=1`);
-      } else scoreFailed(false);
+      } else scoreFailed();
     });
   }
   useEffect(() => {
@@ -229,8 +227,8 @@ export function CallScreen() {
     void savedCall.current.then(async () => {
       const result = await buildScorecard(callId);
       if (cancelled) return;
-      if (result?.call.status === "completed") router.replace(`/scorecard/${callId}?fresh=1`);
-      else scoreFailed(result?.timedOut ?? false);
+      if (result?.status === "completed") router.replace(`/scorecard/${callId}?fresh=1`);
+      else scoreFailed();
     });
     return () => {
       cancelled = true;
@@ -396,7 +394,7 @@ export function CallScreen() {
       if (session.get().retryOf) return scoreThisRetry();
       if (id) {
         void buildScorecard(id).then((result) =>
-          result?.call.status === "completed" ? router.replace(`/scorecard/${id}?fresh=1`) : scoreFailed(result?.timedOut ?? false),
+          result?.status === "completed" ? router.replace(`/scorecard/${id}?fresh=1`) : scoreFailed(),
         );
       }
     };
@@ -429,7 +427,6 @@ export function CallScreen() {
         lastQuestion={state.question > 0 ? state.transcript.findLast((line) => line.speaker === "agent" && line.questionIndex === state.question)?.text : undefined}
         primary={actions.primary}
         secondary={actions.secondary}
-        timedOut={scoreTimedOut}
       />
     );
   }
@@ -532,12 +529,10 @@ type ProblemProps = {
   lastQuestion?: string;
   primary: Action;
   secondary: Action;
-  /** The scorecard request ran past its time limit. */
-  timedOut?: boolean;
 };
 
 /** Screens 5.1 to 5.4: what went wrong, that nothing is lost, and one clear way back. */
-function CallProblem({ problem, total, question, answered, lastQuestion, primary, secondary, timedOut }: ProblemProps) {
+function CallProblem({ problem, total, question, answered, lastQuestion, primary, secondary }: ProblemProps) {
   const answers = `${answered} ${answered === 1 ? "answer" : "answers"}`;
   const copy: Record<Exclude<Problem, null>, { title: string; sub: string; note?: string; pill: string; still: MeeraStill; offline?: boolean; badge?: "mic" | "oops" }> = {
     mic: {
@@ -568,9 +563,7 @@ function CallProblem({ problem, total, question, answered, lastQuestion, primary
     scoreFailed: {
       title: "Scorecard didn't build",
       sub: "Your transcript is saved",
-      note: timedOut
-        ? "Writing it up took too long. Nothing is lost. Try again, or do it later from History."
-        : "Something went wrong writing it up. Nothing is lost. You can also do this later from History.",
+      note: "Try again after some time.",
       pill: "Call ended",
       still: { mood: "skeptical" },
       badge: "oops",
