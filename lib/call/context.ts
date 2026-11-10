@@ -28,8 +28,12 @@ export function setupUpdate(setup: Setup, texts: { cvText?: string; jdText?: str
   return lines.join("\n");
 }
 
-export const oneMinuteLeftUpdate =
-  "About a minute is left. Finish the current question and close. Don't start a new main question.";
+/** Two minutes before the chosen length (PRD.md, Call behavior: Interview). */
+export const nearlyUpUpdate =
+  "About two minutes left. Don't start a new main question. Let them finish, then close.";
+
+/** At the chosen length, if she hasn't closed yet. */
+export const timeUpUpdate = 'Time is up. Say your closing line now and call setPhase("done").';
 
 /** A retry of one question (PRD.md, Agent spec: CONTEXT FROM THE APP). */
 export function retryUpdate(question: string) {

@@ -1,4 +1,5 @@
 import { trimWords } from "../call/context.ts";
+import { stripVoiceTags } from "../call/voiceTags.ts";
 import type { Call, TranscriptLine } from "../store/types.ts";
 
 // The scorecard request from PRD.md, Scorecard: rubric, seniority bar and rewrite rules.
@@ -26,8 +27,31 @@ Never grade technical correctness. Judge how they answered, not whether they are
 lateAddition is true when a key detail came only after Meera had moved on: the question numbers in lateAdditions.`;
 
 const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.round(seconds % 60)).padStart(2, "0")}`;
+// A long call is trimmed before it goes to Gemini, so the scorecard stays quick. Meera's
+// lines are shortened first, in steps. My answers are never cut.
+export const transcriptWordBudget = 5_000;
+const herLineMaxWords = [30, 12];
+
+const wordCount = (text: string) => text.split(/\s+/).filter(Boolean).length;
+const shorten = (text: string, max: number) => {
+  const words = text.split(/\s+/).filter(Boolean);
+  return words.length > max ? `${words.slice(0, max).join(" ")} …` : text;
+};
+
+/** Her lines without voice tags, shortened only while the transcript is over the budget. */
+export function trimForScoring(lines: TranscriptLine[], budget = transcriptWordBudget) {
+  let out = lines
+    .map((line) => (line.speaker === "agent" ? { ...line, text: stripVoiceTags(line.text) } : line))
+    .filter((line) => line.speaker === "user" || line.text);
+  for (const max of herLineMaxWords) {
+    if (out.reduce((total, line) => total + wordCount(line.text), 0) <= budget) break;
+    out = out.map((line) => (line.speaker === "agent" ? { ...line, text: shorten(line.text, max) } : line));
+  }
+  return out;
+}
+
 const transcriptText = (lines: TranscriptLine[]) =>
-  lines
+  trimForScoring(lines)
     .map((line) => `[${clock(line.startSec)}]${line.questionIndex ? ` (Q${line.questionIndex})` : ""} ${line.speaker === "agent" ? "Meera" : "Candidate"}: ${line.text}`)
     .join("\n");
 

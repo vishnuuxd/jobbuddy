@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { retryPrompt, scorecardPrompt } from "../lib/scorecard/prompt.ts";
+import { retryPrompt, scorecardPrompt, trimForScoring } from "../lib/scorecard/prompt.ts";
 import { scorecardSchema, validateAnswer, validateScorecard } from "../lib/scorecard/schema.ts";
 import { scoredCall } from "./fixtures.mjs";
 
@@ -19,6 +19,30 @@ test("the prompt carries the rubric, rules and every input the PRD lists", () =>
   for (const part of ["RUBRIC", "SENIORITY BAR", "[your number]", "ROLE: Senior Product designer", "DELIVERY METRICS", "FLAGS LOGGED", "CV:\nCV text here", "JOB DESCRIPTION:\nJob post here", "[2:04] (Q2) Meera: Tell me about a time.", "[2:11] (Q2) Candidate: So I aligned everyone."]) {
     assert.ok(prompt.includes(part), part);
   }
+});
+
+test("voice tags never reach the scorecard", () => {
+  const prompt = scorecardPrompt({ ...call, transcript: [{ speaker: "agent", text: "[calm] Tell me about a time.", startSec: 0, endSec: 2, questionIndex: 1 }, { speaker: "agent", text: "[laughs]", startSec: 2, endSec: 3 }] });
+  assert.ok(prompt.includes("Meera: Tell me about a time."));
+  assert.ok(!prompt.includes("[calm]") && !prompt.includes("[laughs]"));
+});
+
+test("a long transcript is trimmed by shortening her lines, never my answers", () => {
+  const words = (n, w) => Array(n).fill(w).join(" ");
+  const lines = [];
+  for (let i = 0; i < 40; i++) {
+    lines.push({ speaker: "agent", text: words(40, "meera"), startSec: i * 10, endSec: i * 10 + 2 });
+    lines.push({ speaker: "user", text: words(90, "answer"), startSec: i * 10 + 2, endSec: i * 10 + 9 });
+  }
+  // 1,600 of hers + 3,600 of mine: over the 5,000 budget. At 30 words each (plus "…") hers are 1,240: under.
+  const trimmed = trimForScoring(lines);
+  assert.equal(trimmed.length, lines.length);
+  assert.ok(trimmed.filter((line) => line.speaker === "user").every((line, i) => line.text === lines[i * 2 + 1].text));
+  assert.equal(trimmed[0].text.split(" ").filter((w) => w === "meera").length, 30);
+  // A short call is left as it is.
+  assert.deepEqual(trimForScoring(lines.slice(0, 4)), lines.slice(0, 4));
+  // Still over at 30 words: hers go down to 12.
+  assert.equal(trimForScoring(lines, 3_000)[0].text.split(" ").filter((w) => w === "meera").length, 12);
 });
 
 test("the retry prompt scores one question", () => {

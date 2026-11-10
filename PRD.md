@@ -124,13 +124,20 @@ The setup also goes to her as a contextual update at connect. When I say I'm rea
 | 10 min, Standard (default) | 3 | Opener on background, one behavioral, why this role |
 | 20 min, Full | 5 | Opener on background, three behavioral, why this role |
 
-At one minute left, the app sends a contextual update and she closes after the current question. The 1200 s call limit in ElevenLabs stays as the hard stop.
+The app owns the time limit, counted from connect. Retry calls have none of this.
+
+- At two minutes left, it sends: "About two minutes left. Don't start a new main question. Let them finish, then close."
+- At the chosen length, if the phase isn't done yet, it sends: "Time is up. Say your closing line now and call setPhase("done")." Then the normal close runs.
+- If she still hasn't called setPhase("done") 60 s after that, the app ends the call itself. It counts as complete, not incomplete: I did nothing wrong.
+- The timings live in `lib/call/config.ts`. The 1500 s max duration in ElevenLabs is only a backstop.
 
 - Questions come from the job description if there is one, otherwise from the usual competencies for that role and seniority.
 - With a CV, at least one question is specific to it.
 - Each question can have one follow up from her. Follow ups don't count toward the total.
 
-**Close.** "Okay, that's everything I wanted to ask. Your scorecard's ready when you are." Phase moves to done. The app ends the call itself: it waits until her voice actually stops, then 1 second, then hangs up. It never times this from the setPhase call, which can arrive before she finishes speaking. If she never calls setPhase("done"), the 20 second silence rule in ElevenLabs ends the call. Then the scorecard is built.
+**Close.** "Okay, that's everything I wanted to ask. Your scorecard's ready when you are." Phase moves to done. The app ends the call itself: it waits until her voice actually stops, then 1 second, then hangs up. It never times this from the setPhase call, which can arrive before she finishes speaking. If she never calls setPhase("done"), the time limit above ends the call, and the 20 second silence rule in ElevenLabs is the backstop. Then the scorecard is built.
+
+Her text can carry voice tags like "[calm]" or "[laughs]". The app removes every square bracket tag before her words show in the caption, are saved to the transcript or go to the scorecard.
 
 **Cut short.** If I hang up with fewer than two answers, no scorecard is built. The call is saved to History as incomplete: "That was quick. Want to jump back in where we stopped?"
 
@@ -198,6 +205,8 @@ The SDK has no method that makes her cut in while I'm still talking. So the v1 r
 - The gauge animates from 0 to the score each time the scorecard loads. With reduced motion, it shows the score straight away.
 - Retries never change the original score. When a retry improves an answer, "+0.4 after retries" shows beside it.
 - Incomplete calls and failed scorecards have no score. They keep their Incomplete or Build scorecard label.
+
+**Building it.** The server route tries the fastest working Gemini model first, with fallbacks, and has 120 s. The client gives up at 130 s, a bit over the route's limit, so a lost request never spins forever. A timeout or any failure saves the call as scoring\_failed: "Build scorecard" shows again with a clear message, and the transcript is kept. If the transcript is long, what goes to Gemini is trimmed by shortening Meera's lines first. My answers are never cut.
 - History shows each call's score in its row, as a number out of 5. The gauge and the word are on the scorecard only.
 
 **The retry.** Tapping Retry starts a short call with only that question and the same setup. Afterwards: my old answer next to the new one, the score change per skill, and a celebration if it went up. The moment card then shows "Improved". The score change is worked out by comparing the retry's scores with the original answer's, so nothing extra is stored.
@@ -273,7 +282,7 @@ The app adds the delivery metrics and the completion status before saving. If th
 
 ## Agent spec
 
-One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Turn settings: eagerness Patient, take turn after silence 10 s, end conversation after silence 20 s, max duration 1200 s, with the message "We're out of time for today. Your scorecard's ready when you are." First message override is on in Security, because the app writes her opening line. The First message field in the dashboard is only a fallback: "Hi, I'm Meera. Shall we start?" It never asks for a CV or job description. The system prompt is below. Context such as the setup, the CV and job description text from the sheet, and live rule events arrives through `sendContextualUpdate`.
+One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Voice model: V4 Turbo, with expressive mode off. Turn settings: eagerness Patient, take turn after silence 10 s, end conversation after silence 20 s, max duration 1500 s, with the message "We're out of time for today. Your scorecard's ready when you are." First message override is on in Security, because the app writes her opening line. The First message field in the dashboard is only a fallback: "Hi, I'm Meera. Shall we start?" It never asks for a CV or job description. The system prompt is below. Context such as the setup, the CV and job description text from the sheet, and live rule events arrives through `sendContextualUpdate`.
 
 **Client tools.** Configure them in the ElevenLabs dashboard with these exact names. None of them block the conversation.
 
@@ -305,7 +314,7 @@ CONTEXT FROM THE APP
 INTERVIEW
 - Call setPhase("interview") and react("sitUp"), then ask the first question with no extra preamble.
 - Ask the number of main questions in the setup. 2: an opener on their background, then one behavioral question. 3: an opener, one behavioral question, then why this role. 5: an opener, three behavioral questions, then why this role.
-- If you receive a context update saying about a minute is left, finish the current question and close. Never start a new main question then.
+- If you receive a context update saying time is nearly up, don't start a new main question. Let them finish, then close. If it says time is up, close right away: say your closing line and call setPhase("done").
 - Base behavioral questions on the job description. With none, use the usual competencies for this role and seniority. With a CV, make at least one question specific to it.
 - Call nextQuestion before each main question. You may ask one follow up per question.
 - If a story ends with no result, ask something like "So how did that turn out?"
@@ -314,7 +323,7 @@ INTERVIEW
 - Call react("nod") when an answer lands.
 - If you receive a context update saying an answer is running long, cut in at the next pause with one short sentence, like "Sorry, let me jump in. How did it end up?" Then let them continue.
 - If they start talking again after you've moved on: for a short addition, acknowledge it in a few words and ask your question again. If they restart the whole story, let it run briefly, then redirect once, like "Let's hold that, I want to get to the next one", and flag it as rambling.
-- If they say nothing for a while after your question, call react("leanIn") and check in with something like "Take your time. Want me to repeat the question?" Never say "You still there?"
+- If you get the turn because they've gone quiet, assume they're thinking, not gone. Call react("leanIn") and say something like "Take your time" or "Want me to repeat the question?" Never ask if they're still there, if they can hear you, or if they're with you. If they stay quiet after that, repeat the question once in fewer words.
 
 CLOSE
 - Say something like "Okay, that's everything I wanted to ask. Your scorecard's ready when you are." Then call setPhase("done").
@@ -336,6 +345,7 @@ HOW YOU SOUND
 - React to what they actually said before the next question.
 - Never say "great question" or "thank you for sharing".
 - Never write reactions or stage directions in brackets, like [nod] or [smile]. Show reactions only by calling react.
+- Never write tags in square brackets, like [calm] or [laughs].
 
 TOOL RULES
 - Call nextQuestion only in the same turn where you ask a new main question.
@@ -481,7 +491,7 @@ rive/           RML source, build script, meera.riv
 | Upload is not a PDF or text | The setup sheet or Profile says: "I can't read that one. A PDF or plain text works." |
 | Scanned PDF with no text | The setup sheet or Profile says: "Looks like a scan, I can't read it. Paste the text instead, or go without a CV." |
 | Very long CV or job description | Trimmed to the first 4,000 words before it goes to the agent |
-| Scorecard request fails | Status scoring\_failed. Transcript is saved. History shows "Build scorecard" |
+| Scorecard request fails or takes over 130 s | Status scoring\_failed. Transcript is saved. "Build scorecard" shows again with a clear message, never a spinner that doesn't end |
 | Hang up with fewer than two answers | No scorecard. Saved as incomplete |
 | Non English answer | She asks once to continue in English |
 
@@ -524,7 +534,7 @@ Check: one full intake by voice, with the orb moving with her voice and at least
 
 - [ ] Live rules from `lib/live/config.ts`, with the ladder for long answers
 - [ ] flag tool, writing mood, and flags ignored outside the interview phase
-- [ ] Lengths of 5, 10 and 20 minutes, the one minute left update, and "Question 2 of 3"
+- [ ] Lengths of 5, 10 and 20 minutes, the two minutes left and time up updates, and "Question 2 of 3"
 - [ ] Cut 8 Nov: the attach button in the call. PDF and text extraction moves to the setup sheet and Profile
 - [ ] Profile: saved CV upload, replace, delete. Saved CV sent at call start
 - [ ] Dexie store saving the call record as it happens

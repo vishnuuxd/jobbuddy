@@ -64,3 +64,16 @@ test("a resumed session keeps the call's record and question", async () => {
   assert.equal(session.get().question, 2);
   assert.equal(session.get().transcript.length, 1);
 });
+
+test("the time limit: warn at two minutes left, close at the length, end 60 s later", async () => {
+  const { timeLimitSteps } = await import("../lib/call/timeLimit.ts");
+  const { callConfig } = await import("../lib/call/config.ts");
+  const { nearlyUpUpdate, timeUpUpdate } = await import("../lib/call/context.ts");
+  assert.deepEqual(timeLimitSteps(20, callConfig), [
+    { atMs: 18 * 60_000, step: "nearlyUp" },
+    { atMs: 20 * 60_000, step: "timeUp" },
+    { atMs: 21 * 60_000, step: "endCall" },
+  ]);
+  assert.equal(nearlyUpUpdate, "About two minutes left. Don't start a new main question. Let them finish, then close.");
+  assert.equal(timeUpUpdate, 'Time is up. Say your closing line now and call setPhase("done").');
+});

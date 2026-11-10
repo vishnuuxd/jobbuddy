@@ -341,3 +341,8 @@ Plum replaces Tropical. The entries above describe the Tropical build and stay a
 - Screen showed: nothing, there's no icon reference
 - Built instead: Meera's lavender body, plum eyes and the lime dot on plum, drawn from the Meera component's paths by `scripts/make-icons.mjs`. No mouth, and her "wide" eyes (19 × 30) rather than the resting ones, so the eyes still read at home screen size. The maskable icon keeps her inside the 80% safe circle
 - Why: Vishnu asked for the blob, eyes and dot on plum. The iPhone status bar is translucent so the plum headers show through it, since "black" would be a pure black bar
+
+## History, scorecard and call screen: a scorecard that fails or times out
+- Screen showed: "Build scorecard" only, with no state for a request that never ends
+- Built instead: the client gives up after 130 s and the button shows again. A short muted line says what happened: "took too long" for a timeout, "didn't build" otherwise. In History it sits under "All calls", above the list. The call screen's note and the scorecard page's line say the same
+- Why: PRD.md, Scorecard: Building it. A spinner that never ends was the bug

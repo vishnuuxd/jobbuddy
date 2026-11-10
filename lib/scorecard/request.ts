@@ -3,8 +3,16 @@
 import { getCall, saveCall } from "../store/db";
 import type { Call, Retry, TranscriptLine } from "../store/types";
 
+// A bit over the route's limit (maxDuration 120 s in app/api/scorecard/route.ts), so the
+// route always gets to answer first. Past this, the request is lost: give up, never spin.
+export const scorecardTimeoutMs = 130_000;
+
+const timedOut = (error: unknown) => error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
+
+export type BuildResult = { call: Call; timedOut: boolean };
+
 /** Builds the scorecard for a saved call, and saves the result: completed, or scoring_failed with the transcript kept. */
-export async function buildScorecard(callId: string): Promise<Call | null> {
+export async function buildScorecard(callId: string): Promise<BuildResult | null> {
   const call = await getCall(callId);
   if (!call) return null;
   try {
@@ -12,16 +20,17 @@ export async function buildScorecard(callId: string): Promise<Call | null> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ kind: "call", call }),
+      signal: AbortSignal.timeout(scorecardTimeoutMs),
     });
     if (!res.ok) throw new Error(`Scorecard route returned ${res.status}`);
     const { scorecard } = (await res.json()) as Pick<Call, "scorecard">;
     const done: Call = { ...call, scorecard, status: "completed" };
     await saveCall(done);
-    return done;
-  } catch {
+    return { call: done, timedOut: false };
+  } catch (error) {
     const failed: Call = { ...call, status: "scoring_failed" };
     await saveCall(failed);
-    return failed;
+    return { call: failed, timedOut: timedOut(error) };
   }
 }
 
@@ -34,6 +43,7 @@ export async function scoreRetry(callId: string, questionIndex: number, question
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ kind: "retry", call, questionIndex, question, transcript }),
+      signal: AbortSignal.timeout(scorecardTimeoutMs),
     });
     if (!res.ok) throw new Error(`Scorecard route returned ${res.status}`);
     const { answer } = (await res.json()) as { answer: Retry["answer"] };

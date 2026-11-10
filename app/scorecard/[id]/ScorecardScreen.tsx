@@ -351,7 +351,7 @@ function Moment({ call, answer, full, onRetry }: { call: Call; answer: ScoredAns
 /** A call without a scorecard: rebuild it if it failed, and read the transcript either way. */
 function NoScorecard({ call, onClose, startTab }: { call: Call; onClose: () => void; startTab: "scorecard" | "transcript" }) {
   const [building, setBuilding] = useState(false);
-  const [failedAgain, setFailedAgain] = useState(false);
+  const [failedAgain, setFailedAgain] = useState<"failed" | "timedOut" | null>(null);
   const failed = call.status === "scoring_failed";
   return (
     <main className={styles.page}>
@@ -380,7 +380,7 @@ function NoScorecard({ call, onClose, startTab }: { call: Call; onClose: () => v
                   setBuilding(true);
                   const result = await buildScorecard(call.id);
                   setBuilding(false);
-                  setFailedAgain(result?.status !== "completed");
+                  setFailedAgain(result?.call.status === "completed" ? null : result?.timedOut ? "timedOut" : "failed");
                 }}
               >
                 Build scorecard
@@ -388,7 +388,9 @@ function NoScorecard({ call, onClose, startTab }: { call: Call; onClose: () => v
             )}
             {failedAgain && (
               <p className={styles.quiet} role="alert">
-                It didn't build this time either. Try again in a minute.
+                {failedAgain === "timedOut"
+                  ? "That took too long this time. Nothing is lost. Try again in a minute."
+                  : "It didn't build this time either. Try again in a minute."}
               </p>
             )}
           </>

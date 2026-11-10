@@ -16,13 +16,16 @@ import { hangUpReason } from "@/lib/call/close";
 import { callConfig } from "@/lib/call/config";
 import {
   lastQuestionAsked,
-  oneMinuteLeftUpdate,
+  nearlyUpUpdate,
   resumeFirstLine,
   resumeUpdate,
   retryFirstLine,
   retryUpdate,
   setupUpdate,
+  timeUpUpdate,
 } from "@/lib/call/context";
+import { timeLimitSteps } from "@/lib/call/timeLimit";
+import { stripVoiceTags } from "@/lib/call/voiceTags";
 import { openingLine } from "@/lib/call/opening";
 import { clearPendingCall, readPendingCall, setPendingCall, type PendingCall } from "@/lib/call/pending";
 import { answeredQuestions, createCallSession, toCallRecord, totalQuestions } from "@/lib/call/session";
@@ -73,6 +76,7 @@ export function CallScreen() {
   const [reaction, setReaction] = useState<Reaction>(null);
   const [watching, setWatching] = useState(false);
   const [endedAfterMs, setEndedAfterMs] = useState(0);
+  const [scoreTimedOut, setScoreTimedOut] = useState(false);
   const inCallRef = useRef(false);
   const hangingUp = useRef(false);
   const herTurnStartedAt = useRef(0);
@@ -156,7 +160,9 @@ export function CallScreen() {
         rules.userMessage(message);
       } else {
         herLastLineAt.current = Date.now();
-        session.addTranscript("agent", message, herTurnStartedAt.current || Date.now());
+        // Voice tags like "[calm]" never reach the caption, the transcript or the scorecard.
+        const text = stripVoiceTags(message);
+        if (text) session.addTranscript("agent", text, herTurnStartedAt.current || Date.now());
       }
     },
     onError: (message) => {
@@ -167,6 +173,11 @@ export function CallScreen() {
 
   useVoiceVolume(vm, conversation.getOutputVolume, inCall);
   sendRef.current = conversation.sendContextualUpdate;
+
+  function scoreFailed(timedOut: boolean) {
+    setScoreTimedOut(timedOut);
+    setProblem("scoreFailed");
+  }
 
   function showReaction(next: Reaction) {
     setReaction(next);
@@ -204,7 +215,7 @@ export function CallScreen() {
       if (saved) {
         clearPendingCall();
         router.replace(`/scorecard/${retry.callId}/retry/${retry.questionIndex}?fresh=1`);
-      } else setProblem("scoreFailed");
+      } else scoreFailed(false);
     });
   }
   useEffect(() => {
@@ -218,8 +229,8 @@ export function CallScreen() {
     void savedCall.current.then(async () => {
       const result = await buildScorecard(callId);
       if (cancelled) return;
-      if (result?.status === "completed") router.replace(`/scorecard/${callId}?fresh=1`);
-      else setProblem("scoreFailed");
+      if (result?.call.status === "completed") router.replace(`/scorecard/${callId}?fresh=1`);
+      else scoreFailed(result?.timedOut ?? false);
     });
     return () => {
       cancelled = true;
@@ -239,16 +250,26 @@ export function CallScreen() {
     };
   }, [inCall, rules, session]);
 
-  // At one minute left she's told to finish the current question and close.
+  // The app owns the time limit. Two minutes left: no new main question. At the chosen
+  // length: close now. 60 s after that, if she still hasn't called setPhase("done"),
+  // the app ends the call itself, as complete. Retry calls have none of this.
   useEffect(() => {
     const setup = session.get().setup;
     if (!inCall || !setup || session.get().retryOf) return;
-    const timer = setTimeout(
-      () => conversation.sendContextualUpdate(oneMinuteLeftUpdate),
-      setup.durationMin * 60_000 - callConfig.oneMinuteLeftMs,
+    const timers = timeLimitSteps(setup.durationMin, callConfig).map(({ atMs, step }) =>
+      setTimeout(() => {
+        if (session.get().phase === "done") return; // She's already closing.
+        if (step === "nearlyUp") conversation.sendContextualUpdate(nearlyUpUpdate);
+        else if (step === "timeUp") conversation.sendContextualUpdate(timeUpUpdate);
+        else {
+          console.warn("Call ended by the app: no setPhase(done) 60 s after time was up");
+          session.setPhase("done"); // Complete, not incomplete: they did nothing wrong.
+          conversation.endSession();
+        }
+      }, atMs),
     );
-    return () => clearTimeout(timer);
-    // sendContextualUpdate stays valid for the whole call.
+    return () => timers.forEach(clearTimeout);
+    // sendContextualUpdate and endSession stay valid for the whole call.
   }, [inCall]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // After setPhase("done"): hang up 1 second after her closing line has actually been heard.
@@ -375,7 +396,7 @@ export function CallScreen() {
       if (session.get().retryOf) return scoreThisRetry();
       if (id) {
         void buildScorecard(id).then((result) =>
-          result?.status === "completed" ? router.replace(`/scorecard/${id}?fresh=1`) : setProblem("scoreFailed"),
+          result?.call.status === "completed" ? router.replace(`/scorecard/${id}?fresh=1`) : scoreFailed(result?.timedOut ?? false),
         );
       }
     };
@@ -408,6 +429,7 @@ export function CallScreen() {
         lastQuestion={state.question > 0 ? state.transcript.findLast((line) => line.speaker === "agent" && line.questionIndex === state.question)?.text : undefined}
         primary={actions.primary}
         secondary={actions.secondary}
+        timedOut={scoreTimedOut}
       />
     );
   }
@@ -510,10 +532,12 @@ type ProblemProps = {
   lastQuestion?: string;
   primary: Action;
   secondary: Action;
+  /** The scorecard request ran past its time limit. */
+  timedOut?: boolean;
 };
 
 /** Screens 5.1 to 5.4: what went wrong, that nothing is lost, and one clear way back. */
-function CallProblem({ problem, total, question, answered, lastQuestion, primary, secondary }: ProblemProps) {
+function CallProblem({ problem, total, question, answered, lastQuestion, primary, secondary, timedOut }: ProblemProps) {
   const answers = `${answered} ${answered === 1 ? "answer" : "answers"}`;
   const copy: Record<Exclude<Problem, null>, { title: string; sub: string; note?: string; pill: string; still: MeeraStill; offline?: boolean; badge?: "mic" | "oops" }> = {
     mic: {
@@ -544,7 +568,9 @@ function CallProblem({ problem, total, question, answered, lastQuestion, primary
     scoreFailed: {
       title: "Scorecard didn't build",
       sub: "Your transcript is saved",
-      note: "Something went wrong writing it up. Nothing is lost. You can also do this later from History.",
+      note: timedOut
+        ? "Writing it up took too long. Nothing is lost. Try again, or do it later from History."
+        : "Something went wrong writing it up. Nothing is lost. You can also do this later from History.",
       pill: "Call ended",
       still: { mood: "skeptical" },
       badge: "oops",

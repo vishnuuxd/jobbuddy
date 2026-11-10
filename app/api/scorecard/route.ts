@@ -4,13 +4,15 @@ import { retrySchema, scorecardSchema, validateAnswer, validateScorecard } from 
 import type { Call, TranscriptLine } from "@/lib/store/types";
 
 export const dynamic = "force-dynamic";
+// Within the Hobby plan's 300 s limit (Fluid compute). The client gives up at 130 s (lib/scorecard/request.ts).
 export const maxDuration = 120;
 
-// The current Flash model on this key, checked on 8 Nov 2026. GEMINI_MODEL overrides it.
-const defaultModel = "gemini-3.8-flash";
+// The fastest model that works on this key, checked on 11 Nov 2026 with a 20 minute call:
+// gemini-3.5-flash answered in 16 to 20 s. gemini-3.8-flash gave no answer in 180 s, then 503s.
+// gemini-flash-latest gave 503s. GEMINI_MODEL overrides it.
+const defaultModel = "gemini-3.5-flash";
 // When the main model is busy, rate limited or slow, one try on each of these, in order.
-// gemini-3.5-flash first: on 8 Nov it answered in seconds while the newer ones took minutes.
-const fallbackModels = ["gemini-3.5-flash", "gemini-flash-latest"];
+const fallbackModels = ["gemini-3.8-flash", "gemini-flash-latest"];
 // A model that hasn't answered by then counts as busy, so the next one gets a turn.
 const perModelMs = 45_000;
 const totalMs = 110_000;

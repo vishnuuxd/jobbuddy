@@ -21,6 +21,7 @@ export function History() {
   const calls = useCalls();
   const [now, setNow] = useState<Date | null>(null);
   const [building, setBuilding] = useState<string | null>(null);
+  const [buildFailed, setBuildFailed] = useState<"failed" | "timedOut" | null>(null);
   const [menuFor, setMenuFor] = useState<Call | null>(null);
   useEffect(() => setNow(new Date()), []);
 
@@ -35,8 +36,10 @@ export function History() {
 
   async function rebuild(call: Call) {
     setBuilding(call.id);
-    await buildScorecard(call.id);
+    setBuildFailed(null);
+    const result = await buildScorecard(call.id);
     setBuilding(null);
+    if (result && result.call.status !== "completed") setBuildFailed(result.timedOut ? "timedOut" : "failed");
   }
 
   return (
@@ -124,6 +127,13 @@ export function History() {
               <h2 id="all-title" className={styles.sectionHead}>
                 All calls
               </h2>
+              {buildFailed && (
+                <p className={`${styles.quiet} ${styles.buildNote}`} role="alert">
+                  {buildFailed === "timedOut"
+                    ? "That scorecard took too long to write. Nothing is lost. Try again in a minute."
+                    : "That scorecard didn't build. Nothing is lost. Try again in a minute."}
+                </p>
+              )}
               <CallList
                 calls={calls}
                 now={now}

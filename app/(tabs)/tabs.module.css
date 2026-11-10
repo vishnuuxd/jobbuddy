@@ -15,6 +15,7 @@
 .h2 { font: 700 20px/1.2 var(--display); }
 .seeAll { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); font: 500 14px/18px var(--text); text-decoration: none; }
 .quiet { color: var(--muted); font: 400 14px/20px var(--text); }
+.shell .buildNote { margin: 4px 0 12px; }
 .loading { min-height: 120px; }
 
 /* Home */
