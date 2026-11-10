@@ -165,9 +165,22 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
   - Scorecard: `gemini-3.5-flash` is first (it answered a 20 minute call in 16 to 20 s, while `gemini-3.8-flash` hung or returned 503s), with `gemini-3.8-flash` and `gemini-flash-latest` as fallbacks. The client gives up at 130 s and saves scoring_failed, with "Try again after some time." instead of a spinner. Long transcripts shorten Meera's lines first
 - [x] ElevenLabs dashboard updated: the new system prompt, setSetup deleted, setPhase names opening, interview and done, the fallback first message, max duration 1500 s, V4 Turbo with expressive mode off
 
+## Meera's rig, 11 Nov 2026
+
+- [x] Meera's Rive rig is live (`976dcfc`). It replaced the blob through the same avatar component (`components/meera/Meera.tsx`), reading the same InterviewVM values. Built from `rive/parts` as RML by `rive/rig/make-rig.js`, compiled with the Rive CLI. `npm run rig` rebuilds it, `npm run rig:sheet` renders the contact sheet
+- [x] Lip sync from `onAudioAlignmentPlayback` (`lib/lipsync`), with the mouthOpen fallback when a chunk has no letter timing (InterviewVM.lipSync)
+- [x] Reduced motion follows the phone's setting: breathing, nod and lean off, expressions and blinks stay
+- [x] Published on Rive Cadet, with no splash screen
+- [x] The contact sheet matches the reference within 0.12%, state by state (`rive/contact/stage2.png`)
+- [x] PROGRESS.md and PRD.md reflect the four live fixes and the ElevenLabs dashboard changes
+
+## Next
+
+- Vishnu's phone test of the rig: lip sync, expressions, blinks and breathing, and the small sizes (Home's card, the scorecard's "Meera says")
+
 ## Still open, as of 11 Nov 2026
 
-- **Meera's rig.** Parts and spec are coming in `rive/`. The blob stands in, behind InterviewVM
 - **Final testing**
 - **The video**
+- **Future triggers:** think, impressed, laugh, reassure and surprised. The poses exist in `rive/expressions.json`; the wiring (rig states, the react tool's list and the app) isn't built
 - Optional: connect the Vercel project to GitHub so pushes deploy themselves. Until then, each update needs `vercel deploy --prod`
