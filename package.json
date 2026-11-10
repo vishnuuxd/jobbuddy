@@ -7,10 +7,13 @@
     "build": "next build",
     "start": "next start",
     "test": "node --test \"tests/*.test.mjs\"",
-    "test:e2e": "node e2e/close-caps.mjs && node e2e/time-limit.mjs"
+    "test:e2e": "node e2e/close-caps.mjs && node e2e/time-limit.mjs",
+    "rig": "node rive/rig/make-rig.js && rive rive --publish=local && mkdir -p public/rive && cp rive/meera.riv public/rive/meera.riv",
+    "rig:sheet": "node rive/rig/contact-sheet.js"
   },
   "dependencies": {
     "@elevenlabs/react": "^1.20.2",
+    "@rive-app/react-canvas": "4.37.1",
     "dexie": "^4.4.7",
     "next": "^16.4.3",
     "pdfjs-dist": "^6.5.438",

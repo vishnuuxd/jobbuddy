@@ -346,3 +346,8 @@ Plum replaces Tropical. The entries above describe the Tropical build and stay a
 - Screen showed: "Build scorecard" only, with no state for a request that never ends
 - Built instead: the client gives up after 130 s and the button shows again. A short muted line says "Try again after some time." for a timeout or any other failure (Vishnu's wording). In History it sits under "All calls", above the list. The call screen's note and the scorecard page's line say the same
 - Why: PRD.md, Scorecard: Building it. A spinner that never ends was the bug
+
+## Meera's rig in the avatar slot (11 Nov)
+- Screen showed: the blob, with dash eyes when offline, and the same blob at every size
+- Built instead: the Rive rig. Below 160 px (Home's card at 64, the scorecard's "Meera says" at 34) she shows her head only, in a round avatar, the halo filling the circle: the whole bust is unreadable at those sizes. Offline greys her out at rest, since the rig has no dash eyes. Still previews keep breathing and blinking instead of freezing
+- Why: rive/RIG.md, "Done when": she reads clearly at the smallest size the app shows her

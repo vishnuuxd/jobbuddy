@@ -48,7 +48,7 @@ async function startCall(pending) {
   await page.waitForTimeout(300);
   check("time up update at 20 min", updates(log).includes('Time is up. Say your closing line now and call setPhase("done").'));
   check("call still open at 20 min", !log.closedAt);
-  await page.screenshot({ path: process.env.SHOTS ? `${process.env.SHOTS}/time-up-live.png` : "/dev/null" });
+  if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/time-up-live.png` });
   await page.clock.fastForward(61_000);
   for (let i = 0; i < 50 && !log.closedAt; i++) await page.waitForTimeout(100);
   check("the app ends the call 60 s after time up", !!log.closedAt && warnings.some((w) => /Call ended by the app/.test(w)));

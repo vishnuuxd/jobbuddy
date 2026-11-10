@@ -17,7 +17,8 @@ export const triggers = [
 export type Mood = (typeof moods)[number];
 export type Viseme = (typeof visemes)[number];
 export type Trigger = (typeof triggers)[number];
-export type InterviewValues = { mood: Mood; viseme: Viseme; mouthOpen: number };
+/** lipSync: true while her audio has letter timing, so viseme follows the letters. False, the rig picks the mouth from mouthOpen. */
+export type InterviewValues = { mood: Mood; viseme: Viseme; mouthOpen: number; lipSync: boolean };
 
 export type InterviewVM = {
   /** Current values. Safe to read every frame. */
@@ -29,7 +30,7 @@ export type InterviewVM = {
 };
 
 export function createInterviewVM(): InterviewVM {
-  let current: InterviewValues = { mood: "idle", viseme: "rest", mouthOpen: 0 };
+  let current: InterviewValues = { mood: "idle", viseme: "rest", mouthOpen: 0, lipSync: false };
   const listeners = new Set<(name: Trigger) => void>();
 
   return {

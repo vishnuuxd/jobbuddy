@@ -31,6 +31,7 @@ import { clearPendingCall, readPendingCall, setPendingCall, type PendingCall } f
 import { answeredQuestions, createCallSession, toCallRecord, totalQuestions } from "@/lib/call/session";
 import { useSelfView } from "@/lib/call/useSelfView";
 import { useVoiceVolume } from "@/lib/call/useVoiceVolume";
+import { createLipSync } from "@/lib/lipsync/player";
 import { liveConfig } from "@/lib/live/config";
 import { createLiveRules } from "@/lib/live/rules";
 import { buildScorecard, scoreRetry } from "@/lib/scorecard/request";
@@ -57,7 +58,7 @@ function createCall() {
   const session = createCallSession(vm, liveConfig);
   const sendRef: { current: (text: string) => void } = { current: () => {} };
   const rules = createLiveRules(session, (text) => sendRef.current(text), liveConfig);
-  return { vm, session, rules, sendRef, clientTools: createClientTools(session) };
+  return { vm, session, rules, sendRef, lips: createLipSync(vm), clientTools: createClientTools(session) };
 }
 
 const formatTime = (ms: number) => {
@@ -67,7 +68,7 @@ const formatTime = (ms: number) => {
 
 export function CallScreen() {
   const router = useRouter();
-  const [{ vm, session, rules, sendRef, clientTools }] = useState(createCall);
+  const [{ vm, session, rules, sendRef, lips, clientTools }] = useState(createCall);
   const call = useSyncExternalStore(session.subscribe, session.get, session.get);
   const [stage, setStage] = useState<CallStage>("connecting");
   const [problem, setProblem] = useState<Problem>(null);
@@ -120,6 +121,7 @@ export function CallScreen() {
     },
     onDisconnect: (details) => {
       rules.finish();
+      lips.stop();
       const state = session.get();
       const answered = answeredQuestions(state);
       setEndedAfterMs(Date.now() - state.startedAtMs);
@@ -147,11 +149,17 @@ export function CallScreen() {
         rules.herTurn();
       } else {
         herVoiceStoppedAt.current = Date.now(); // Her audio finished playing.
+        lips.stop(); // Her next turn starts on the mouthOpen fallback until letters arrive.
       }
       session.setSpeaking(mode === "speaking");
     },
     onVadScore: ({ vadScore }) => rules.vad(vadScore),
-    onInterruption: () => rules.interruption(),
+    onInterruption: () => {
+      lips.stop();
+      rules.interruption();
+    },
+    // Lip sync: each chunk's letter timing, as that chunk starts playing.
+    onAudioAlignmentPlayback: ({ alignment }) => lips.chunk(alignment),
     onMessage: ({ role, message }) => {
       if (role === "user") {
         session.noteUserMessage();
@@ -171,6 +179,14 @@ export function CallScreen() {
   });
 
   useVoiceVolume(vm, conversation.getOutputVolume, inCall);
+  useEffect(() => {
+    if (!inCall) return;
+    let frame = requestAnimationFrame(function tick() {
+      lips.tick();
+      frame = requestAnimationFrame(tick);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [inCall, lips]);
   sendRef.current = conversation.sendContextualUpdate;
 
   function scoreFailed() {

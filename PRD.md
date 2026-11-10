@@ -358,7 +358,17 @@ TOOL RULES
 
 The same method as Unstuck. Meera is flat and front facing, built from separate named vector parts, and rigged in Rive with the Rive CLI. The app never animates. It only sets view model values.
 
-**V2 placeholder: Meera's blob.** v1 shipped an orb to build and test fast. v2 replaces it with Meera's blob from `design/DESIGN.md`: a pink blob with a sun dot and ink eyes, built in `components/meera/Meera.tsx`. She reads the same InterviewVM values the rig will use (mood, mouthOpen and every trigger) through one avatar component, so the Rive rig drops into the same slot later and nothing else in the app changes. The mapping lives in `lib/avatar/meeraFace.ts` and is unit tested. The call screen uses the blob from v2 part 4. The reading mood is retired with the mid call upload (8 Nov).
+**The rig, from 11 Nov.** Meera's Rive rig (`rive/`, spec in `rive/RIG.md`) replaces the blob in `components/meera/Meera.tsx`, the same avatar component, reading the same InterviewVM values. `npm run rig` regenerates `rive/meera.rml` from the parts, publishes `rive/meera.riv` and copies it to `public/rive/`. `npm run rig:sheet` renders every state against the reference poses. The component:
+
+- copies InterviewVM into the rig's view model whenever a value changes, and passes triggers straight through
+- sets the rig's `reducedMotion` from the phone's setting, which turns off breathing, nod and lean. Expressions and blinks stay
+- offline: she rests on idle, greyed out
+- a `still` preview sets the mood, mouthOpen and trigger once, and she stays in that moment, still breathing and blinking
+- below 160 px, shows her head only, in a round avatar
+
+Until the Rive plan is upgraded, every published file carries the Rive splash screen for about 2.5 s after it loads. Rebuild with `npm run rig` after the upgrade.
+
+**V2 placeholder, retired 11 Nov: Meera's blob.** v1 shipped an orb to build and test fast. v2 replaces it with Meera's blob from `design/DESIGN.md`: a pink blob with a sun dot and ink eyes, built in `components/meera/Meera.tsx`. She reads the same InterviewVM values the rig will use (mood, mouthOpen and every trigger) through one avatar component, so the Rive rig drops into the same slot later and nothing else in the app changes. The mapping lives in `lib/avatar/meeraFace.ts` and is unit tested. The call screen uses the blob from v2 part 4. The reading mood is retired with the mid call upload (8 Nov).
 
 | Signal | Blob |
 | --- | --- |
@@ -403,11 +413,12 @@ The same method as Unstuck. Meera is flat and front facing, built from separate 
 | mood | enum | idle, intake, listening, skeptical, writing, talking |
 | viseme | enum | rest, closed, teeth, open, wide, round, pucker, fv, lth |
 | mouthOpen | number | 0 to 100 |
+| lipSync | boolean | True while her audio playing has letter timing, so viseme follows the letters. False, the rig picks the mouth from mouthOpen: rest, teeth or open |
 | nod, smile, browRaise, glanceDown, handUp, checkWatch, sitUp, leanIn, expectant (brows up slightly, head tilted) | trigger | Fire once, then hand back |
 
 **State machine layers, running at once.** Mood (breathing, posture, head drift), reactions, blink on its own timer, mouth, jaw.
 
-**Lip sync.** Same pipeline as Unstuck. `onAudioAlignment` gives character timing. Letters map to visemes with simple spelling rules. Shapes under 60 ms are merged. Each shape is shown about 40 ms early. Tiny gaps between words close the lips, and real pauses rest the mouth.
+**Lip sync.** `lib/lipsync`, timings in `lib/lipsync/config.ts`. `onAudioAlignmentPlayback` gives each audio chunk's character timing as that chunk starts playing (`onAudioAlignment` arrives seconds early). Letters map to visemes with simple spelling rules. Shapes under 60 ms are merged. Each shape is shown about 40 ms early. Gaps between words under 220 ms close the lips, and longer gaps or punctuation rest the mouth. A chunk with no letters sets lipSync false, and the rig picks the mouth from mouthOpen until letters return. In a real call on 11 Nov, every chunk had alignment, and the mouth matched the letters best 20 to 50 ms after each chunk started playing, about where the sound reaches the speaker.
 
 **Fallback for the two day budget.** If the full rig runs over by the end of day 1, ship with mood, blink, five visemes and four triggers (nod, browRaise, glanceDown, checkWatch). Add the rest after testing.
 
