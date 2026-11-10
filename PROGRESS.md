@@ -155,11 +155,19 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 - [x] Chrome reports no manifest errors. The mic works in standalone display mode (checked in Chrome with a fake device), and `npm run test:e2e` passes. No service worker: Chrome and Safari don't need one to install, and the app needs the network for calls anyway
 - [ ] Install from the home screen on Vishnu's iPhone and Android phone, then do one call from the icon
 
-## Still open, as of 9 Nov 2026
+## Live fixes and the real voice test, 11 Nov 2026
 
-- **No real voice call on the v2 build yet.** The call, retry, resume, focus skill and one minute left flows are tested against a scripted mock session only
-- **ElevenLabs dashboard:** paste the updated system prompt from PRD.md, delete the setSetup tool, set the setPhase names to opening, interview and done, and turn on first message override
-- **The mid-answer cut in (test 5) is still unproven.** If it fails, the long answer ladder stops at checkWatch
-- **Gemini is slow at times.** The scorecard took 34 to 60 s in real tests, with fallbacks when the newest Flash models are busy
-- **Meera's Rive rig is deferred.** The blob stands in, behind InterviewVM
-- **Day 2 evening testing (three calls, tune the config, record the video) hasn't started**
+- [x] The real voice test on v2 passed
+- [x] Four fixes from the live test call are live and retested:
+  - Voice tags like "[calm]" or "[laughs]" are stripped from Meera's lines before the caption, the transcript and the scorecard
+  - The app owns the time limit: "about two minutes left" at length minus 2 min, "time is up" at the length, and the app ends the call as complete if she hasn't closed 60 s later. Retries are unchanged
+  - The silence check in reads "Take your time", never "are you still there"
+  - Scorecard: `gemini-3.5-flash` is first (it answered a 20 minute call in 16 to 20 s, while `gemini-3.8-flash` hung or returned 503s), with `gemini-3.8-flash` and `gemini-flash-latest` as fallbacks. The client gives up at 130 s and saves scoring_failed, with "Try again after some time." instead of a spinner. Long transcripts shorten Meera's lines first
+- [x] ElevenLabs dashboard updated: the new system prompt, setSetup deleted, setPhase names opening, interview and done, the fallback first message, max duration 1500 s, V4 Turbo with expressive mode off
+
+## Still open, as of 11 Nov 2026
+
+- **Meera's rig.** Parts and spec are coming in `rive/`. The blob stands in, behind InterviewVM
+- **Final testing**
+- **The video**
+- Optional: connect the Vercel project to GitHub so pushes deploy themselves. Until then, each update needs `vercel deploy --prod`
