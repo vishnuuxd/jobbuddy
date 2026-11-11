@@ -188,7 +188,16 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 - [x] Unit tests, the build and both e2e suites pass
 - [x] PRD.md has the impressed, laugh and reassure lines from the live ElevenLabs prompt, and the react tool lists all fourteen names
 
-## Still open, as of 11 Nov 2026
+## Phone test fixes, 12 Nov 2026
+
+- [x] Live (`741a30a`, `e1c5ecc`), deployed 12 Nov 2026
+- [x] The call now ends after her closing line. The ElevenLabs log showed she said it but never called setPhase("done"). Safety net: on the last main question, if her turn mentions the scorecard and setPhase("done") hasn't come within 3 s of her audio stopping, the app closes the call as complete (`lib/call/closeNet.ts`, unit tested both ways, `e2e/close-net.mjs`)
+- [x] A ringing screen replaces "Connecting": plum, the round static Meera with pulsing lavender rings, "Calling…" then "Ringing…", End call only, an optional quiet ringback, at least 1.2 s. On answer the avatar grows into the tile in 300 ms and the rig takes over without a jump. Reduced motion: no rings, a crossfade
+- [x] Expression switches are smooth. Every switch was captured at 60 fps (`node rive/rig/switch-strips.js <name>`). Eyes, mouths and visemes cut in one frame. Arm poses cut too, with a 2 px body dip that recovers over 120 ms, both ways. Each node is keyed by one layer and every mood keys the same properties; `make-rig.js` refuses to build otherwise
+- [x] Unit tests, the typecheck, the build and all three e2e suites pass. PRD.md and DECISIONS.md updated
+- [ ] On the next phone call, check that her opening line starts after the grow, and that the silent switch mutes the ringback
+
+## Still open, as of 12 Nov 2026
 
 - **Final testing**
 - **The video**
