@@ -18,7 +18,8 @@ const T = {
   thinkingBlendMs: 600, // to and from thinking
   reactInMs: 90, // reactions in
   reactOutMs: 160, // and out
-  armSwapMs: 120, // hold and watch: arm_R out, the pose group in, head and eyes into the pose
+  armSwapMs: 120, // hold and watch: head and eyes ease into the pose (the arm itself cuts)
+  armCut: { dy: 2, recoverMs: 120 }, // the body dip on the frame the arm cuts, in and out
   mouthFadeMs: 40,
   blink: { closeMs: 67, holdMs: 33, openMs: 100, closedTy: X.blink.lid_upper_ty, waitsMs: [2500, 3000, 3500, 4000, 4500, 5000, 5500], singleWeight: 2, doubleWeight: 1 },
   holds: { smile: 1200, browRaise: 900, glanceDown: 800, handUp: 1200, checkWatch: 1400, leanIn: 1500, expectant: 2000, think: 2500, impressed: 1200, laugh: 1400, reassure: 1500, surprised: 800 },
@@ -609,6 +610,10 @@ const reactRest = {
   arm_hold: { opacity: 0 },
   arm_watch: { opacity: 0 },
 };
+// The pose arms dip with the body on the cut, so the sleeve stays on the shoulder. Their rest y is
+// wherever they were drawn; read once the rig is built.
+for (const g of ['arm_hold', 'arm_watch']) reactRest[g].y = reg[g].rest.y ?? 0;
+reactRest.arm_R_show.y = 0;
 /** A reaction: rest values for everything, overridden by `tracks`, plus the opening blink. */
 function reaction(name, length, tracks = []) {
   const all = [];
@@ -623,17 +628,28 @@ const reactRestAnim = (() => {
   return anim('react_rest', 100, all);
 })();
 const hold = (inMs, holdMs, outMs, peak, base = 0) => [[0, base], [inMs, peak], [inMs + holdMs, peak], [inMs + holdMs + outMs, base]];
-// The pose arm draws on top of arm_R. In: it fades in while arm_R stays fully visible, then arm_R
-// hides in one frame. Out: arm_R comes back in one frame, then the pose arm fades out on top.
-// Only one of the two is ever partly transparent.
+// Arm swaps are hard cuts both ways: on one frame arm_R hides and the pose arm shows, and the body
+// dips 2 px and recovers over 120 ms to sell the cut. The same on the way back down. Nothing is ever
+// partly transparent. The state transitions in and out are 0 ms so the layer blend can't fade them.
 const armSwap = (group, holdMs) => {
-  const s = T.armSwapMs, o = T.reactOutMs, end = s + holdMs + o;
+  const d = T.armSwapMs + holdMs, dip = T.armCut, end = d + dip.recoverMs;
   return [
-    { name: 'arm_R_show', property: 'opacity', keys: [{ frame: 0, value: 1 }, { frame: s, value: 0 }, { frame: s + holdMs, value: 1 }, { frame: end, value: 1 }] },
-    { name: group, property: 'opacity', keys: curve([[0, 0], [s, 1], [s + holdMs, 1], [end, 0]]) },
+    { name: 'arm_R_show', property: 'opacity', keys: [{ frame: 0, value: 0 }, { frame: d, value: 1 }] },
+    { name: group, property: 'opacity', keys: [{ frame: 0, value: 1 }, { frame: d, value: 0 }] },
+    [
+      // The body dips on both cuts. The arm that's showing dips with it: the pose arm on the way
+      // in, arm_R on the way back down.
+      { name: 'body_react', property: 'y', keys: [
+        { frame: 0, value: dip.dy, ease: EASE }, { frame: dip.recoverMs, value: 0 },
+        { frame: d, value: dip.dy, ease: EASE }, { frame: end, value: 0 },
+      ] },
+      { name: group, property: 'y', keys: curve([[0, dip.dy], [dip.recoverMs, 0]], (v) => reactRest[group].y + v) },
+      { name: 'arm_R_show', property: 'y', keys: [{ frame: 0, value: 0 }, { frame: d, value: dip.dy, ease: EASE }, { frame: end, value: 0 }] },
+    ],
     end,
   ];
 };
+const ARM_CUTS = ['handUp', 'checkWatch'];
 const reactions = {};
 const reactionsStill = {}; // reduced motion: the blink, the face and arm swaps; no movement
 {
@@ -659,8 +675,9 @@ const reactionsStill = {}; // reduced motion: the blink, the face and arm swaps;
   const su = T.surprised, suLen = T.reactInMs + T.holds.surprised + T.reactOutMs;
   reactions.surprised = reaction('surprised', suLen, [{ name: 'head_react', property: 'y', keys: curve(hold(120, T.holds.surprised, T.reactOutMs, su.dy)) }]);
   for (const [t, group] of [['handUp', 'arm_hold'], ['checkWatch', 'arm_watch']]) {
-    const [r, g, end] = armSwap(group, T.holds[t]);
-    reactions[t] = reaction(t, end, [r, g]);
+    const [r, g, dip, end] = armSwap(group, T.holds[t]);
+    reactions[t] = reaction(t, end, [r, g, ...dip]);
+    reactionsStill[t] = reaction(`${t}_still`, end, [r, g]); // reduced motion: the cut, no dip
   }
   for (const t of ['smile', 'browRaise', 'glanceDown', 'sitUp', 'expectant', 'think', 'impressed', 'reassure']) reactions[t] = reaction(t, blinkLen);
   for (const t of ['nod', 'leanIn', 'laugh', 'surprised']) reactionsStill[t] = reaction(`${t}_still`, blinkLen);
@@ -838,13 +855,14 @@ layers.push(layer('3 Reactions', ({ state, any, entry }) => {
   entry.children.push(transition(rest.attrs.id));
   for (const t of TRIGGERS) {
     const s = state(reactions[t], { reset: true });
-    s.children.push(transition(rest.attrs.id, { ms: T.reactOutMs, exit: true }));
+    const cut = ARM_CUTS.includes(t); // arm swaps cut: no blend in or out
+    s.children.push(transition(rest.attrs.id, { ms: cut ? 0 : T.reactOutMs, exit: true }));
     if (reactionsStill[t]) {
       const st = state(reactionsStill[t], { reset: true });
-      st.children.push(transition(rest.attrs.id, { ms: T.reactOutMs, exit: true }));
-      any.children.push(transition(s.attrs.id, { ms: T.reactInMs, conds: [triggerCond(t), boolCond('reducedMotion', false)] }));
-      any.children.push(transition(st.attrs.id, { ms: T.reactInMs, conds: [triggerCond(t), boolCond('reducedMotion', true)] }));
-    } else any.children.push(transition(s.attrs.id, { ms: T.reactInMs, conds: [triggerCond(t)] }));
+      st.children.push(transition(rest.attrs.id, { ms: cut ? 0 : T.reactOutMs, exit: true }));
+      any.children.push(transition(s.attrs.id, { ms: cut ? 0 : T.reactInMs, conds: [triggerCond(t), boolCond('reducedMotion', false)] }));
+      any.children.push(transition(st.attrs.id, { ms: cut ? 0 : T.reactInMs, conds: [triggerCond(t), boolCond('reducedMotion', true)] }));
+    } else any.children.push(transition(s.attrs.id, { ms: cut ? 0 : T.reactInMs, conds: [triggerCond(t)] }));
   }
 }));
 // 3b. Posture: sitUp stays for the call, so it can't share the Reactions layer.

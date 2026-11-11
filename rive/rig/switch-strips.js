@@ -18,7 +18,7 @@ const FACE = [60, 90, 208, 208]; // her face, in tile coordinates
 const FULL = [0, 0, 328, 430];
 
 // [label, setup steps before the switch, the switch's own data steps, crop]
-const SWITCHES = [
+const ALL_SWITCHES = [
   ['mood: listening to skeptical', ['mood=listening', 600], ['mood=skeptical']],
   ['mood: listening to talking', ['mood=listening', 'lipSync=true', 'viseme=open', 'mouthOpen=40', 600], ['mood=talking']],
   ['mood: talking to listening', ['mood=talking', 'lipSync=true', 'viseme=open', 'mouthOpen=40', 900], ['mood=listening']],
@@ -28,10 +28,14 @@ const SWITCHES = [
   ['eyes: laugh in (open to happy)', ['mood=listening', 600], ['laugh=1']],
   ['eyes: laugh out (happy to open)', ['mood=listening', 600, 'laugh=1', 1440], []],
   ['mouth: viseme open to round', ['mood=talking', 'lipSync=true', 'viseme=open', 'mouthOpen=40', 700], ['viseme=round']],
-  ['arm: handUp in', ['mood=listening', 600], ['handUp=1'], FULL],
-  ['arm: handUp out', ['mood=listening', 600, 'handUp=1', 1440], [], FULL],
+  ['arm: handUp in', ['mood=listening', 'reducedMotion=false', 600], ['handUp=1'], FULL],
+  ['arm: handUp out', ['mood=listening', 'reducedMotion=false', 600, 'handUp=1', 1270], [], FULL],
+  ['arm: checkWatch in', ['mood=listening', 'reducedMotion=false', 600], ['checkWatch=1'], FULL],
+  ['arm: checkWatch out', ['mood=listening', 'reducedMotion=false', 600, 'checkWatch=1', 1470], [], FULL],
   ['blink during a reaction: browRaise', ['mood=listening', 600], ['browRaise=1']],
 ];
+// ONLY=arm captures just the rows whose label starts with "arm".
+const SWITCHES = process.env.ONLY ? ALL_SWITCHES.filter(([l]) => l.startsWith(process.env.ONLY)) : ALL_SWITCHES;
 
 fs.rmSync(SHOTS, { recursive: true, force: true });
 fs.mkdirSync(SHOTS, { recursive: true });
@@ -56,7 +60,7 @@ if (run.status !== 0 || run.stdout.split('\n').some((l) => l.startsWith('err')))
 const strips = SWITCHES.map(([label, , , crop], i) => ({ label, crop: crop ?? FACE, frames: files[i].map((f) => path.basename(f)) }));
 const page = `<!doctype html><body style="margin:0;padding:20px;background:#F9F8F5;font-family:Inter,system-ui,sans-serif;color:#0B051D;width:${FRAMES * 76 + 40}px">
 <div style="font:700 20px sans-serif">Meera rig switches, ${name}: 60 fps, 16.7 ms a frame</div>
-<div style="font:13px sans-serif;color:#615F6D;margin:4px 0 12px">Each row starts two frames before the switch (the third frame is where it's triggered). Reduced motion is on so only the switch moves.</div>
+<div style="font:13px sans-serif;color:#615F6D;margin:4px 0 12px">Each row starts two frames before the switch (the third frame is where it's triggered). Reduced motion is on so only the switch moves (off for the arm rows, so the body dip shows).</div>
 <div id="o"></div><script>
 const strips = ${JSON.stringify(strips)};
 (async () => {

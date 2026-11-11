@@ -429,7 +429,7 @@ What the rig does (rive/RIG.md v2): parallax head turns from one turn value, hai
 
 **Smooth switches** (from Vishnu's phone test, 12 Nov: grey flashes and jitter):
 - Swaps never cross-fade two overlapping parts. The eyes (open, happy, closed), the expression mouths, the visemes and the mouth set (expression or talking) are Solos: one child shows at a time, and a swap is a single-frame cut at the start of the transition.
-- Arm poses: the pose arm fades in on top while arm_R stays fully visible, then arm_R hides in one frame; on the way back arm_R returns in one frame and the pose arm fades out on top.
+- Arm poses (handUp, checkWatch) are hard cuts both ways: on one frame arm_R hides and the pose arm shows. To sell the cut, the body dips 2 px on that frame and recovers over 120 ms (`armCut` in `make-rig.js`), and the arm that's showing dips with it. The same on the way back down. With reduced motion: the cut, no dip.
 - Each node is keyed by one layer only, through its own wrapper (arm_R's visibility moved to arm_R_show). Every mood state keys every property any mood keys. `make-rig.js` checks both and refuses to build if either breaks.
 - Every timed transition eases in and out.
 - `node rive/rig/switch-strips.js <name>` captures every kind of switch frame by frame at 60 fps.

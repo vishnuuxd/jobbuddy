@@ -376,5 +376,5 @@ Plum replaces Tropical. The entries above describe the Tropical build and stay a
 
 ## Meera rig: swaps cut instead of cross-fading (12 Nov)
 - Spec showed: rive/RIG.md v2 asked for a 40 ms crossfade on mouth swaps and a 120 ms fade on the arm pose swaps
-- Built instead: eyes, mouths and visemes cut in one frame (Solos). Arm poses fade the new arm in on top while the old one stays solid, then hide the old one in one frame
+- Built instead: eyes, mouths, visemes and arm poses all cut in one frame (Solos for the eyes and mouths). On an arm cut, in or out, the body dips 2 px and recovers over 120 ms to sell it, with the showing arm dipping along; reduced motion keeps the cut without the dip
 - Why: two half-transparent parts on top of each other showed as grey flashes on the phone (eye whites, ghost mouths, a see-through arm). Vishnu's rule: never two overlapping parts partly transparent at once
