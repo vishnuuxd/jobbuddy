@@ -245,7 +245,9 @@ function rigValues(p, mouthName, arm = { pose: 'rest' }) {
     const lid = s === 'L' ? p.lidL : p.lidR;
     const g = lidGeom(s);
     const yIn = g.top + (1 - lid.inn) * H, yOut = g.top + (1 - lid.out) * H;
-    const ang = (Math.atan2(yIn - yOut, g.xIn - g.xOut) - Math.atan2(0, g.xIn - g.xOut)) * 180 / Math.PI;
+    let ang = (Math.atan2(yIn - yOut, g.xIn - g.xOut) - Math.atan2(0, g.xIn - g.xOut)) * 180 / Math.PI;
+    // Keep the tilt in -180..180, so Rive animates the short way round and the lid never spins.
+    ang = ((ang + 540) % 360) - 180;
     v[`lid_upper_${s}`] = { ty: r2((yIn + yOut) / 2 - g.y), rot: r2(ang) };
     const low = s === 'L' ? p.lowL : p.lowR;
     v[`lid_lower_${s}`] = { ty: r2(-low * H * 0.62), line: low > 0.05 ? 1 : 0 };

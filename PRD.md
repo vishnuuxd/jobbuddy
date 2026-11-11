@@ -432,6 +432,7 @@ What the rig does (rive/RIG.md v2): parallax head turns from one turn value, hai
 - Arm poses (handUp, checkWatch) are hard cuts both ways: on one frame arm_R hides and the pose arm shows. To sell the cut, the body dips 2 px on that frame and recovers over 120 ms (`armCut` in `make-rig.js`), and the arm that's showing dips with it. The same on the way back down. With reduced motion: the cut, no dip.
 - Each node is keyed by one layer only, through its own wrapper (arm_R's visibility moved to arm_R_show). Every mood state keys every property any mood keys. `make-rig.js` checks both and refuses to build if either breaks.
 - Every timed transition eases in and out.
+- Rotations stay in −180..180° and never turn more than 90° between keys or across a state blend, so nothing spins the long way round (the upper lid spun after writing, 12 Nov). `rive/source/rig.js` keeps lid angles in range, and `make-rig.js` refuses to build otherwise.
 - `node rive/rig/switch-strips.js <name>` captures every kind of switch frame by frame at 60 fps.
 
 **Who fires the new triggers.** The agent fires impressed, laugh and reassure through the react tool. The app fires the other two:

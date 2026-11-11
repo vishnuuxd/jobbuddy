@@ -928,6 +928,8 @@ layers.push(layer('7 Breathing', ({ state, entry }) => {
 
 // ---------- checks: the rules from Vishnu's phone test ----------
 // 1. Each node is keyed by exactly one layer. 2. Every mood state keys every property any mood keys.
+// 3. Every rotation key is inside -180..180°, and no key-to-key step or state transition turns a
+// rotation by more than 90°, so nothing spins the long way round (the writing lid bug, 12 Nov).
 {
   const animById = new Map(animations.map((a) => [a.attrs.id, a]));
   const props = (a) => a.children.flatMap((ko) => ko.children.map((kp) => `${ko.attrs.objectId}|${kp.attrs.property ?? kp.attrs.propertyKey}`));
@@ -949,8 +951,50 @@ layers.push(layer('7 Breathing', ({ state, entry }) => {
     const missing = [...union].filter((k) => !moodProps[i].has(k));
     if (missing.length) problems.push(`mood ${m} misses ${missing.length} properties other moods key`);
   });
+  const deg = (r) => (r * 180) / Math.PI;
+  const nodeName = (id) => Object.keys(reg).find((n) => reg[n].id === id);
+  // Rotation values each animation keys: "objectId|property" -> [degrees, ...] in key order.
+  const rotations = (a) => {
+    const m = new Map();
+    for (const ko of a.children) for (const kp of ko.children) {
+      if (!/rotation/i.test(kp.attrs.property ?? '')) continue;
+      m.set(`${ko.attrs.objectId}|${kp.attrs.property}`, kp.children.map((k) => deg(Number(k.attrs.value))));
+    }
+    return m;
+  };
+  const label = (key) => { const [id, prop] = key.split('|'); return `${nodeName(id)}.${prop}`; };
+  let rotKeys = 0, rotTransitions = 0;
+  for (const a of animations) {
+    for (const [key, vals] of rotations(a)) {
+      vals.forEach((v, i) => {
+        rotKeys++;
+        if (v < -180 || v > 180) problems.push(`${a.attrs.name}: ${label(key)} key at ${v.toFixed(1)}°, outside -180..180`);
+        if (i && Math.abs(v - vals[i - 1]) > 90) problems.push(`${a.attrs.name}: ${label(key)} turns ${Math.abs(v - vals[i - 1]).toFixed(1)}° between keys`);
+      });
+    }
+  }
+  for (const L of layers) {
+    const states = L.children.filter((c) => c.tag === 'AnimationState');
+    const byId = new Map(states.map((st) => [st.attrs.id, st]));
+    const any = L.children.find((c) => c.tag === 'AnyState');
+    const pairs = [];
+    for (const st of states) for (const t of st.children.filter((c) => c.tag === 'StateTransition')) pairs.push([st, byId.get(t.attrs.stateToId)]);
+    for (const t of any.children.filter((c) => c.tag === 'StateTransition')) for (const st of states) pairs.push([st, byId.get(t.attrs.stateToId)]);
+    for (const [from, to] of pairs) {
+      if (!from || !to || from === to) continue;
+      const fa = animById.get(from.attrs.animationId), ta = animById.get(to.attrs.animationId);
+      const fr = rotations(fa), tr = rotations(ta);
+      for (const [key, tv] of tr) {
+        const fv = fr.get(key);
+        if (!fv) continue;
+        rotTransitions++;
+        const turn = Math.max(...fv.flatMap((a) => tv.map((b) => Math.abs(a - b))));
+        if (turn > 90) problems.push(`${L.attrs.name}: ${fa.attrs.name} to ${ta.attrs.name} turns ${label(key)} by ${turn.toFixed(1)}°`);
+      }
+    }
+  }
   if (problems.length) throw new Error('Rig rules broken:\n' + [...new Set(problems)].join('\n'));
-  console.log(`checks: ${nodeOwner.size} keyed nodes, each owned by one layer; all ${MOODS.length} moods key the same ${union.size} properties`);
+  console.log(`checks: ${nodeOwner.size} keyed nodes, each owned by one layer; all ${MOODS.length} moods key the same ${union.size} properties; ${rotKeys} rotation keys in -180..180 and ${rotTransitions} rotation blends, none over 90°`);
 }
 
 const smId = newId();

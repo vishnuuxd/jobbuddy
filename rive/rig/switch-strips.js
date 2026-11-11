@@ -13,7 +13,7 @@ const SHEET = path.join(BUILD, `strips-${name}`);
 // MAKE_RIG picks another generator, to capture an older rig for a before and after.
 const MAKE_RIG = process.env.MAKE_RIG ?? path.join(__dirname, 'make-rig.js');
 const SHOTS = path.join(SHEET, 'shots');
-const FRAMES = 26, STEP = 1000 / 60;
+const FRAMES = Number(process.env.FRAMES ?? 26), STEP = 1000 / 60;
 const FACE = [60, 90, 208, 208]; // her face, in tile coordinates
 const FULL = [0, 0, 328, 430];
 
@@ -32,6 +32,12 @@ const ALL_SWITCHES = [
   ['arm: handUp out', ['mood=listening', 'reducedMotion=false', 600, 'handUp=1', 1270], [], FULL],
   ['arm: checkWatch in', ['mood=listening', 'reducedMotion=false', 600], ['checkWatch=1'], FULL],
   ['arm: checkWatch out', ['mood=listening', 'reducedMotion=false', 600, 'checkWatch=1', 1470], [], FULL],
+  // The writing lid bug (12 Nov): lid_upper_R spun the long way round. ONLY=lid captures these.
+  ['lid: writing to listening', ['mood=writing', 1000], ['mood=listening']],
+  ['lid: reassure in', ['mood=listening', 600], ['reassure=1']],
+  ['lid: reassure out', ['mood=listening', 600, 'reassure=1', 1540], []],
+  ['lid: checkWatch in', ['mood=listening', 600], ['checkWatch=1']],
+  ['lid: checkWatch out', ['mood=listening', 600, 'checkWatch=1', 1470], []],
   ['blink during a reaction: browRaise', ['mood=listening', 600], ['browRaise=1']],
 ];
 // ONLY=arm captures just the rows whose label starts with "arm".

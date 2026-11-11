@@ -8145,7 +8145,7 @@
           <KeyFrameDouble value="1.15" frame="0" interpolationType="hold"/>
         </KeyedProperty>
         <KeyedProperty property="rotation">
-          <KeyFrameDouble value="-6.239" frame="0" interpolationType="hold"/>
+          <KeyFrameDouble value="0.0442" frame="0" interpolationType="hold"/>
         </KeyedProperty>
       </KeyedObject>
       <KeyedObject objectId="0:166">
@@ -9703,7 +9703,7 @@
           <KeyFrameDouble value="1.15" frame="0" interpolationType="hold"/>
         </KeyedProperty>
         <KeyedProperty property="rotation">
-          <KeyFrameDouble value="-6.239" frame="0" interpolationType="hold"/>
+          <KeyFrameDouble value="0.0442" frame="0" interpolationType="hold"/>
         </KeyedProperty>
       </KeyedObject>
       <KeyedObject objectId="0:166">
@@ -10268,7 +10268,7 @@
           <KeyFrameDouble value="-1.15" frame="0" interpolationType="hold"/>
         </KeyedProperty>
         <KeyedProperty property="rotation">
-          <KeyFrameDouble value="-6.239" frame="0" interpolationType="hold"/>
+          <KeyFrameDouble value="0.0442" frame="0" interpolationType="hold"/>
         </KeyedProperty>
       </KeyedObject>
       <KeyedObject objectId="0:166">
@@ -11779,7 +11779,7 @@
           <KeyFrameDouble value="-18.17" frame="0" interpolationType="hold"/>
         </KeyedProperty>
         <KeyedProperty property="rotation">
-          <KeyFrameDouble value="-6.1861" frame="0" interpolationType="hold"/>
+          <KeyFrameDouble value="0.097" frame="0" interpolationType="hold"/>
         </KeyedProperty>
       </KeyedObject>
       <KeyedObject objectId="0:166">
