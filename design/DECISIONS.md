@@ -368,3 +368,13 @@ Plum replaces Tropical. The entries above describe the Tropical build and stay a
 - Seven behaviours, nine Rive layers: sitUp stays for the call while other reactions come and go, so it has its own layer; the mouth set and the viseme are separate layers, as in v1
 - Hair follow-through is baked: a spring that lags 120 ms, overshoots about 40% and settles in about 300 ms is run against each head rotation curve (breathing, talking, thinking, laugh, leanIn) and saved as keys on the locks. Mood cross-fades don't add follow-through
 - public/meera.svg is build.js's output; rive/static/meera.svg keeps Vishnu's copy with its provenance data
+
+## Call: a ringing screen before she answers (12 Nov)
+- Screen showed: "Calling Meera · Connecting…" over the call layout
+- Built instead: a ringing screen like an outgoing phone call: plum, the static round Meera at 140 px with three lavender rings pulsing outward, "Meera", "HR interviewer", and "Calling…" then "Ringing…". Only the pink End call button, which cancels. A quiet two-ring ringback, muted by the iPhone silent switch and off with reduced motion. At least 1.2 s on screen. On answer, the round avatar grows into the video call tile in 300 ms, the static image riding the same path as it fades so the rig takes over without a jump; the rest of the call fades in after. Reduced motion: no rings, a crossfade
+- Why: Vishnu's phone test. The call layout is already mounted and hidden under the ringing screen, so the rig is loaded before she answers
+
+## Meera rig: swaps cut instead of cross-fading (12 Nov)
+- Spec showed: rive/RIG.md v2 asked for a 40 ms crossfade on mouth swaps and a 120 ms fade on the arm pose swaps
+- Built instead: eyes, mouths and visemes cut in one frame (Solos). Arm poses fade the new arm in on top while the old one stays solid, then hide the old one in one frame
+- Why: two half-transparent parts on top of each other showed as grey flashes on the phone (eye whites, ghost mouths, a see-through arm). Vishnu's rule: never two overlapping parts partly transparent at once

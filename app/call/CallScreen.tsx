@@ -2,7 +2,7 @@
 
 import { useConversation } from "@elevenlabs/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Meera, type MeeraStill } from "@/components/meera/Meera";
 import { SelfView } from "@/components/SelfView";
 import { Button } from "@/components/ui/Button";
@@ -13,6 +13,9 @@ import { createClientTools } from "@/lib/agent/clientTools";
 import { createInterviewVM, type Trigger } from "@/lib/avatar/interviewVM";
 import { callCopy, type CallStage } from "@/lib/call/callCopy";
 import { hangUpReason } from "@/lib/call/close";
+import { closedWithoutDone } from "@/lib/call/closeNet";
+import { createRingback } from "@/lib/call/ringback";
+import { MeeraStatic } from "@/components/meera/MeeraStatic";
 import { callConfig } from "@/lib/call/config";
 import {
   lastQuestionAsked,
@@ -90,6 +93,16 @@ export function CallScreen() {
   const callNumber = useRef<number | undefined>(undefined);
   const [callId, setCallId] = useState<string | null>(null);
   const selfView = useSelfView();
+  // Ringing, before she answers: "Calling…", then "Ringing…" once the connection request is out.
+  const [ringStatus, setRingStatus] = useState<"calling" | "ringing">("calling");
+  const ringStartedAt = useRef(0);
+  const cancelled = useRef(false);
+  const [ringback] = useState(createRingback);
+  const avatarRef = useRef<HTMLDivElement>(null);
+  const tileRef = useRef<HTMLDivElement>(null);
+  const answerAvatarRef = useRef<HTMLSpanElement>(null);
+  // Where the ringing avatar was when she answered: the tile grows out of it.
+  const [answeredFrom, setAnsweredFrom] = useState<DOMRect | null>(null);
 
   function setSessionOpen(open: boolean) {
     inCallRef.current = open;
@@ -99,6 +112,8 @@ export function CallScreen() {
   const conversation = useConversation({
     clientTools,
     onConnect: () => {
+      ringback.stop();
+      setAnsweredFrom(avatarRef.current?.getBoundingClientRect() ?? null);
       const pending = pendingRef.current!;
       const texts = { cvText: pending.cvText, jdText: pending.jdText };
       if (pending.resume && resumeRecord.current) {
@@ -310,6 +325,25 @@ export function CallScreen() {
   // After setPhase("done"): hang up 1 second after her closing line has actually been heard.
   // Safety caps, counted from setPhase("done"): end anyway if her audio hasn't started
   // within 3 seconds, or hasn't finished within 15.
+  // Safety net: her closing line on the last question, but no setPhase("done") within 3 s of her
+  // audio stopping. Close as complete; setting done hands over to the normal close below.
+  useEffect(() => {
+    if (!inCall) return;
+    const timer = setInterval(() => {
+      const state = session.get();
+      const close = closedWithoutDone(
+        { phase: state.phase, question: state.question, questionCount: totalQuestions(state.setup), speaking: state.speaking, retry: !!state.retryOf, transcript: state.transcript },
+        { lineAt: herLastLineAt.current, stoppedAt: herVoiceStoppedAt.current, now: Date.now() },
+        callConfig.closingLineWaitMs,
+      );
+      if (close) {
+        console.warn('Call closed by the app: her closing line, but no setPhase("done")');
+        session.setPhase("done");
+      }
+    }, 200);
+    return () => clearInterval(timer);
+  }, [inCall, session]);
+
   const callEnding = inCall && call.phase === "done";
   useEffect(() => {
     if (!callEnding) return;
@@ -342,12 +376,17 @@ export function CallScreen() {
     if (!pending) return setProblem("noSetup");
     setProblem(null);
     setStage("connecting");
+    setRingStatus("calling");
     hangingUp.current = false;
+    cancelled.current = false;
+    ringStartedAt.current = performance.now();
+    ringback.start();
 
     try {
       const mic = await navigator.mediaDevices.getUserMedia({ audio: true });
       mic.getTracks().forEach((track) => track.stop());
     } catch {
+      ringback.stop();
       setProblem("mic");
       return;
     }
@@ -361,6 +400,11 @@ export function CallScreen() {
       const res = await fetch("/api/agent-session", { cache: "no-store" });
       if (!res.ok) throw new Error(`Session route returned ${res.status}`);
       const { signedUrl } = (await res.json()) as { signedUrl: string };
+      setRingStatus("ringing");
+      // Ring for at least minRingMs, so the screen never flashes on a fast connection.
+      const wait = callConfig.minRingMs - (performance.now() - ringStartedAt.current);
+      if (wait > 0) await new Promise((done) => setTimeout(done, wait));
+      if (cancelled.current) return;
       const firstMessage = resumeRecord.current
         ? resumeFirstLine(lastQuestionAsked(resumeRecord.current.transcript).text)
         : pending.retry
@@ -368,9 +412,68 @@ export function CallScreen() {
           : openingLine(pending.setup);
       conversation.startSession({ signedUrl, connectionType: "websocket", overrides: { agent: { firstMessage } } });
     } catch {
+      ringback.stop();
       setProblem("failed");
     }
   }
+
+  // Cancel while it's ringing: stop everything and go home.
+  function cancelCall() {
+    cancelled.current = true;
+    ringback.stop();
+    hangingUp.current = true;
+    conversation.endSession();
+    router.push("/");
+  }
+  useEffect(() => () => ringback.stop(), [ringback]);
+  useEffect(() => {
+    if (problem) ringback.stop(); // No mic, no connection: the ringing stops with it.
+  }, [problem, ringback]);
+
+  // She answered: the tile grows out of the round avatar (or crossfades, with reduced motion).
+  useLayoutEffect(() => {
+    const tile = tileRef.current;
+    if (!answeredFrom || !tile) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const ease = "cubic-bezier(0.42, 0, 0.58, 1)";
+    const ms = callConfig.answerMs;
+    const overlay = answerAvatarRef.current;
+    if (reduce) {
+      tile.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms, easing: ease });
+      overlay?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms, easing: ease, fill: "forwards" });
+    } else {
+      // Map the tile so her face in it sits exactly where the avatar's face was, then let it go.
+      const A = answeredFrom, Tr = tile.getBoundingClientRect();
+      const k = Math.max(Tr.width / 328, Tr.height / 430), offX = (Tr.width - 328 * k) / 2; // the tile's cover fit
+      const s1 = A.width / 300; // the avatar image: viewBox 50 60 300 300 of the drawing
+      const S = s1 / k;
+      const face = { x: (200 - 36) * k + offX, y: (200 - 30) * k }; // her face centre in the tile
+      const tx = A.left + (200 - 50) * s1 - Tr.left - S * face.x;
+      const ty = A.top + (200 - 60) * s1 - Tr.top - S * face.y;
+      const cx = (A.left + A.width / 2 - Tr.left - tx) / S, cy = (A.top + A.height / 2 - Tr.top - ty) / S;
+      const r0 = A.width / 2 / S, r1 = Math.hypot(Math.max(cx, Tr.width - cx), Math.max(cy, Tr.height - cy));
+      tile.animate(
+        [
+          { transformOrigin: "0 0", transform: `translate(${tx}px, ${ty}px) scale(${S})`, clipPath: `circle(${r0}px at ${cx}px ${cy}px)` },
+          { transformOrigin: "0 0", transform: "none", clipPath: `circle(${r1}px at ${cx}px ${cy}px)` },
+        ],
+        { duration: ms, easing: ease },
+      );
+      // The static avatar rides the same path, from the avatar to where her face lands in the tile,
+      // so the two faces stay aligned while it fades out.
+      const end = { left: Tr.left + offX + (50 - 36) * k, top: Tr.top + (60 - 30) * k, size: 300 * k };
+      overlay?.animate(
+        [
+          { left: `${A.left}px`, top: `${A.top}px`, width: `${A.width}px`, height: `${A.height}px`, opacity: 1 },
+          { opacity: 0, offset: 0.6 },
+          { left: `${end.left}px`, top: `${end.top}px`, width: `${end.size}px`, height: `${end.size}px`, opacity: 0 },
+        ],
+        { duration: ms, easing: ease, fill: "forwards" },
+      );
+    }
+    const done = setTimeout(() => setAnsweredFrom(null), ms);
+    return () => clearTimeout(done);
+  }, [answeredFrom]);
 
   // Start straight away: the tap on the sheet is the gesture. Once only, even in development.
   useEffect(() => {
@@ -470,9 +573,22 @@ export function CallScreen() {
 
   const segments = total ?? 0;
   const current = stage === "writing" ? segments + 1 : Math.max(call.question, 0);
+  const ringing = stage === "connecting";
 
   return (
-    <main className={styles.call}>
+    <>
+    {ringing && (
+      <Ringing status={ringStatus} avatarRef={avatarRef} onCancel={cancelCall} />
+    )}
+    {answeredFrom && (
+      // The ringing avatar, fading out over the tile as it grows out of it.
+      <span ref={answerAvatarRef} className={styles.answerAvatar} style={{ left: answeredFrom.left, top: answeredFrom.top, width: answeredFrom.width, height: answeredFrom.height }} aria-hidden="true">
+        <MeeraStatic size={answeredFrom.width} className={styles.answerImage} />
+      </span>
+    )}
+    {/* Under the ringing screen the call is already laid out, with the rig loaded and idle, so she
+        takes over from the static image without a blank frame. */}
+    <main className={`${styles.call} ${ringing ? styles.waiting : ""} ${answeredFrom ? styles.answering : ""}`} aria-hidden={ringing || undefined}>
       <div className={styles.top}>
         {retry ? (
           <Tag tone="lime">Retry · Question {retry.questionIndex}</Tag>
@@ -485,7 +601,7 @@ export function CallScreen() {
       </div>
 
       {/* Meera fills the tile, like the other person on a video call. My camera sits in its corner. */}
-      <div className={styles.tile}>
+      <div className={styles.tile} ref={tileRef}>
         <Meera vm={vm} fill />
         <SelfView stream={selfView.stream} className={styles.selfView} />
         {reaction && stage === "live" && (
@@ -527,6 +643,33 @@ export function CallScreen() {
           </div>
         </>
       )}
+    </main>
+    </>
+  );
+}
+
+/** Ringing, before she answers (PRD.md, Call behavior: Ringing): like an outgoing phone call. */
+function Ringing({ status, avatarRef, onCancel }: { status: "calling" | "ringing"; avatarRef: React.RefObject<HTMLDivElement | null>; onCancel: () => void }) {
+  return (
+    <main className={styles.ringing}>
+      <div className={styles.ringCentre}>
+        <div className={styles.ringAvatar} ref={avatarRef}>
+          <span className={styles.ring} aria-hidden="true" />
+          <span className={styles.ring} aria-hidden="true" />
+          <span className={styles.ring} aria-hidden="true" />
+          <MeeraStatic size={140} />
+        </div>
+        <h1 className={styles.ringName}>Meera</h1>
+        <p className={styles.ringRole}>HR interviewer</p>
+        <p className={styles.ringStatus} aria-live="polite">
+          {status === "calling" ? "Calling…" : "Ringing…"}
+        </p>
+      </div>
+      <div className={styles.ringControls}>
+        <CallControl label="End call" end onClick={onCancel}>
+          <CloseIcon />
+        </CallControl>
+      </div>
     </main>
   );
 }

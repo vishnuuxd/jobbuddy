@@ -61,6 +61,7 @@ All setup happens here, before the call. Nothing is asked by voice.
 
 **Call**
 
+- Before she answers, a ringing screen, like an outgoing phone call (see Call behavior: Ringing).
 - Meera fills a large rounded tile, like the other person on a video call. My self view camera sits small in the tile's top corner, off by default, one tap to turn on. What she's doing ("Meera's talking · Question 1 of 2") is a caption over the bottom of the tile, like a name label. The question card and the call controls stay below the tile.
 - Controls: mute, camera, hang up. No attach button: the CV and job description only come in through the setup sheet, before the call. Meera never asks for them.
 - A small progress label once the interview starts: "Question 2 of 5". No timer.
@@ -106,6 +107,8 @@ Six journeys. Four of them carry the video: first practice, daily practice, chec
 
 The call has three phases: opening, interview and close. The app tracks the phase. Flags only count during the interview.
 
+**Ringing.** Before she answers, the call screen rings, like an outgoing phone call. Full plum, no tile, no animated rig. Centred: the static round Meera image at 140 px with three soft lavender rings pulsing outward, then "Meera" in the display font, "HR interviewer", and a status line: "Calling…", then "Ringing…" once the connection request is out. At the bottom, only the pink End call button, which cancels and goes home; mute and camera wait until she answers. A quiet ringback (two short rings on repeat) plays from the tap until she connects; on an iPhone the silent switch mutes it, and it's off with reduced motion. The ringing screen shows for at least 1.2 s (`callConfig.minRingMs`) so it never flashes: the session starts once that time is up. When she connects, the round avatar grows into the video call tile over 300 ms (`callConfig.answerMs`), with the static image riding the same path as it fades, so the rig, already loaded and idle underneath, takes over without a jump. Then the rest of the call screen fades in. With reduced motion: no pulsing rings, and a plain crossfade into the tile.
+
 **Opening.** The app speaks her first line, built from the sheet, through the first message override. Keep it short, like a real interviewer. The app picks one at random:
 
 - With a CV and a job post: "Hi Vishnu, I'm Meera. Ten minutes on the senior product designer role. I've read your CV and the job post. Ready?"
@@ -136,6 +139,8 @@ The app owns the time limit, counted from connect. Retry calls have none of this
 - Each question can have one follow up from her. Follow ups don't count toward the total.
 
 **Close.** "Okay, that's everything I wanted to ask. Your scorecard's ready when you are." Phase moves to done. The app ends the call itself: it waits until her voice actually stops, then 1 second, then hangs up. It never times this from the setPhase call, which can arrive before she finishes speaking. If she never calls setPhase("done"), the time limit above ends the call, and the 20 second silence rule in ElevenLabs is the backstop. Then the scorecard is built.
+
+**Close safety net.** On a phone test on 11 Nov she said her closing line and never called setPhase("done"), so the call stayed open. Now, if she's on the last main question, her turn mentions the scorecard, and setPhase("done") hasn't come within 3 s of her audio stopping (`callConfig.closingLineWaitMs`), the app sets done itself and the normal close hangs up. The call counts as complete. Retry calls are left out: they close themselves after one line. Logic in `lib/call/closeNet.ts`.
 
 Her text can carry voice tags like "[calm]" or "[laughs]". The app removes every square bracket tag before her words show in the caption, are saved to the transcript or go to the scorecard.
 
@@ -421,6 +426,13 @@ What the rig does (rive/RIG.md v2): parallax head turns from one turn value, hai
 | nod, smile, browRaise, glanceDown, handUp, checkWatch, sitUp, leanIn, expectant (brows up slightly, head tilted), think, impressed, laugh, reassure, surprised | trigger | Fire once, then hand back |
 
 **State machine layers, running at once** (rive/RIG.md v2's seven behaviours, in nine Rive layers): 1 Mood, with the face of every reaction so it hands back to the current mood without a snap; 2 Talking motion; 3 Reactions (movement, arm swaps and the opening blink) and 3b Posture (sitUp, which stays for the call, so it needs its own layer); 4 Blink; 5 Eye darts; 6 Mouth and 6b Viseme; 7 Breathing and follow-through.
+
+**Smooth switches** (from Vishnu's phone test, 12 Nov: grey flashes and jitter):
+- Swaps never cross-fade two overlapping parts. The eyes (open, happy, closed), the expression mouths, the visemes and the mouth set (expression or talking) are Solos: one child shows at a time, and a swap is a single-frame cut at the start of the transition.
+- Arm poses: the pose arm fades in on top while arm_R stays fully visible, then arm_R hides in one frame; on the way back arm_R returns in one frame and the pose arm fades out on top.
+- Each node is keyed by one layer only, through its own wrapper (arm_R's visibility moved to arm_R_show). Every mood state keys every property any mood keys. `make-rig.js` checks both and refuses to build if either breaks.
+- Every timed transition eases in and out.
+- `node rive/rig/switch-strips.js <name>` captures every kind of switch frame by frame at 60 fps.
 
 **Who fires the new triggers.** The agent fires impressed, laugh and reassure through the react tool. The app fires the other two:
 - **think:** when my turn has ended (my final transcript arrived) and her reply hasn't started 600 ms after my voice stopped. The app holds the thinking mood until she speaks, or 2.5 s at most, and only during the interview. A pause in the middle of an answer never fires it. Thresholds in `lib/live/config.ts` (thinkAfterMs, thinkHoldMs), logic in `lib/call/thinking.ts`.

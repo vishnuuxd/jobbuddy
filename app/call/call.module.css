@@ -107,3 +107,50 @@
 }
 .caption .title { font-size: 24px; line-height: 1.1; }
 .caption .sub { color: rgb(255 255 255 / 0.78); font-size: 14px; }
+
+/* Ringing (PRD.md, Call behavior: Ringing): an outgoing call before she answers. */
+.ringing {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) var(--side) calc(env(safe-area-inset-bottom, 0px) + 24px);
+  background: var(--plum);
+  color: var(--white);
+}
+.ringCentre { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.ringAvatar { position: relative; width: 140px; height: 140px; margin-bottom: 26px; }
+.ringAvatar > img { position: relative; z-index: 1; }
+.ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--lavender);
+  opacity: 0;
+  animation: ripple 2.4s cubic-bezier(0, 0, 0.58, 1) infinite;
+}
+.ring:nth-child(2) { animation-delay: 0.8s; }
+.ring:nth-child(3) { animation-delay: 1.6s; }
+.ringName { font: 500 34px/1.05 var(--display); }
+.ringRole { color: var(--on-plum-muted); font: 400 16px/22px var(--text); }
+.ringStatus { margin-top: 10px; color: var(--lavender); font: 500 15px/20px var(--text); }
+.ringControls { display: flex; justify-content: center; width: 100%; padding-top: 18px; }
+
+/* The call underneath, ready but hidden while it rings. */
+.waiting { visibility: hidden; }
+/* She answered: the tile grows out of the avatar; the rest of the call fades in after it. */
+.answerAvatar { position: fixed; z-index: 11; pointer-events: none; }
+.answerImage { width: 100%; height: 100%; }
+.answering > :not(.tile) { animation: fadeIn 260ms 160ms ease-in-out both; }
+
+@keyframes ripple { 0% { transform: scale(1); opacity: 0.35; } 100% { transform: scale(2); opacity: 0; } }
+@keyframes fadeIn { from { opacity: 0; } }
+@keyframes fadeOut { to { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ring { display: none; }
+  .answering > :not(.tile) { animation-delay: 0ms; }
+}

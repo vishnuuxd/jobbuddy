@@ -51,6 +51,7 @@ const RATE = { features: RATES.features, nose: RATES.nose, face: RATES.face, hai
 // posture: sitUp, which stays. talk: the talking loop. react: one-off triggers. breath: breathing.
 // dart: eye darts. The part node itself takes the mood and reaction poses.
 const WRAPPERS = {
+  arm_R: ['arm_R_show'], // the Reactions layer's arm swap; the Mood layer moves arm_R itself
   head: ['head_posture', 'head_talk', 'head_react', 'head_breath'],
   body: ['body_posture', 'body_talk', 'body_react', 'body_breath'],
   brow_L: ['brow_L_posture', 'brow_L_talk'],
@@ -220,19 +221,27 @@ function convert(svgEl, ctmParent, frameParent, parentName) {
     register(name, id, { ...rest, opacity: attrs.opacity ?? 1 });
 
     let children;
-    if (name === 'mouth') {
+    // Swaps are Solos: one child shows at a time, so a swap is a single-frame cut and two parts are
+    // never half-visible together (the grey flashes on the phone). Solo children draw at full opacity.
+    const solo = (soloName, kids, activeName) => {
+      const sid = newId();
+      register(soloName, sid, { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1, opacity: 1 });
+      for (const k of kids) { delete k.attrs.opacity; reg[k.attrs.name].rest.opacity = 1; }
+      return el('Solo', { x: 0, y: 0, activeComponentId: reg[activeName].id, name: soloName, id: sid }, kids);
+    };
+    if (/^eye_[LR]$/.test(name)) {
+      const s = name.slice(-1);
+      const all = convertChildren(svgEl, ctm, frame, name);
+      const swapNames = [`eye_open_${s}`, `eye_happy_${s}`, `eye_closed_${s}`];
+      const kids = all.filter((c) => swapNames.includes(c.attrs.name));
+      children = [...all.filter((c) => !kids.includes(c)), solo(`eye_swap_${s}`, kids, `eye_open_${s}`)];
+    } else if (name === 'mouth') {
       // Two sets inside the mouth: expression mouths, and the visemes that mouthOpen scales (the jaw).
-      const groupFor = (setName, filter) => {
-        const gid = newId();
-        register(setName, gid, { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1, opacity: 1 });
-        const kids = convertChildren({ children: svgEl.children.filter(filter) }, ctm, frame, setName);
-        return el('Node', { x: 0, y: 0, name: setName, id: gid }, kids);
-      };
-      const talk = groupFor('mouth_talk', (c) => c.attrs.id?.startsWith('viseme_'));
-      talk.attrs.opacity = 0;
-      reg.mouth_talk.rest.opacity = 0;
+      const set = (setName, prefix, active) => solo(setName, convertChildren({ children: svgEl.children.filter((c) => c.attrs.id?.startsWith(prefix)) }, ctm, frame, setName), active);
+      const talk = set('mouth_talk', 'viseme_', 'viseme_rest');
       talk.children.unshift(el('DataBindContext', { sourcePathIds: `${VM.id}-${VM.props.mouthOpen.id}`, propertyKey: 17, converterId: CONVERTERS.mouthOpen }));
-      children = [talk, groupFor('mouth_expr', (c) => c.attrs.id?.startsWith('mouth_'))];
+      const expr = set('mouth_expr', 'mouth_', 'mouth_neutral');
+      children = [solo('mouth_set', [talk, expr], 'mouth_expr')];
     } else {
       children = convertChildren(svgEl, ctm, frame, name);
     }
@@ -406,14 +415,11 @@ function poseKeys(v, only) {
     set(`pupil_${s}`, 'y', r(`pupil_${s}`).y + p.ty);
     set(`pupil_${s}`, 'scaleX', p.scale);
     set(`pupil_${s}`, 'scaleY', p.scale);
-    const mode = v[`eye_${s}`];
-    set(`eye_open_${s}`, 'opacity', mode === 'open' ? 1 : 0);
-    set(`eye_happy_${s}`, 'opacity', mode === 'happy' ? 1 : 0);
-    set(`eye_closed_${s}`, 'opacity', mode === 'closed' ? 1 : 0);
+    set(`eye_swap_${s}`, 'activeComponentId', reg[`eye_${v[`eye_${s}`]}_${s}`].id);
   }
   // The expression's own mouth. A viseme here (talking) means the mouth comes from the viseme layer.
   const mouth = EXPRESSION_MOUTHS.includes(v.mouth) ? v.mouth : 'mouth_neutral';
-  for (const m of EXPRESSION_MOUTHS) set(m, 'opacity', m === mouth ? 1 : 0);
+  set('mouth_expr', 'activeComponentId', reg[mouth].id);
   return k;
 }
 /** arm_R's translation, for rest and writing (the Mood layer owns it). */
@@ -434,7 +440,9 @@ function anim(name, duration, tracks, { loop = false } = {}) {
   }
   const keyed = [...byObj.entries()].map(([name, props]) =>
     el('KeyedObject', { objectId: reg[name].id }, [...props.values()].map((t) =>
-      el('KeyedProperty', { property: t.property }, (t.keys ?? [{ frame: 0, value: t.value }]).map((k) => {
+      t.property === 'activeComponentId'
+        ? el('KeyedProperty', { propertyKey: 296 }, (t.keys ?? [{ frame: 0, value: t.value }]).map((k) => el('KeyFrameId', { value: k.value, frame: Math.round(k.frame) })))
+        : el('KeyedProperty', { property: t.property }, (t.keys ?? [{ frame: 0, value: t.value }]).map((k) => {
         const attrs = { value: k.value, frame: Math.round(k.frame), interpolationType: k.ease ? 'cubic' : k.linear ? 'linear' : 'hold' };
         const kids = k.ease ? [el('CubicEaseInterpolator', { x1: k.ease[0], y1: k.ease[1], x2: k.ease[2], y2: k.ease[3] })] : [];
         return el('KeyFrameDouble', attrs, kids);
@@ -597,7 +605,7 @@ const reactRest = {
   body_react: { y: 0 },
   lock_L_react: { rotation: 0 },
   lock_R_react: { rotation: 0 },
-  arm_R: { opacity: 1 },
+  arm_R_show: { opacity: 1 },
   arm_hold: { opacity: 0 },
   arm_watch: { opacity: 0 },
 };
@@ -615,11 +623,14 @@ const reactRestAnim = (() => {
   return anim('react_rest', 100, all);
 })();
 const hold = (inMs, holdMs, outMs, peak, base = 0) => [[0, base], [inMs, peak], [inMs + holdMs, peak], [inMs + holdMs + outMs, base]];
+// The pose arm draws on top of arm_R. In: it fades in while arm_R stays fully visible, then arm_R
+// hides in one frame. Out: arm_R comes back in one frame, then the pose arm fades out on top.
+// Only one of the two is ever partly transparent.
 const armSwap = (group, holdMs) => {
   const s = T.armSwapMs, o = T.reactOutMs, end = s + holdMs + o;
   return [
-    { name: 'arm_R', property: 'opacity', keys: curve(hold(s, holdMs, o, 0, 1)) },
-    { name: group, property: 'opacity', keys: curve(hold(s, holdMs, o, 1, 0)) },
+    { name: 'arm_R_show', property: 'opacity', keys: [{ frame: 0, value: 1 }, { frame: s, value: 0 }, { frame: s + holdMs, value: 1 }, { frame: end, value: 1 }] },
+    { name: group, property: 'opacity', keys: curve([[0, 0], [s, 1], [s + holdMs, 1], [end, 0]]) },
     end,
   ];
 };
@@ -745,9 +756,9 @@ const blinkDouble = anim('blink_double', 2 * blinkLen + 60, blinkKeys([...blinkC
 const blinkWaits = b.waitsMs.map((ms) => anim(`blink_wait_${ms}`, ms, blinkKeys([{ frame: 0, value: 0 }])));
 
 // ---- Mouth and jaw (layer 6) ----
-const mouthExpr = anim('mouth_expression', 100, [{ name: 'mouth_expr', property: 'opacity', value: 1 }, { name: 'mouth_talk', property: 'opacity', value: 0 }]);
-const mouthTalk = anim('mouth_talking', 100, [{ name: 'mouth_expr', property: 'opacity', value: 0 }, { name: 'mouth_talk', property: 'opacity', value: 1 }]);
-const visemeAnims = Object.fromEntries(VISEMES.map((v) => [v, anim(`viseme_${v}`, 100, VISEMES.map((w) => ({ name: `viseme_${w}`, property: 'opacity', value: w === v ? 1 : 0 })))]));
+const mouthExpr = anim('mouth_expression', 100, [{ name: 'mouth_set', property: 'activeComponentId', value: reg.mouth_expr.id }]);
+const mouthTalk = anim('mouth_talking', 100, [{ name: 'mouth_set', property: 'activeComponentId', value: reg.mouth_talk.id }]);
+const visemeAnims = Object.fromEntries(VISEMES.map((v) => [v, anim(`viseme_${v}`, 100, [{ name: 'mouth_talk', property: 'activeComponentId', value: reg[`viseme_${v}`].id }])]));
 
 // ---- Sway demo, for the contact sheet only: the head tilted -6° with the locks at the reference's
 // lag, overshoot and settle angles. Played by the Sway artboard, never by the state machine.
@@ -771,9 +782,11 @@ const boolCond = (name, value) =>
 const numCond = (name, op, value) =>
   el('TransitionViewModelCondition', { opValue: op }, [comparator('BindablePropertyNumber', 636, name), el('TransitionValueNumberComparator', { value })]);
 const triggerCond = (name) => el('TransitionViewModelCondition', {}, [comparator('BindablePropertyTrigger', 686, name), el('TransitionValueTriggerComparator', {})]);
-const transition = (to, { ms = 0, ease = false, exit = false, conds = [] } = {}) => {
+// Every timed transition eases in and out: nothing starts from a jump.
+const transition = (to, { ms = 0, ease = true, exit = false, conds = [] } = {}) => {
   const attrs = { stateToId: to };
   if (ms) attrs.duration = ms;
+  else ease = false;
   if (ease) attrs.interpolationType = 'cubic';
   if (exit) Object.assign(attrs, { enableExitTime: 'true', exitTimeIsPercetange: 'true', exitTime: 100 });
   return el('StateTransition', attrs, [...(ease ? [easeInterp()] : []), ...conds]);
@@ -868,8 +881,8 @@ layers.push(layer('5 Eye darts', ({ state, entry }) => {
 layers.push(layer('6 Mouth', ({ state, entry }) => {
   const expr = state(mouthExpr), talk = state(mouthTalk);
   entry.children.push(transition(expr.attrs.id));
-  expr.children.push(transition(talk.attrs.id, { ms: T.mouthFadeMs, conds: [enumCond('mood', 'Mood', 'talking')] }));
-  talk.children.push(transition(expr.attrs.id, { ms: T.mouthFadeMs, conds: [enumCond('mood', 'Mood', 'talking', 'notEqual')] }));
+  expr.children.push(transition(talk.attrs.id, { conds: [enumCond('mood', 'Mood', 'talking')] }));
+  talk.children.push(transition(expr.attrs.id, { conds: [enumCond('mood', 'Mood', 'talking', 'notEqual')] }));
 }));
 // 6b. Viseme: letter timing picks the shape; without it, mouthOpen picks rest, teeth or open.
 layers.push(layer('6b Viseme', ({ state, entry }) => {
@@ -883,8 +896,8 @@ layers.push(layer('6b Viseme', ({ state, entry }) => {
   const auto = Object.fromEntries(Object.keys(bands).map((v) => [v, state(visemeAnims[v])]));
   entry.children.push(transition(vs.rest.attrs.id));
   for (const from of [...Object.values(vs), ...Object.values(auto)]) {
-    for (const to of VISEMES) if (from !== vs[to]) from.children.push(transition(vs[to].attrs.id, { ms: T.mouthFadeMs, conds: [boolCond('lipSync', true), enumCond('viseme', 'Viseme', to)] }));
-    for (const [band, conds] of Object.entries(bands)) if (from !== auto[band]) from.children.push(transition(auto[band].attrs.id, { ms: T.mouthFadeMs, conds: [boolCond('lipSync', false), ...conds] }));
+    for (const to of VISEMES) if (from !== vs[to]) from.children.push(transition(vs[to].attrs.id, { conds: [boolCond('lipSync', true), enumCond('viseme', 'Viseme', to)] }));
+    for (const [band, conds] of Object.entries(bands)) if (from !== auto[band]) from.children.push(transition(auto[band].attrs.id, { conds: [boolCond('lipSync', false), ...conds] }));
   }
 }));
 // 7. Breathing and follow-through (off with reduced motion).
@@ -894,6 +907,33 @@ layers.push(layer('7 Breathing', ({ state, entry }) => {
   breathe.children.push(transition(still.attrs.id, { ms: T.moodBlendMs, ease: true, conds: [boolCond('reducedMotion', true)] }));
   still.children.push(transition(breathe.attrs.id, { ms: T.moodBlendMs, ease: true, conds: [boolCond('reducedMotion', false)] }));
 }));
+
+// ---------- checks: the rules from Vishnu's phone test ----------
+// 1. Each node is keyed by exactly one layer. 2. Every mood state keys every property any mood keys.
+{
+  const animById = new Map(animations.map((a) => [a.attrs.id, a]));
+  const props = (a) => a.children.flatMap((ko) => ko.children.map((kp) => `${ko.attrs.objectId}|${kp.attrs.property ?? kp.attrs.propertyKey}`));
+  const nodeOwner = new Map();
+  const problems = [];
+  for (const L of layers) {
+    for (const st of L.children.filter((c) => c.tag === 'AnimationState')) {
+      for (const key of props(animById.get(st.attrs.animationId))) {
+        const node = key.split('|')[0];
+        const owner = nodeOwner.get(node);
+        if (owner && owner !== L.attrs.name) problems.push(`node ${Object.keys(reg).find((n) => reg[n].id === node)} keyed by ${owner} and ${L.attrs.name}`);
+        nodeOwner.set(node, L.attrs.name);
+      }
+    }
+  }
+  const moodProps = MOODS.map((m) => new Set(props(animById.get(moodAnims[m]))));
+  const union = new Set(moodProps.flatMap((s) => [...s]));
+  MOODS.forEach((m, i) => {
+    const missing = [...union].filter((k) => !moodProps[i].has(k));
+    if (missing.length) problems.push(`mood ${m} misses ${missing.length} properties other moods key`);
+  });
+  if (problems.length) throw new Error('Rig rules broken:\n' + [...new Set(problems)].join('\n'));
+  console.log(`checks: ${nodeOwner.size} keyed nodes, each owned by one layer; all ${MOODS.length} moods key the same ${union.size} properties`);
+}
 
 const smId = newId();
 const stateMachine = el('StateMachine', { name: 'InterviewVM', id: smId }, layers);

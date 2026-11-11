@@ -8,4 +8,11 @@ export const callConfig = {
   timeUpCloseCapMs: 60_000,
   // After setPhase("done"): hang up this long after her voice has actually stopped (PRD.md, Call behavior: Close).
   hangUpAfterHerVoiceMs: 1_000,
+  // Safety net: she said her closing line on the last question but never called setPhase("done").
+  // This long after her audio stops, the app closes the call itself, as complete.
+  closingLineWaitMs: 3_000,
+  // Ringing: the screen shows at least this long, even on a fast connection, so it never flashes.
+  minRingMs: 1_200,
+  // When she answers, the round avatar grows into the video call tile over this long.
+  answerMs: 300,
 };
