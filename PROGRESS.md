@@ -181,12 +181,14 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 - [x] Outside the call flow, Meera is a static image (`public/meera.svg`, made by `rive/source/build.js`), shown round. The animated rig stays on the call, writing and retry screens, and on `/kit`
 - [x] The rig is in Rive for case study visuals: https://editor.rive.app/file/meera/2718334. `npm run rig:push` updates it without touching the repo
 
-## Next
+## Meera v2, 11 Nov 2026
 
-- Vishnu's phone retest
-- Then final testing and the video
+- [x] Meera v2 is live (`6dc4bbf`): the video call tile, parallax head turns, hair follow-through, arm poses, the talking loop, the thinking mood and the five new triggers. The contact sheet matches the reference within 0.09%, and talking motion is 5.9% per frame against Alex's 6.1%
+- [x] The "..." on the question card is fixed (`997dd80`): a turn I cut off before she speaks came through as "..." and replaced her question. Wordless lines are now skipped, and her turn is retagged when the question changes
+- [x] Unit tests, the build and both e2e suites pass
+- [x] PRD.md has the impressed, laugh and reassure lines from the live ElevenLabs prompt, and the react tool lists all fourteen names
 
 ## Still open, as of 11 Nov 2026
 
-- **Future triggers:** think, impressed, laugh, reassure and surprised. The poses exist in `rive/expressions.json`; the wiring (rig states, the react tool's list and the app) isn't built
-- Optional: connect the Vercel project to GitHub so pushes deploy themselves. Until then, each update needs `vercel deploy --prod`
+- **Final testing**
+- **The video**
