@@ -20,6 +20,11 @@ export const liveConfig = {
   // Silence after I've been talking before the expectant look.
   expectantAfterSilenceMs: 1_500,
 
+  // Her reply is slow: this long after I stop talking (once my turn has ended), she shows
+  // she's thinking. The thinking mood holds until she speaks, or this long at most.
+  thinkAfterMs: 600,
+  thinkHoldMs: 2_500,
+
   // Talking after she has taken her turn: up to this long is an addition to
   // the previous answer, longer is a restart.
   additionMaxMs: 15_000,

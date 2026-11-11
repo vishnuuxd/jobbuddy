@@ -10,6 +10,8 @@ export type CallState = {
   /** The main question she's on, from 1. 0 before the first one. */
   question: number;
   speaking: boolean;
+  /** Her reply is slow: the app fired think and holds the thinking mood until she speaks. */
+  thinking: boolean;
   reactions: Reaction[];
   held: "writing" | null; // A mood that shows over everything for a moment
   id: string;
@@ -35,6 +37,7 @@ const initialState: CallState = {
   setup: null,
   question: 0,
   speaking: false,
+  thinking: false,
   reactions: [],
   held: null,
   id: "",
@@ -57,9 +60,10 @@ export function totalQuestions(setup: Setup | null) {
   return setup ? setup.questionCount : null;
 }
 
-function moodFor({ phase, speaking, held }: CallState): Mood {
+function moodFor({ phase, speaking, thinking, held }: CallState): Mood {
   if (held) return held; // Her voice still moves mouthOpen under a held mood.
   if (speaking) return "talking";
+  if (thinking && phase === "interview") return "thinking"; // Never over the close's writing mood.
   if (phase === "opening") return "intake"; // The intake mood name stays for the opening.
   if (phase === "interview") return "listening";
   if (phase === "done") return "writing";
@@ -182,7 +186,11 @@ export function createCallSession(
     },
 
     setSpeaking(speaking: boolean) {
-      if (speaking !== state.speaking) update({ speaking });
+      // She speaks: thinking is over.
+      if (speaking !== state.speaking) update({ speaking, ...(speaking ? { thinking: false } : {}) });
+    },
+    setThinking(thinking: boolean) {
+      if (thinking !== state.thinking) update({ thinking });
     },
     noteUserMessage() {
       answeredSinceLastQuestion = true;

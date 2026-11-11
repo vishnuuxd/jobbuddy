@@ -1,100 +1,124 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 440" width="400" height="440" xmlns:c2pa="http://c2pa.org/manifest">
-  <g id="meera">
-    <circle id="halo" cx="200" cy="214" r="168" fill="#AA89F2"/>
-    <g id="body" data-pivot="200 440" >
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 328 430" width="328" height="430" xmlns:c2pa="http://c2pa.org/manifest">
+  <defs>
+    <radialGradient id="glow_gradient" cx="50%" cy="42%" r="55%"><stop offset="0" stop-color="#AA89F2" stop-opacity="0.42"/><stop offset="1" stop-color="#AA89F2" stop-opacity="0"/></radialGradient>
+  </defs>
+  <g id="meera" transform="translate(-36 -30)">
+    <g id="bg">
+      <rect id="bg_fill" x="0" y="0" width="400" height="520" fill="#140C2A"/>
+      <ellipse id="glow" cx="200" cy="220" rx="230" ry="240" fill="url(#glow_gradient)"/>
+    </g>
+    <g id="body" data-pivot="200 520" >
       <path id="neck" d="M180 262 L220 262 L224 318 L176 318 Z" fill="#C98463"/>
       <path id="neck_shadow" d="M180 270 Q200 286 220 270 L220 262 L180 262 Z" fill="#AE6C4D"/>
-      <path id="blazer" d="M56 440 C60 360 92 330 150 314 L200 330 L250 314 C308 330 340 360 344 440 Z" fill="#FFA8CD"/>
-      <path id="shirt" d="M164 312 L200 336 L236 312 L232 440 L168 440 Z" fill="#FFFFFF"/>
+      <path id="blazer" d="M40 500 C46 372 90 330 150 314 L200 330 L250 314 C310 330 354 372 360 500 Z" fill="#FFA8CD"/>
+      <path id="blazer_fold_L" d="M70 420 C80 392 96 372 116 360" stroke="#EE86B3" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path id="blazer_fold_R" d="M330 420 C320 392 304 372 284 360" stroke="#EE86B3" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path id="shirt" d="M164 312 L200 336 L236 312 L232 500 L168 500 Z" fill="#FFFFFF"/>
       <path id="collar_L" d="M164 312 L200 336 L184 352 L156 322 Z" fill="#E9E4EE"/>
       <path id="collar_R" d="M236 312 L200 336 L216 352 L244 322 Z" fill="#E9E4EE"/>
-      <path id="lapel_L" d="M150 314 L182 360 L170 372 L176 440 L136 440 L128 360 Z" fill="#F089B5"/>
-      <path id="lapel_R" d="M250 314 L218 360 L230 372 L224 440 L264 440 L272 360 Z" fill="#F089B5"/>
+      <path id="lapel_L" d="M150 314 L182 360 L170 372 L178 500 L132 500 L128 360 Z" fill="#F089B5"/>
+      <path id="lapel_R" d="M250 314 L218 360 L230 372 L222 500 L268 500 L272 360 Z" fill="#F089B5"/>
     </g>
     <g id="head" data-pivot="200 300" transform="rotate(0 200 300)">
-      <circle id="bun" cx="200" cy="80" r="33" fill="#3A2230"/>
-      <path id="bun_shine" d="M188 58 Q204 52 218 62" stroke="#5E3A4E" stroke-width="5" stroke-linecap="round" fill="none"/>
-      <path id="hair_back" d="M108 200 C100 128 146 94 200 94 C256 94 300 128 292 200 C290 232 282 252 268 262 L132 262 C118 252 110 232 108 200 Z" fill="#3A2230"/>
-      <ellipse id="ear_L" cx="121" cy="202" rx="11" ry="15" fill="#AE6C4D"/>
-      <ellipse id="ear_R" cx="279" cy="202" rx="11" ry="15" fill="#AE6C4D"/>
-      <circle id="earring_L" cx="120" cy="222" r="5.5" fill="#E6FFA9"/>
-      <circle id="earring_R" cx="280" cy="222" r="5.5" fill="#E6FFA9"/>
-      <path id="face" d="M200 104 C252 104 280 140 280 192 C280 246 246 284 200 284 C154 284 120 246 120 192 C120 140 148 104 200 104 Z" fill="#C98463"/>
-      <ellipse id="blush_L" cx="146" cy="232" rx="14" ry="8.5" fill="#E8796B" opacity="0.35"/>
-      <ellipse id="blush_R" cx="254" cy="232" rx="14" ry="8.5" fill="#E8796B" opacity="0.35"/>
-      <path id="hair_front" d="M114 204 C106 136 148 100 204 100 C260 100 296 136 286 204 C282 176 274 156 262 142 C242 136 218 126 198 108 C186 126 166 134 146 138 C132 154 120 176 114 204 Z" fill="#3A2230"/>
-      <path id="hair_shine" d="M226 108 C244 112 260 122 270 136" stroke="#5E3A4E" stroke-width="5" stroke-linecap="round" fill="none"/>
-      <g id="brow_L" data-pivot="162 160" transform="translate(162 160) rotate(0)"><path id="brow_shape_L" d="M-23 3 Q-6 -8.97 23 -1 Q25 4 21 6 Q-4 -0.97 -21 8 Q-26 7 -23 3 Z" fill="#2A1622" transform="scale(1 1)"/></g>
-      <g id="brow_R" data-pivot="238 160" transform="translate(238 160) rotate(0)"><path id="brow_shape_R" d="M-23 3 Q-6 -8.97 23 -1 Q25 4 21 6 Q-4 -0.97 -21 8 Q-26 7 -23 3 Z" fill="#2A1622" transform="scale(-1 1)"/></g>
-      
-    <g id="eye_L" data-pivot="165 198">
-      <defs>
-        <clipPath id="clip_eye_L"><ellipse cx="165" cy="198" rx="20" ry="23"/></clipPath>
-        <clipPath id="clip_lids_L"><ellipse cx="165" cy="198" rx="24" ry="27"/></clipPath>
-      </defs>
-      <g id="eye_open_L" opacity="1">
-        <ellipse id="eye_white_L" cx="165" cy="198" rx="20" ry="23" fill="#FFFFFF"/>
-        <g clip-path="url(#clip_eye_L)">
-          <g id="pupil_L" data-pivot="165 200" transform="translate(0 0) translate(165 200) scale(1) translate(-165 -200)">
-            <circle id="iris_L" cx="165" cy="200" r="12.5" fill="#3B1F2E"/>
-            <circle id="shine_big_L" cx="161" cy="195" r="4.2" fill="#FFFFFF"/>
-            <circle id="shine_small_L" cx="169.5" cy="204" r="1.8" fill="#FFFFFF"/>
-          </g>
-          <ellipse id="eye_ring_L" cx="165" cy="198" rx="20" ry="23" fill="none" stroke="#2A1622" stroke-width="6"/>
+      <g id="hair_back" data-pivot="200 250" transform="translate(0 0)">
+        <g id="lock_L" data-pivot="128 236" transform="rotate(0 128 236)">
+          <path id="lock_L_shape" d="M108 210 C106 250 104 292 96 336 Q116 350 144 338 C148 300 150 280 156 262 L150 230 Z" fill="#5A3226"/>
+          <path id="lock_L_strand" d="M118 262 C116 290 114 312 110 330" stroke="#47261C" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6"/>
         </g>
-        <g clip-path="url(#clip_lids_L)">
-          <g id="lid_lower_L" data-pivot="165 221" transform="translate(0 0)">
-            <path id="lid_lower_skin_L" d="M142 255 L142 225 Q165 219 188 225 L188 255 Z" fill="#C98463"/>
-            <path id="lid_lower_line_L" d="M142 225 Q165 219 188 225" stroke="#2A1622" stroke-width="3" fill="none" opacity="0"/>
-          </g>
-          <g id="lid_upper_L" data-pivot="165 178.68" transform="translate(0 0) rotate(0 165 178.68)">
-            <path id="lid_upper_skin_L" d="M139 108.68 L139 178.68 Q165 181.68 191 178.68 L191 108.68 Z" fill="#C98463"/>
-            <path id="lash_L" d="M139 178.68 Q165 181.68 191 178.68" stroke="#2A1622" stroke-width="5.5" fill="none" stroke-linecap="round"/>
-          </g>
+        <g id="lock_R" data-pivot="272 236" transform="rotate(0 272 236)">
+          <path id="lock_R_shape" d="M292 210 C294 250 296 292 304 336 Q284 350 256 338 C252 300 250 280 244 262 L250 230 Z" fill="#5A3226"/>
+          <path id="lock_R_strand" d="M282 262 C284 290 286 312 290 330" stroke="#47261C" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6"/>
         </g>
-        <path id="lash_flick_L" d="M146 182 q-5 -1 -8 -6" stroke="#2A1622" stroke-width="4" stroke-linecap="round" fill="none" transform="translate(0 0)"/>
+        <path id="hair_crown" d="M106 214 C98 120 146 92 200 92 C254 92 302 120 294 214 L276 252 L124 252 Z" fill="#5A3226"/>
       </g>
-      <path id="eye_happy_L" d="M149 204 Q165 182 181 204" stroke="#2A1622" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0"/>
-      <path id="eye_closed_L" d="M149 200 Q165 210 181 200" stroke="#2A1622" stroke-width="5" stroke-linecap="round" fill="none" opacity="0"/>
-    </g>
-      
-    <g id="eye_R" data-pivot="235 198">
-      <defs>
-        <clipPath id="clip_eye_R"><ellipse cx="235" cy="198" rx="20" ry="23"/></clipPath>
-        <clipPath id="clip_lids_R"><ellipse cx="235" cy="198" rx="24" ry="27"/></clipPath>
-      </defs>
-      <g id="eye_open_R" opacity="1">
-        <ellipse id="eye_white_R" cx="235" cy="198" rx="20" ry="23" fill="#FFFFFF"/>
-        <g clip-path="url(#clip_eye_R)">
-          <g id="pupil_R" data-pivot="235 200" transform="translate(0 0) translate(235 200) scale(1) translate(-235 -200)">
-            <circle id="iris_R" cx="235" cy="200" r="12.5" fill="#3B1F2E"/>
-            <circle id="shine_big_R" cx="231" cy="195" r="4.2" fill="#FFFFFF"/>
-            <circle id="shine_small_R" cx="239.5" cy="204" r="1.8" fill="#FFFFFF"/>
-          </g>
-          <ellipse id="eye_ring_R" cx="235" cy="198" rx="20" ry="23" fill="none" stroke="#2A1622" stroke-width="6"/>
-        </g>
-        <g clip-path="url(#clip_lids_R)">
-          <g id="lid_lower_R" data-pivot="235 221" transform="translate(0 0)">
-            <path id="lid_lower_skin_R" d="M212 255 L212 225 Q235 219 258 225 L258 255 Z" fill="#C98463"/>
-            <path id="lid_lower_line_R" d="M212 225 Q235 219 258 225" stroke="#2A1622" stroke-width="3" fill="none" opacity="0"/>
-          </g>
-          <g id="lid_upper_R" data-pivot="235 178.68" transform="translate(0 0) rotate(0 235 178.68)">
-            <path id="lid_upper_skin_R" d="M261 108.68 L261 178.68 Q235 181.68 209 178.68 L209 108.68 Z" fill="#C98463"/>
-            <path id="lash_R" d="M261 178.68 Q235 181.68 209 178.68" stroke="#2A1622" stroke-width="5.5" fill="none" stroke-linecap="round"/>
-          </g>
-        </g>
-        <path id="lash_flick_R" d="M254 182 q5 -1 8 -6" stroke="#2A1622" stroke-width="4" stroke-linecap="round" fill="none" transform="translate(0 0)"/>
+      <g id="ear_L" data-pivot="110 202" transform="translate(0 0) translate(110 202) scale(1 1) translate(-110 -202)">
+        <ellipse id="ear_L_shape" cx="121" cy="202" rx="11" ry="15" fill="#AE6C4D"/>
+        <path id="ear_L_inner" d="M118 196 Q124 202 119 210" stroke="#9A5B40" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <circle id="earring_L" cx="120" cy="222" r="5.5" fill="#E6FFA9"/>
       </g>
-      <path id="eye_happy_R" d="M219 204 Q235 182 251 204" stroke="#2A1622" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0"/>
-      <path id="eye_closed_R" d="M219 200 Q235 210 251 200" stroke="#2A1622" stroke-width="5" stroke-linecap="round" fill="none" opacity="0"/>
-    </g>
-      <g id="nose">
-        <path id="nose_bridge" d="M203 206 Q206 220 204 226" stroke="#AE6C4D" stroke-width="3" stroke-linecap="round" fill="none"/>
-        <path id="nose_tip" d="M193 228 Q200 233 207 228" stroke="#AE6C4D" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      <g id="ear_R" data-pivot="290 202" transform="translate(0 0) translate(290 202) scale(1 1) translate(-290 -202)">
+        <ellipse id="ear_R_shape" cx="279" cy="202" rx="11" ry="15" fill="#AE6C4D"/>
+        <path id="ear_R_inner" d="M282 196 Q276 202 281 210" stroke="#9A5B40" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <circle id="earring_R" cx="280" cy="222" r="5.5" fill="#E6FFA9"/>
       </g>
-      <g id="mouth" data-pivot="200 248" >
-      <g id="mouth_neutral" opacity="1"><path d="M184 244 Q200 254 217 242" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M217 242 q3 -1 4 -4" stroke="#4A1622" stroke-width="3.5" stroke-linecap="round" fill="none"/></g>
-      <g id="mouth_smile" opacity="0"><g>
+      <path id="face" d="M200 104 C252 104 280 140 280 192 C280 246 246 284 200 284 C154 284 120 246 120 192 C120 140 148 104 200 104 Z" fill="#C98463" transform="translate(0 0)"/>
+      <g id="hair_front" transform="translate(0 0)">
+        <defs><clipPath id="clip_face"><path d="M200 104 C252 104 280 140 280 192 C280 246 246 284 200 284 C154 284 120 246 120 192 C120 140 148 104 200 104 Z"/></clipPath></defs>
+        <g clip-path="url(#clip_face)"><path id="fringe_shadow" transform="translate(0 6)" d="M114 204 C106 136 148 100 204 100 C260 100 296 136 286 204 C282 176 274 156 262 142 C242 136 218 126 198 108 C186 126 166 134 146 138 C132 154 120 176 114 204 Z" fill="#AE6C4D" opacity="0.45"/></g>
+        <path id="fringe" d="M114 204 C106 136 148 100 204 100 C260 100 296 136 286 204 C282 176 274 156 262 142 C242 136 218 126 198 108 C186 126 166 134 146 138 C132 154 120 176 114 204 Z" fill="#5A3226"/>
+        <path id="fringe_strand_L" d="M198 108 C186 126 168 132 150 136" stroke="#47261C" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.55"/>
+        <path id="fringe_strand_R" d="M214 112 C232 126 250 134 266 140" stroke="#47261C" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.55"/>
+      </g>
+      <g id="features" transform="translate(0 0)">
+        <ellipse id="blush_L" cx="146" cy="232" rx="14" ry="8.5" fill="#E8796B" opacity="0.35"/>
+        <ellipse id="blush_R" cx="254" cy="232" rx="14" ry="8.5" fill="#E8796B" opacity="0.35"/>
+        <g id="brow_L" data-pivot="162 160" transform="translate(162 160) rotate(0)"><path id="brow_shape_L" d="M-23 3 Q-6 -8.97 23 -1 Q25 4 21 6 Q-4 -0.97 -21 8 Q-26 7 -23 3 Z" fill="#2A1622" transform="scale(1 1)"/></g>
+        <g id="brow_R" data-pivot="238 160" transform="translate(238 160) rotate(0)"><path id="brow_shape_R" d="M-23 3 Q-6 -8.97 23 -1 Q25 4 21 6 Q-4 -0.97 -21 8 Q-26 7 -23 3 Z" fill="#2A1622" transform="scale(-1 1)"/></g>
+        
+        <g id="eye_L" data-pivot="165 198">
+          <defs>
+            <clipPath id="clip_eye_L"><ellipse cx="165" cy="198" rx="20" ry="23"/></clipPath>
+            <clipPath id="clip_lids_L"><ellipse cx="165" cy="198" rx="24" ry="27"/></clipPath>
+          </defs>
+          <g id="eye_open_L" opacity="1">
+            <ellipse id="eye_white_L" cx="165" cy="198" rx="20" ry="23" fill="#FFFFFF"/>
+            <g clip-path="url(#clip_eye_L)">
+              <g id="pupil_L" data-pivot="165 200" transform="translate(0 0) translate(165 200) scale(1) translate(-165 -200)">
+                <circle id="iris_L" cx="165" cy="200" r="12.5" fill="#3B1F2E"/>
+                <circle id="shine_big_L" cx="161" cy="195" r="4.2" fill="#FFFFFF"/>
+                <circle id="shine_small_L" cx="169.5" cy="204" r="1.8" fill="#FFFFFF"/>
+              </g>
+              <ellipse id="eye_ring_L" cx="165" cy="198" rx="20" ry="23" fill="none" stroke="#2A1622" stroke-width="6"/>
+            </g>
+            <g clip-path="url(#clip_lids_L)">
+              <g id="lid_lower_L" data-pivot="165 221" transform="translate(0 0)">
+                <path id="lid_lower_skin_L" d="M142 255 L142 225 Q165 219 188 225 L188 255 Z" fill="#C98463"/>
+                <path id="lid_lower_line_L" d="M142 225 Q165 219 188 225" stroke="#2A1622" stroke-width="3" fill="none" opacity="0"/>
+              </g>
+              <g id="lid_upper_L" data-pivot="165 178.68" transform="translate(0 0) rotate(0 165 178.68)">
+                <path id="lid_upper_skin_L" d="M139 108.68 L139 178.68 Q165 181.68 191 178.68 L191 108.68 Z" fill="#C98463"/>
+                <path id="lash_L" d="M139 178.68 Q165 181.68 191 178.68" stroke="#2A1622" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+              </g>
+            </g>
+            <path id="lash_flick_L" d="M146 182 q-5 -1 -8 -6" stroke="#2A1622" stroke-width="4" stroke-linecap="round" fill="none" transform="translate(0 0)"/>
+          </g>
+          <path id="eye_happy_L" d="M149 204 Q165 182 181 204" stroke="#2A1622" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0"/>
+          <path id="eye_closed_L" d="M149 200 Q165 210 181 200" stroke="#2A1622" stroke-width="5" stroke-linecap="round" fill="none" opacity="0"/>
+        </g>
+        
+        <g id="eye_R" data-pivot="235 198">
+          <defs>
+            <clipPath id="clip_eye_R"><ellipse cx="235" cy="198" rx="20" ry="23"/></clipPath>
+            <clipPath id="clip_lids_R"><ellipse cx="235" cy="198" rx="24" ry="27"/></clipPath>
+          </defs>
+          <g id="eye_open_R" opacity="1">
+            <ellipse id="eye_white_R" cx="235" cy="198" rx="20" ry="23" fill="#FFFFFF"/>
+            <g clip-path="url(#clip_eye_R)">
+              <g id="pupil_R" data-pivot="235 200" transform="translate(0 0) translate(235 200) scale(1) translate(-235 -200)">
+                <circle id="iris_R" cx="235" cy="200" r="12.5" fill="#3B1F2E"/>
+                <circle id="shine_big_R" cx="231" cy="195" r="4.2" fill="#FFFFFF"/>
+                <circle id="shine_small_R" cx="239.5" cy="204" r="1.8" fill="#FFFFFF"/>
+              </g>
+              <ellipse id="eye_ring_R" cx="235" cy="198" rx="20" ry="23" fill="none" stroke="#2A1622" stroke-width="6"/>
+            </g>
+            <g clip-path="url(#clip_lids_R)">
+              <g id="lid_lower_R" data-pivot="235 221" transform="translate(0 0)">
+                <path id="lid_lower_skin_R" d="M212 255 L212 225 Q235 219 258 225 L258 255 Z" fill="#C98463"/>
+                <path id="lid_lower_line_R" d="M212 225 Q235 219 258 225" stroke="#2A1622" stroke-width="3" fill="none" opacity="0"/>
+              </g>
+              <g id="lid_upper_R" data-pivot="235 178.68" transform="translate(0 0) rotate(0 235 178.68)">
+                <path id="lid_upper_skin_R" d="M261 108.68 L261 178.68 Q235 181.68 209 178.68 L209 108.68 Z" fill="#C98463"/>
+                <path id="lash_R" d="M261 178.68 Q235 181.68 209 178.68" stroke="#2A1622" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+              </g>
+            </g>
+            <path id="lash_flick_R" d="M254 182 q5 -1 8 -6" stroke="#2A1622" stroke-width="4" stroke-linecap="round" fill="none" transform="translate(0 0)"/>
+          </g>
+          <path id="eye_happy_R" d="M219 204 Q235 182 251 204" stroke="#2A1622" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0"/>
+          <path id="eye_closed_R" d="M219 200 Q235 210 251 200" stroke="#2A1622" stroke-width="5" stroke-linecap="round" fill="none" opacity="0"/>
+        </g>
+        <g id="mouth" data-pivot="200 248" >
+          <g id="mouth_neutral" opacity="1"><path d="M184 244 Q200 254 217 242" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M217 242 q3 -1 4 -4" stroke="#4A1622" stroke-width="3.5" stroke-linecap="round" fill="none"/></g>
+          <g id="mouth_smile" opacity="0"><g>
   <defs><clipPath id="clip_mouth_smile"><path d="M170 232 Q200 250 230 232 Q226 272 200 274 Q174 272 170 232 Z"/></clipPath></defs>
   <path d="M170 232 Q200 250 230 232 Q226 272 200 274 Q174 272 170 232 Z" fill="#4A1622"/>
   <g clip-path="url(#clip_mouth_smile)">
@@ -106,7 +130,7 @@
   </g>
   <path d="M170 232 Q200 250 230 232 Q226 272 200 274 Q174 272 170 232 Z" fill="none" stroke="#4A1622" stroke-width="3" stroke-linejoin="round"/>
 </g></g>
-      <g id="mouth_laugh" opacity="0"><g>
+          <g id="mouth_laugh" opacity="0"><g>
   <defs><clipPath id="clip_mouth_laugh"><path d="M179.769 238.25 Q200.315 247.884 220.861 238.25 Q219.652 269.559 200.315 270.763 Q180.978 269.559 179.769 238.25 Z"/></clipPath></defs>
   <path d="M179.769 238.25 Q200.315 247.884 220.861 238.25 Q219.652 269.559 200.315 270.763 Q180.978 269.559 179.769 238.25 Z" fill="#4A1622"/>
   <g clip-path="url(#clip_mouth_laugh)">
@@ -118,10 +142,10 @@
   </g>
   <path d="M179.769 238.25 Q200.315 247.884 220.861 238.25 Q219.652 269.559 200.315 270.763 Q180.978 269.559 179.769 238.25 Z" fill="none" stroke="#4A1622" stroke-width="3" stroke-linejoin="round"/>
 </g></g>
-      <g id="mouth_flat" opacity="0"><path d="M184 251 Q199 250 213 245" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M213 245 q3 -1 5 -4" stroke="#4A1622" stroke-width="3.5" stroke-linecap="round" fill="none"/></g>
-      <g id="mouth_soft" opacity="0"><path d="M188 248 Q200 253 212 248" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/></g>
-      <g id="mouth_expect" opacity="0"><path d="M187 245 Q200 252 213 245" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/></g>
-      <g id="mouth_oh" opacity="0"><g>
+          <g id="mouth_flat" opacity="0"><path d="M184 251 Q199 250 213 245" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M213 245 q3 -1 5 -4" stroke="#4A1622" stroke-width="3.5" stroke-linecap="round" fill="none"/></g>
+          <g id="mouth_soft" opacity="0"><path d="M188 248 Q200 253 212 248" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/></g>
+          <g id="mouth_expect" opacity="0"><path d="M187 245 Q200 252 213 245" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/></g>
+          <g id="mouth_oh" opacity="0"><g>
   <defs><clipPath id="clip_mouth_oh"><path d="M190 248 Q190 236 200 236 Q210 236 210 248 Q210 262 200 262 Q190 262 190 248 Z"/></clipPath></defs>
   <path d="M190 248 Q190 236 200 236 Q210 236 210 248 Q210 262 200 262 Q190 262 190 248 Z" fill="#4A1622"/>
   <g clip-path="url(#clip_mouth_oh)">
@@ -133,7 +157,7 @@
   </g>
   <path d="M190 248 Q190 236 200 236 Q210 236 210 248 Q210 262 200 262 Q190 262 190 248 Z" fill="none" stroke="#4A1622" stroke-width="3" stroke-linejoin="round"/>
 </g></g>
-      <g id="mouth_ooh" opacity="0"><g>
+          <g id="mouth_ooh" opacity="0"><g>
   <defs><clipPath id="clip_mouth_ooh"><path d="M190 244 Q200 239 210 244 Q212 256 200 258 Q188 256 190 244 Z"/></clipPath></defs>
   <path d="M190 244 Q200 239 210 244 Q212 256 200 258 Q188 256 190 244 Z" fill="#4A1622"/>
   <g clip-path="url(#clip_mouth_ooh)">
@@ -145,10 +169,10 @@
   </g>
   <path d="M190 244 Q200 239 210 244 Q212 256 200 258 Q188 256 190 244 Z" fill="none" stroke="#4A1622" stroke-width="3" stroke-linejoin="round"/>
 </g></g>
-      <g id="mouth_hmm" opacity="0"><path d="M190 249 Q200 247 208 246" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/><ellipse cx="213" cy="245.794" rx="6" ry="2.941" fill="#4A1622"/></g>
-      <g id="viseme_rest" opacity="0"><path d="M186 245 Q200 252 214 244" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/></g>
-      <g id="viseme_closed" opacity="0"><path d="M184 245 Q200 249 216 245" stroke="#4A1622" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M190 251 Q200 254 210 251" stroke="#4A1622" stroke-width="2.5" stroke-linecap="round" fill="none"/></g>
-      <g id="viseme_teeth" opacity="0"><g>
+          <g id="mouth_hmm" opacity="0"><path d="M190 249 Q200 247 208 246" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/><ellipse cx="213" cy="245.794" rx="6" ry="2.941" fill="#4A1622"/></g>
+          <g id="viseme_rest" opacity="0"><path d="M186 245 Q200 252 214 244" stroke="#4A1622" stroke-width="4.5" stroke-linecap="round" fill="none"/></g>
+          <g id="viseme_closed" opacity="0"><path d="M184 245 Q200 249 216 245" stroke="#4A1622" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M190 251 Q200 254 210 251" stroke="#4A1622" stroke-width="2.5" stroke-linecap="round" fill="none"/></g>
+          <g id="viseme_teeth" opacity="0"><g>
   <defs><clipPath id="clip_viseme_teeth"><path d="M180 240 Q200 238 220 240 Q220 254 200 255 Q180 254 180 240 Z"/></clipPath></defs>
   <path d="M180 240 Q200 238 220 240 Q220 254 200 255 Q180 254 180 240 Z" fill="#4A1622"/>
   <g clip-path="url(#clip_viseme_teeth)">
@@ -160,7 +184,7 @@
   </g>
   <path d="M180 240 Q200 238 220 240 Q220 254 200 255 Q180 254 180 240 Z" fill="none" stroke="#4A1622" stroke-width="3" stroke-linejoin="round"/>
 </g></g>
-      <g id="viseme_open" opacity="0"><g>
+          <g id="viseme_open" opacity="0"><g>
   <defs><clipPath id="clip_viseme_open"><path d="M182 238 Q200 234 218 238 Q220 264 200 268 Q180 264 182 238 Z"/></clipPath></defs>
   <path d="M182 238 Q200 234 218 238 Q220 264 200 268 Q180 264 182 238 Z" fill="#4A1622"/>
   <g clip-path="url(#clip_viseme_open)">
@@ -172,7 +196,7 @@
   </g>
   <path d="M182 238 Q200 234 218 238 Q220 264 200 268 Q180 264 182 238 Z" fill="none" stroke="#4A1622" stroke-width="3" stroke-linejoin="round"/>
 </g></g>
-      <g id="viseme_wide" opacity="0"><g>
+          <g id="viseme_wide" opacity="0"><g>
   <defs><clipPath id="clip_viseme_wide"><path d="M174 241 Q200 238 226 241 Q224 256 200 258 Q176 256 174 241 Z"/></clipPath></defs>
   <path d="M174 241 Q200 238 226 241 Q224 256 200 258 Q176 256 174 241 Z" fill="#4A1622"/>
   <g clip-path="url(#clip_viseme_wide)">
@@ -184,7 +208,7 @@
   </g>
   <path d="M174 241 Q200 238 226 241 Q224 256 200 258 Q176 256 174 241 Z" fill="none" stroke="#4A1622" stroke-width="3" stroke-linejoin="round"/>
 </g></g>
-      <g id="viseme_round" opacity="0"><g>
+          <g id="viseme_round" opacity="0"><g>
   <defs><clipPath id="clip_viseme_round"><path d="M188 246 Q188 234 200 234 Q212 234 212 246 Q212 260 200 260 Q188 260 188 246 Z"/></clipPath></defs>
   <path d="M188 246 Q188 234 200 234 Q212 234 212 246 Q212 260 200 260 Q188 260 188 246 Z" fill="#4A1622"/>
   <g clip-path="url(#clip_viseme_round)">
@@ -196,7 +220,7 @@
   </g>
   <path d="M188 246 Q188 234 200 234 Q212 234 212 246 Q212 260 200 260 Q188 260 188 246 Z" fill="none" stroke="#4A1622" stroke-width="3" stroke-linejoin="round"/>
 </g></g>
-      <g id="viseme_pucker" opacity="0"><g>
+          <g id="viseme_pucker" opacity="0"><g>
   <defs><clipPath id="clip_viseme_pucker"><path d="M193 247 Q193 240 200 240 Q207 240 207 247 Q207 254 200 254 Q193 254 193 247 Z"/></clipPath></defs>
   <path d="M193 247 Q193 240 200 240 Q207 240 207 247 Q207 254 200 254 Q193 254 193 247 Z" fill="#4A1622"/>
   <g clip-path="url(#clip_viseme_pucker)">
@@ -208,7 +232,7 @@
   </g>
   <path d="M193 247 Q193 240 200 240 Q207 240 207 247 Q207 254 200 254 Q193 254 193 247 Z" fill="none" stroke="#4A1622" stroke-width="3" stroke-linejoin="round"/>
 </g><path d="M190 243 q-2 4 0 8" stroke="#4A1622" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M210 243 q2 4 0 8" stroke="#4A1622" stroke-width="2.5" stroke-linecap="round" fill="none"/></g>
-      <g id="viseme_fv" opacity="0"><g>
+          <g id="viseme_fv" opacity="0"><g>
   <defs><clipPath id="clip_viseme_fv"><path d="M182 242 Q200 239 218 242 Q216 254 200 255 Q184 254 182 242 Z"/></clipPath></defs>
   <path d="M182 242 Q200 239 218 242 Q216 254 200 255 Q184 254 182 242 Z" fill="#4A1622"/>
   <g clip-path="url(#clip_viseme_fv)">
@@ -220,7 +244,7 @@
   </g>
   <path d="M182 242 Q200 239 218 242 Q216 254 200 255 Q184 254 182 242 Z" fill="none" stroke="#4A1622" stroke-width="3" stroke-linejoin="round"/>
 </g><path d="M184 252 Q200 258 216 252" stroke="#8E3F4A" stroke-width="4" stroke-linecap="round" fill="none"/></g>
-      <g id="viseme_lth" opacity="0"><g>
+          <g id="viseme_lth" opacity="0"><g>
   <defs><clipPath id="clip_viseme_lth"><path d="M182 239 C194 237 206 237 218 239 C218 251.667 212 259 200 261 C188 259 182 251.667 182 239 Z"/></clipPath></defs>
   <path d="M182 239 C194 237 206 237 218 239 C218 251.667 212 259 200 261 C188 259 182 251.667 182 239 Z" fill="#4A1622"/>
   <g clip-path="url(#clip_viseme_lth)">
@@ -232,29 +256,68 @@
   </g>
   <path d="M182 239 C194 237 206 237 218 239 C218 251.667 212 259 200 261 C188 259 182 251.667 182 239 Z" fill="none" stroke="#4A1622" stroke-width="3" stroke-linejoin="round"/>
 </g></g>
-      </g>
-    </g>
-    <g id="notepad" data-pivot="130 400" transform="rotate(-8 130 400)">
-      <rect id="notepad_page" x="84" y="366" width="96" height="74" rx="8" fill="#FFFFFF" stroke="#EEE9FF"/>
-      <rect id="notepad_binding" x="84" y="366" width="96" height="12" rx="6" fill="#B9D96A"/>
-      <path id="notepad_lines" d="M98 394 H164 M98 408 H156 M98 422 H140" stroke="#D9D5E6" stroke-width="4" stroke-linecap="round" fill="none"/>
-    </g>
-    <g id="arm_R" data-pivot="330 440" >
-      <path id="sleeve_R" d="M344 440 C340 420 330 404 312 396 L286 416 C296 424 304 432 306 440 Z" fill="#F089B5"/>
-      <path id="wrist_R" d="M286 416 L312 396 L304 388 L280 408 Z" fill="#C98463"/>
-      <g id="watch">
-        <path id="watch_strap" d="M282 402 L304 384 L312 394 L290 412 Z" fill="#0B051D"/>
-        <circle id="watch_face" cx="297" cy="398" r="7.5" fill="#E6FFA9" stroke="#0B051D" stroke-width="2.5"/>
-      </g>
-      <g id="hand_R" data-pivot="282 372">
-        <g id="pen">
-          <path id="pen_body" d="M300 336 L262 404" stroke="#E6FFA9" stroke-width="7" stroke-linecap="round" fill="none"/>
-          <path id="pen_cap" d="M300 336 L295 345" stroke="#0B051D" stroke-width="7" stroke-linecap="round" fill="none"/>
         </g>
-        <path id="fist" d="M262 372 C262 356 276 348 290 352 C302 356 306 370 300 382 C294 392 280 394 270 390 C264 386 262 380 262 372 Z" fill="#C98463"/>
-        <path id="knuckle_1" d="M268 366 C274 360 284 360 290 364" stroke="#AE6C4D" stroke-width="3" stroke-linecap="round" fill="none"/>
-        <path id="knuckle_2" d="M266 378 C272 374 282 374 288 378" stroke="#AE6C4D" stroke-width="3" stroke-linecap="round" fill="none"/>
       </g>
+      <g id="nose" transform="translate(0 0)">
+        <path id="nose_bridge" d="M203 206 Q206 220 204 226" stroke="#AE6C4D" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <path id="nose_tip" d="M193 228 Q200 233 207 228" stroke="#AE6C4D" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      </g>
+    </g>
+    <g id="arm_R" data-pivot="390 540" transform="translate(0 0)">
+      <path id="sleeve_R" d="M470 560 C430 500 334 438 290 418 L270 446 C300 466 350 516 390 560 Z" fill="#F089B5"/>
+      <path id="wrist_R" d="M270 446 L290 418 L258 380 L244 404 Z" fill="#C98463"/>
+      <g id="watch">
+        <path id="watch_strap" d="M262 438 L280 410 L290 416 L272 444 Z" fill="#0B051D"/>
+        <circle id="watch_face" cx="276" cy="427" r="7" fill="#E6FFA9" stroke="#0B051D" stroke-width="2.5"/>
+      </g>
+      <g id="hand_R" transform="translate(6 -16)">
+        <path id="pen_body" d="M212 412 L258 344" stroke="#E6FFA9" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <path id="pen_cap" d="M258 344 L252 353" stroke="#0B051D" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <path id="fist_R" d="M214 392 C214 376 228 370 242 374 C254 378 258 392 252 402 C246 410 232 412 222 408 C217 404 214 399 214 392 Z" fill="#C98463"/>
+        <path id="knuckle_R" d="M221 386 C227 380 237 380 243 384" stroke="#AE6C4D" stroke-width="3" stroke-linecap="round" fill="none"/>
+      </g>
+    </g>
+    <g id="clipboard" data-pivot="200 440" transform="rotate(-3 200 440)">
+      <rect id="board" x="116" y="384" width="170" height="132" rx="10" fill="#C9955E"/>
+      <rect id="board_edge" x="116" y="384" width="170" height="132" rx="10" fill="none" stroke="#A9763F" stroke-width="3"/>
+      <path id="board_shine" d="M130 398 H272" stroke="#DDB07C" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.8"/>
+      <rect id="clip" x="176" y="374" width="50" height="16" rx="5" fill="#3B2433"/>
+      <circle id="clip_dot" cx="201" cy="380" r="3.5" fill="#E6FFA9"/>
+    </g>
+    <g id="hand_L">
+      <path id="palm_L" d="M120 422 C102 424 92 444 96 462 C100 476 114 480 124 472 Z" fill="#C98463"/>
+      <g id="fingers_L" fill="#C98463">
+        <rect x="114" y="428" width="28" height="11" rx="5.5"/>
+        <rect x="114" y="441" width="30" height="11" rx="5.5"/>
+        <rect x="114" y="454" width="28" height="11" rx="5.5"/>
+        <rect x="114" y="467" width="24" height="10" rx="5"/>
+      </g>
+      <path id="finger_lines_L" d="M134 439 V441 M136 452 V454 M134 465 V467" stroke="#AE6C4D" stroke-width="2" stroke-linecap="round" fill="none"/>
+    </g>
+    <g id="arm_watch" data-pivot="340 390" opacity="0">
+      <g transform="translate(2 -22) rotate(-9 340 390)">
+        <path id="sleeve_watch" d="M440 320 L440 452 L334 404 C320 396 316 368 326 354 Z" fill="#F089B5"/>
+        <path id="sleeve_watch_fold" d="M326 354 C316 368 320 396 334 404" stroke="#EE86B3" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <path id="forearm_watch" d="M328 360 L246 350 C236 352 236 380 246 382 L330 398 Z" fill="#C98463"/>
+        <path id="forearm_watch_line" d="M300 392 L250 382" stroke="#AE6C4D" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6"/>
+        <path id="pen_watch" d="M226 372 L198 410" stroke="#E6FFA9" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <path id="fist_watch" d="M222 366 C222 352 236 346 248 350 C258 354 260 370 254 380 C248 388 234 390 228 384 C223 380 222 373 222 366 Z" fill="#C98463"/>
+        <path id="knuckles_watch" d="M230 360 C236 356 244 356 250 360 M229 372 C235 368 243 368 249 372" stroke="#AE6C4D" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <path id="strap_watch" d="M272 352 L290 355 L288 396 L270 392 Z" fill="#0B051D"/>
+        <circle id="watchface_big" cx="280" cy="373" r="13" fill="#E6FFA9" stroke="#0B051D" stroke-width="3.5"/>
+        <path id="watch_hands" d="M280 373 V365 M280 373 L286 376" stroke="#0B051D" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      </g>
+    </g>
+    <g id="arm_hold" data-pivot="320 420" opacity="0">
+      <path id="sleeve_hold" d="M420 520 L330 520 L296 420 C300 404 326 398 340 410 Z" fill="#F089B5"/>
+      <path id="forearm_hold" d="M300 418 L286 344 C296 336 314 338 318 346 L338 410 Z" fill="#C98463"/>
+      <path id="pen_hold" d="M300 330 L338 300" stroke="#E6FFA9" stroke-width="7" stroke-linecap="round" fill="none"/>
+      <path id="pen_hold_cap" d="M338 300 L330 306" stroke="#0B051D" stroke-width="7" stroke-linecap="round" fill="none"/>
+      <path id="fist_hold" d="M280 330 C280 314 294 308 308 312 C320 316 322 332 316 342 C310 350 296 352 288 348 C283 344 280 338 280 330 Z" fill="#C98463"/>
+      <rect id="index_hold" x="285" y="270" width="13" height="50" rx="6.5" fill="#C98463"/>
+      <path id="index_crease" d="M288 284 Q291 286 295 284" stroke="#AE6C4D" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <path id="knuckle_hold" d="M288 330 C294 326 304 326 310 330" stroke="#AE6C4D" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path id="strap_hold" d="M290 362 L314 358 L318 376 L294 380 Z" fill="#0B051D"/>
     </g>
   </g>
-<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo4M2YzYWNmYy1lYzE3LTQwOGEtYjY2Ni03MjIwZmFlNzIyMTAAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaMnc8EXiIQGhLGhznOX8XTEAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo3MjdkZGQ0Yy1jMjBkLTQwMmYtYmNkNS0yNTJiOTAyYjk1NjdscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoYe0uC+Sf2Uw6oD10nrTquwAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggi4j3xcYIv5YGjDQUnb2srDFzK3A34uGnQ7lOPcY1y1akZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaBYyPD+LFvB6+gLaJT6LaA0AAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIKWMGGvhDMmiVjn/T/yJ0h841VnlAwcu2K7hmnhgO9GoZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GUYEZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjgzZjNhY2ZjLWVjMTctNDA4YS1iNjY2LTcyMjBmYWU3MjIxMC9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjYwMGU3OWZlLWY0M2YtNDBmZi05MDg2LTk0NzFjZmY3YmRlMnJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCCLiPfFxgi/lgaMNBSdvaysMXMrcDfi4adDuU49xjXLVqJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggzyQgirHitg9xRINIdru5LJk4vPovXiy2AkpT6nmh7yaiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggNEEg1eiMsrgrBqyLXJ9cENm6cCsXTNhoHHK7SQUGng10Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQLIY/QNmT93SBKeWfpUJjqoftwBO/HjCqd0G6CFIRJC3SOVMhW8nTMwbMAEYcF0IQ/XUwyLygWORo2eFXk+Rq7w=</c2pa:manifest></metadata></svg>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo3ZjU1YzE2OS0xODczLTQ3MGYtODEzMS1jZjU0NjllYjMxZTIAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaOKA9Qg84zcT899tt0ZEQGcAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDozYzA0NGE4Mi0zYzhmLTRmNzAtODYxNS00ZGNiZDNmNmU3ZjNscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNo3W8j7qdV3wCFfbaxm2utsQAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggJghvYuN1afaSB+7u8lKMwgWQ14eLJKAH15ZaMhmGLROkZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaIJd3nPCbEOfvWlW6IWhOCoAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIJLt2pC1zvOtNAok14IwfCTHhGgWxfEcfOoHbSyfDj/JZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GV4WZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjdmNTVjMTY5LTE4NzMtNDcwZi04MTMxLWNmNTQ2OWViMzFlMi9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjM2MzE0Mjc5LTViNmUtNGE5Yi1hZWQ4LWYyNjA0MmU4ZGJiM3JjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCAmCG9i43Vp9pIH7u7yUozCBZDXh4skoAfXlloyGYYtE6JjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggPubFr/lmFmLJyYFPswJOjxg2ABAO2PXSAkqWk0qa5GaiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggV7Y4Uu88oE8RCRTJpMtyjELo1/pqD5zXCEv1cEByiqV0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQF6PjdaEyveBPbBuAYJXWF2ClGmGEmco1kDr7nYI2mFt1q2n8CkXZzkFOIDvfltpPhIQvzVWyYwXoNxeeC+BFuc=</c2pa:manifest></metadata></svg>

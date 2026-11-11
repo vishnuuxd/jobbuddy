@@ -1,8 +1,41 @@
 {
-  "about": "Meera's rig values. Units are artboard px and degrees. Artboard 400 x 440. Values are offsets from the neutral pose in meera-parts.svg.",
+  "about": "Meera's rig values (v2). Units are drawing px and degrees. The artboard is the 328 x 430 call tile; the whole drawing sits in group 'meera', offset by (-36, -30), and every pivot below is in the drawing's own coordinates inside that group. Values are offsets from the neutral pose in meera-parts.svg.",
+  "artboard": {
+    "width": 328,
+    "height": 430,
+    "drawingOffset": [
+      -36,
+      -30
+    ]
+  },
   "controls": {
     "head": {
       "rot": "degrees around pivot 200 300, positive is clockwise"
+    },
+    "turn": "head turn, -1 to 1 (about ±4°). Drives the parallax values below; keep them in step",
+    "parallax": {
+      "features": "tx",
+      "nose": "tx",
+      "face": "tx",
+      "hair_front": "tx",
+      "hair_back": "tx",
+      "ear_L": "tx, sx (narrows when it is the far ear)",
+      "ear_R": "tx, sx",
+      "rates": {
+        "features": 5,
+        "nose": 6.5,
+        "face": 1,
+        "hair_front": 2,
+        "hair_back": -1.5,
+        "ears": -1.2,
+        "farEar": 0.24
+      }
+    },
+    "lock_L": {
+      "rot": "degrees around 128 236: hair follow-through"
+    },
+    "lock_R": {
+      "rot": "degrees around 272 236"
     },
     "blush": {
       "opacity": "0 to 1, applies to blush_L and blush_R"
@@ -29,7 +62,8 @@
       "scale": "around the pupil pivot"
     },
     "eye_L": "open | happy | closed: which of eye_open_L, eye_happy_L, eye_closed_L is visible",
-    "mouth": "the one mouth layer that is visible"
+    "mouth": "the one mouth layer that is visible",
+    "arm": "pose: rest | writing | hold | watch. rest and writing move arm_R (tx, ty); hold and watch swap to arm_hold or arm_watch and hide arm_R"
   },
   "browShapes": {
     "arch_min": "M-23 3 Q-6 -6 23 -1 Q25 4 21 6 Q-4 2 -21 8 Q-26 7 -23 3 Z",
@@ -52,6 +86,41 @@
       "opacity": 0.35
     },
     "mouth": "mouth_neutral",
+    "turn": 0,
+    "features": {
+      "tx": 0
+    },
+    "nose": {
+      "tx": 0
+    },
+    "face": {
+      "tx": 0
+    },
+    "hair_front": {
+      "tx": 0
+    },
+    "hair_back": {
+      "tx": 0
+    },
+    "ear_L": {
+      "tx": 0,
+      "sx": 1
+    },
+    "ear_R": {
+      "tx": 0,
+      "sx": 1
+    },
+    "lock_L": {
+      "rot": 0
+    },
+    "lock_R": {
+      "rot": 0
+    },
+    "arm": {
+      "pose": "rest",
+      "tx": 0,
+      "ty": 0
+    },
     "brow_L": {
       "ty": 0,
       "rot": 0,
@@ -106,6 +175,41 @@
         "opacity": 0.35
       },
       "mouth": "mouth_neutral",
+      "turn": 0.6,
+      "features": {
+        "tx": 3
+      },
+      "nose": {
+        "tx": 3.9
+      },
+      "face": {
+        "tx": 0.6
+      },
+      "hair_front": {
+        "tx": 1.2
+      },
+      "hair_back": {
+        "tx": -0.9
+      },
+      "ear_L": {
+        "tx": -0.72,
+        "sx": 0.86
+      },
+      "ear_R": {
+        "tx": -0.72,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
       "brow_L": {
         "ty": 0,
         "rot": 0,
@@ -159,6 +263,41 @@
         "opacity": 0.6
       },
       "mouth": "mouth_smile",
+      "turn": 0,
+      "features": {
+        "tx": 0
+      },
+      "nose": {
+        "tx": 0
+      },
+      "face": {
+        "tx": 0
+      },
+      "hair_front": {
+        "tx": 0
+      },
+      "hair_back": {
+        "tx": 0
+      },
+      "ear_L": {
+        "tx": 0,
+        "sx": 1
+      },
+      "ear_R": {
+        "tx": 0,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
       "brow_L": {
         "ty": -7,
         "rot": -3,
@@ -212,6 +351,41 @@
         "opacity": 0.35
       },
       "mouth": "viseme_open",
+      "turn": 0.15,
+      "features": {
+        "tx": 0.75
+      },
+      "nose": {
+        "tx": 0.98
+      },
+      "face": {
+        "tx": 0.15
+      },
+      "hair_front": {
+        "tx": 0.3
+      },
+      "hair_back": {
+        "tx": -0.22
+      },
+      "ear_L": {
+        "tx": -0.18,
+        "sx": 0.96
+      },
+      "ear_R": {
+        "tx": -0.18,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
       "brow_L": {
         "ty": -2,
         "rot": 0,
@@ -265,6 +439,41 @@
         "opacity": 0.35
       },
       "mouth": "mouth_expect",
+      "turn": -0.25,
+      "features": {
+        "tx": -1.25
+      },
+      "nose": {
+        "tx": -1.62
+      },
+      "face": {
+        "tx": -0.25
+      },
+      "hair_front": {
+        "tx": -0.5
+      },
+      "hair_back": {
+        "tx": 0.38
+      },
+      "ear_L": {
+        "tx": 0.3,
+        "sx": 1
+      },
+      "ear_R": {
+        "tx": 0.3,
+        "sx": 0.94
+      },
+      "lock_L": {
+        "rot": -1.5
+      },
+      "lock_R": {
+        "rot": -1.5
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
       "brow_L": {
         "ty": -6,
         "rot": -4,
@@ -318,6 +527,41 @@
         "opacity": 0.35
       },
       "mouth": "mouth_neutral",
+      "turn": 0,
+      "features": {
+        "tx": 0
+      },
+      "nose": {
+        "tx": 0
+      },
+      "face": {
+        "tx": 0
+      },
+      "hair_front": {
+        "tx": 0
+      },
+      "hair_back": {
+        "tx": 0
+      },
+      "ear_L": {
+        "tx": 0,
+        "sx": 1
+      },
+      "ear_R": {
+        "tx": 0,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
       "brow_L": {
         "ty": -10,
         "rot": 0,
@@ -371,6 +615,41 @@
         "opacity": 0.35
       },
       "mouth": "mouth_flat",
+      "turn": 0.35,
+      "features": {
+        "tx": 1.75
+      },
+      "nose": {
+        "tx": 2.28
+      },
+      "face": {
+        "tx": 0.35
+      },
+      "hair_front": {
+        "tx": 0.7
+      },
+      "hair_back": {
+        "tx": -0.52
+      },
+      "ear_L": {
+        "tx": -0.42,
+        "sx": 0.92
+      },
+      "ear_R": {
+        "tx": -0.42,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
       "brow_L": {
         "ty": 4,
         "rot": 8,
@@ -424,6 +703,41 @@
         "opacity": 0.35
       },
       "mouth": "mouth_soft",
+      "turn": -0.15,
+      "features": {
+        "tx": -0.75
+      },
+      "nose": {
+        "tx": -0.97
+      },
+      "face": {
+        "tx": -0.15
+      },
+      "hair_front": {
+        "tx": -0.3
+      },
+      "hair_back": {
+        "tx": 0.22
+      },
+      "ear_L": {
+        "tx": 0.18,
+        "sx": 1
+      },
+      "ear_R": {
+        "tx": 0.18,
+        "sx": 0.96
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "writing",
+        "tx": -20,
+        "ty": -6
+      },
       "brow_L": {
         "ty": 2,
         "rot": 0,
@@ -477,6 +791,41 @@
         "opacity": 0.35
       },
       "mouth": "mouth_hmm",
+      "turn": 0.9,
+      "features": {
+        "tx": 4.5
+      },
+      "nose": {
+        "tx": 5.85
+      },
+      "face": {
+        "tx": 0.9
+      },
+      "hair_front": {
+        "tx": 1.8
+      },
+      "hair_back": {
+        "tx": -1.35
+      },
+      "ear_L": {
+        "tx": -1.08,
+        "sx": 0.78
+      },
+      "ear_R": {
+        "tx": -1.08,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
       "brow_L": {
         "ty": 0,
         "rot": 2,
@@ -530,6 +879,41 @@
         "opacity": 0.55
       },
       "mouth": "mouth_ooh",
+      "turn": 0,
+      "features": {
+        "tx": 0
+      },
+      "nose": {
+        "tx": 0
+      },
+      "face": {
+        "tx": 0
+      },
+      "hair_front": {
+        "tx": 0
+      },
+      "hair_back": {
+        "tx": 0
+      },
+      "ear_L": {
+        "tx": 0,
+        "sx": 1
+      },
+      "ear_R": {
+        "tx": 0,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
       "brow_L": {
         "ty": -12,
         "rot": 0,
@@ -583,6 +967,41 @@
         "opacity": 0.75
       },
       "mouth": "mouth_laugh",
+      "turn": -0.2,
+      "features": {
+        "tx": -1
+      },
+      "nose": {
+        "tx": -1.3
+      },
+      "face": {
+        "tx": -0.2
+      },
+      "hair_front": {
+        "tx": -0.4
+      },
+      "hair_back": {
+        "tx": 0.3
+      },
+      "ear_L": {
+        "tx": 0.24,
+        "sx": 1
+      },
+      "ear_R": {
+        "tx": 0.24,
+        "sx": 0.95
+      },
+      "lock_L": {
+        "rot": 2.5
+      },
+      "lock_R": {
+        "rot": 2.5
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
       "brow_L": {
         "ty": -6,
         "rot": 0,
@@ -636,6 +1055,41 @@
         "opacity": 0.5
       },
       "mouth": "mouth_expect",
+      "turn": -0.3,
+      "features": {
+        "tx": -1.5
+      },
+      "nose": {
+        "tx": -1.95
+      },
+      "face": {
+        "tx": -0.3
+      },
+      "hair_front": {
+        "tx": -0.6
+      },
+      "hair_back": {
+        "tx": 0.45
+      },
+      "ear_L": {
+        "tx": 0.36,
+        "sx": 1
+      },
+      "ear_R": {
+        "tx": 0.36,
+        "sx": 0.93
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
       "brow_L": {
         "ty": -5,
         "rot": -15,
@@ -689,6 +1143,41 @@
         "opacity": 0.35
       },
       "mouth": "mouth_oh",
+      "turn": 0,
+      "features": {
+        "tx": 0
+      },
+      "nose": {
+        "tx": 0
+      },
+      "face": {
+        "tx": 0
+      },
+      "hair_front": {
+        "tx": 0
+      },
+      "hair_back": {
+        "tx": 0
+      },
+      "ear_L": {
+        "tx": 0,
+        "sx": 1
+      },
+      "ear_R": {
+        "tx": 0,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
       "brow_L": {
         "ty": -14,
         "rot": 0,
@@ -734,6 +1223,542 @@
       },
       "eye_R": "open"
     }
+  },
+  "armPoses": {
+    "rest": {
+      "head": {
+        "rot": 0
+      },
+      "blush": {
+        "opacity": 0.35
+      },
+      "mouth": "mouth_neutral",
+      "turn": 0,
+      "features": {
+        "tx": 0
+      },
+      "nose": {
+        "tx": 0
+      },
+      "face": {
+        "tx": 0
+      },
+      "hair_front": {
+        "tx": 0
+      },
+      "hair_back": {
+        "tx": 0
+      },
+      "ear_L": {
+        "tx": 0,
+        "sx": 1
+      },
+      "ear_R": {
+        "tx": 0,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "rest",
+        "tx": 0,
+        "ty": 0
+      },
+      "brow_L": {
+        "ty": 0,
+        "rot": 0,
+        "arch": 0.33
+      },
+      "lid_upper_L": {
+        "ty": 0,
+        "rot": 0
+      },
+      "lid_lower_L": {
+        "ty": 0,
+        "line": 0
+      },
+      "lash_flick_L": {
+        "ty": 0
+      },
+      "pupil_L": {
+        "tx": 0,
+        "ty": 0,
+        "scale": 1
+      },
+      "eye_L": "open",
+      "brow_R": {
+        "ty": 0,
+        "rot": 0,
+        "arch": 0.33
+      },
+      "lid_upper_R": {
+        "ty": 0,
+        "rot": 0
+      },
+      "lid_lower_R": {
+        "ty": 0,
+        "line": 0
+      },
+      "lash_flick_R": {
+        "ty": 0
+      },
+      "pupil_R": {
+        "tx": 0,
+        "ty": 0,
+        "scale": 1
+      },
+      "eye_R": "open"
+    },
+    "writing": {
+      "head": {
+        "rot": 3
+      },
+      "blush": {
+        "opacity": 0.35
+      },
+      "mouth": "mouth_soft",
+      "turn": 0,
+      "features": {
+        "tx": 0
+      },
+      "nose": {
+        "tx": 0
+      },
+      "face": {
+        "tx": 0
+      },
+      "hair_front": {
+        "tx": 0
+      },
+      "hair_back": {
+        "tx": 0
+      },
+      "ear_L": {
+        "tx": 0,
+        "sx": 1
+      },
+      "ear_R": {
+        "tx": 0,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "writing",
+        "tx": -20,
+        "ty": -6
+      },
+      "brow_L": {
+        "ty": 0,
+        "rot": 0,
+        "arch": 0.33
+      },
+      "lid_upper_L": {
+        "ty": 20.47,
+        "rot": -2.53
+      },
+      "lid_lower_L": {
+        "ty": 0,
+        "line": 0
+      },
+      "lash_flick_L": {
+        "ty": 21.3
+      },
+      "pupil_L": {
+        "tx": -1.4,
+        "ty": 6.3,
+        "scale": 1
+      },
+      "eye_L": "open",
+      "brow_R": {
+        "ty": 0,
+        "rot": 0,
+        "arch": 0.33
+      },
+      "lid_upper_R": {
+        "ty": 20.47,
+        "rot": -357.47
+      },
+      "lid_lower_R": {
+        "ty": 0,
+        "line": 0
+      },
+      "lash_flick_R": {
+        "ty": 21.3
+      },
+      "pupil_R": {
+        "tx": -1.4,
+        "ty": 6.3,
+        "scale": 1
+      },
+      "eye_R": "open"
+    },
+    "hold": {
+      "head": {
+        "rot": -3
+      },
+      "blush": {
+        "opacity": 0.35
+      },
+      "mouth": "mouth_expect",
+      "turn": 0.2,
+      "features": {
+        "tx": 1
+      },
+      "nose": {
+        "tx": 1.3
+      },
+      "face": {
+        "tx": 0.2
+      },
+      "hair_front": {
+        "tx": 0.4
+      },
+      "hair_back": {
+        "tx": -0.3
+      },
+      "ear_L": {
+        "tx": -0.24,
+        "sx": 0.95
+      },
+      "ear_R": {
+        "tx": -0.24,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "hold",
+        "tx": 0,
+        "ty": 0
+      },
+      "brow_L": {
+        "ty": -6,
+        "rot": -4,
+        "arch": 0.33
+      },
+      "lid_upper_L": {
+        "ty": -3.68,
+        "rot": 0
+      },
+      "lid_lower_L": {
+        "ty": 0,
+        "line": 0
+      },
+      "lash_flick_L": {
+        "ty": 0
+      },
+      "pupil_L": {
+        "tx": 0,
+        "ty": 0,
+        "scale": 1
+      },
+      "eye_L": "open",
+      "brow_R": {
+        "ty": -3,
+        "rot": 0,
+        "arch": 0.33
+      },
+      "lid_upper_R": {
+        "ty": -3.68,
+        "rot": 0
+      },
+      "lid_lower_R": {
+        "ty": 0,
+        "line": 0
+      },
+      "lash_flick_R": {
+        "ty": 0
+      },
+      "pupil_R": {
+        "tx": 0,
+        "ty": 0,
+        "scale": 1
+      },
+      "eye_R": "open"
+    },
+    "watch": {
+      "head": {
+        "rot": 5
+      },
+      "blush": {
+        "opacity": 0.35
+      },
+      "mouth": "mouth_soft",
+      "turn": 0.3,
+      "features": {
+        "tx": 1.5
+      },
+      "nose": {
+        "tx": 1.95
+      },
+      "face": {
+        "tx": 0.3
+      },
+      "hair_front": {
+        "tx": 0.6
+      },
+      "hair_back": {
+        "tx": -0.45
+      },
+      "ear_L": {
+        "tx": -0.36,
+        "sx": 0.93
+      },
+      "ear_R": {
+        "tx": -0.36,
+        "sx": 1
+      },
+      "lock_L": {
+        "rot": 0
+      },
+      "lock_R": {
+        "rot": 0
+      },
+      "arm": {
+        "pose": "watch",
+        "tx": 0,
+        "ty": 0
+      },
+      "brow_L": {
+        "ty": -2,
+        "rot": 0,
+        "arch": 0.33
+      },
+      "lid_upper_L": {
+        "ty": 18.17,
+        "rot": -2.53
+      },
+      "lid_lower_L": {
+        "ty": 0,
+        "line": 0
+      },
+      "lash_flick_L": {
+        "ty": 19
+      },
+      "pupil_L": {
+        "tx": 3.85,
+        "ty": 6.65,
+        "scale": 1
+      },
+      "eye_L": "open",
+      "brow_R": {
+        "ty": -2,
+        "rot": 0,
+        "arch": 0.33
+      },
+      "lid_upper_R": {
+        "ty": 18.17,
+        "rot": -357.47
+      },
+      "lid_lower_R": {
+        "ty": 0,
+        "line": 0
+      },
+      "lash_flick_R": {
+        "ty": 19
+      },
+      "pupil_R": {
+        "tx": 3.85,
+        "ty": 6.65,
+        "scale": 1
+      },
+      "eye_R": "open"
+    }
+  },
+  "writingPath": {
+    "fps": 24,
+    "frames": [
+      {
+        "tx": -49.93,
+        "ty": 2.62
+      },
+      {
+        "tx": -48.33,
+        "ty": 5.12
+      },
+      {
+        "tx": -46.74,
+        "ty": 1.78
+      },
+      {
+        "tx": -45.14,
+        "ty": 2.87
+      },
+      {
+        "tx": -43.54,
+        "ty": 3.5
+      },
+      {
+        "tx": -41.94,
+        "ty": -0.64
+      },
+      {
+        "tx": -40.34,
+        "ty": 1.33
+      },
+      {
+        "tx": -38.75,
+        "ty": 3.74
+      },
+      {
+        "tx": -37.15,
+        "ty": 1.04
+      },
+      {
+        "tx": -35.55,
+        "ty": 3.03
+      },
+      {
+        "tx": -33.95,
+        "ty": 3.91
+      },
+      {
+        "tx": -32.36,
+        "ty": -0.6
+      },
+      {
+        "tx": -30.76,
+        "ty": 0.67
+      },
+      {
+        "tx": -29.16,
+        "ty": 2.34
+      },
+      {
+        "tx": -27.56,
+        "ty": -0.32
+      },
+      {
+        "tx": -25.96,
+        "ty": 2.41
+      },
+      {
+        "tx": -24.37,
+        "ty": 3.97
+      },
+      {
+        "tx": -22.77,
+        "ty": -0.19
+      },
+      {
+        "tx": -21.17,
+        "ty": 0.79
+      },
+      {
+        "tx": -19.57,
+        "ty": 1.56
+      },
+      {
+        "tx": -17.98,
+        "ty": -1.72
+      },
+      {
+        "tx": -16.38,
+        "ty": 1.15
+      },
+      {
+        "tx": -14.78,
+        "ty": 3.27
+      },
+      {
+        "tx": -13.18,
+        "ty": -0.1
+      },
+      {
+        "tx": -11.58,
+        "ty": 1.29
+      },
+      {
+        "tx": -9.99,
+        "ty": 1.56
+      },
+      {
+        "tx": -8.39,
+        "ty": -2.5
+      },
+      {
+        "tx": -6.79,
+        "ty": -0.16
+      },
+      {
+        "tx": -5.19,
+        "ty": 1.9
+      },
+      {
+        "tx": -3.6,
+        "ty": -0.78
+      },
+      {
+        "tx": -2,
+        "ty": 1.49
+      },
+      {
+        "tx": -0.4,
+        "ty": 1.96
+      },
+      {
+        "tx": 1.2,
+        "ty": -2.5
+      },
+      {
+        "tx": 2.8,
+        "ty": -0.87
+      },
+      {
+        "tx": 4.39,
+        "ty": 0.48
+      },
+      {
+        "tx": 5.99,
+        "ty": -2.12
+      },
+      {
+        "tx": -1,
+        "ty": -1.86
+      },
+      {
+        "tx": -7.99,
+        "ty": -3.12
+      },
+      {
+        "tx": -14.98,
+        "ty": -3.83
+      },
+      {
+        "tx": -21.97,
+        "ty": -3.85
+      },
+      {
+        "tx": -28.96,
+        "ty": -3.1
+      },
+      {
+        "tx": -35.95,
+        "ty": -1.65
+      },
+      {
+        "tx": -42.94,
+        "ty": 0.34
+      },
+      {
+        "tx": -49.93,
+        "ty": 2.62
+      }
+    ],
+    "note": "arm_R translation per frame: 36 frames writing left to right, 8 frames lifting back. Loop while mood is writing."
   },
   "visemes": [
     {

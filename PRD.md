@@ -61,7 +61,7 @@ All setup happens here, before the call. Nothing is asked by voice.
 
 **Call**
 
-- Meera full screen. A small self view camera tile in the corner, off by default, one tap to turn on.
+- Meera fills a large rounded tile, like the other person on a video call. My self view camera sits small in the tile's top corner, off by default, one tap to turn on. What she's doing ("Meera's talking · Question 1 of 2") is a caption over the bottom of the tile, like a name label. The question card and the call controls stay below the tile.
 - Controls: mute, camera, hang up. No attach button: the CV and job description only come in through the setup sheet, before the call. Meera never asks for them.
 - A small progress label once the interview starts: "Question 2 of 5". No timer.
 - While the scorecard is being built: Meera's face stays on screen with "Writing up your scorecard" and her writing mood.
@@ -288,7 +288,7 @@ One ElevenLabs agent. Pick a calm, warm voice with a natural pace. Voice model: 
 
 | Tool | Parameters | What the app does |
 | --- | --- | --- |
-| react | name: nod, smile, browRaise, glanceDown, handUp, checkWatch, sitUp, leanIn | Fires that trigger on the rig |
+| react | name: nod, smile, browRaise, glanceDown, handUp, checkWatch, sitUp, leanIn, impressed, laugh, reassure, think, surprised | Fires that trigger on the rig. think and surprised are normally fired by the app (see Character and rig), but the tool accepts them |
 | flag | type, quote | Logs the flag with a timestamp. Plays the writing mood. Ignored outside the interview phase |
 | setPhase | name: opening, interview, done | Sets the phase. done ends the call and starts the scorecard |
 | setSetup | None | Removed. Setup now comes from the sheet. Delete this tool in ElevenLabs |
@@ -358,15 +358,16 @@ TOOL RULES
 
 The same method as Unstuck. Meera is flat and front facing, built from separate named vector parts, and rigged in Rive with the Rive CLI. The app never animates. It only sets view model values.
 
-**The rig, from 11 Nov.** Meera's Rive rig (`rive/`, spec in `rive/RIG.md`) replaces the blob in `components/meera/Meera.tsx`, the same avatar component, reading the same InterviewVM values. It runs only in the call flow: the call, writing and retry screens, and the call's problem screens. `/kit`, the developer page, keeps the animated rig too, for previewing her moods. Everywhere else (Home, the scorecard, History, Profile) shows `components/meera/MeeraStatic.tsx`: her neutral pose as a still SVG, `public/meera.svg`, cropped to viewBox 50 20 300 300 with lavender filling the frame. `node rive/source/build.js` makes it from the parts with everything else, so it never drifts from the rig. Those screens don't load the Rive runtime. The still image is shown round, like the other interviewer avatars, with the lavender filling the circle. `npm run rig` regenerates `rive/meera.rml` from the parts, publishes `rive/meera.riv` and copies it to `public/rive/`. `npm run rig:sheet` renders every state against the reference poses. The component:
+**The rig, v2 from 11 Nov.** Meera's Rive rig (`rive/`, spec in `rive/RIG.md` v2: Concept v2, a 328 × 430 call tile) replaces the blob in `components/meera/Meera.tsx`, the same avatar component, reading the same InterviewVM values. It runs only in the call flow: the call, writing and retry screens, and the call's problem screens. `/kit`, the developer page, keeps the animated rig too, for previewing her moods. Everywhere else (Home, the scorecard, History, Profile) shows `components/meera/MeeraStatic.tsx`: her neutral pose as a still SVG, `public/meera.svg`, cropped to viewBox 50 60 300 300 with lavender filling the frame. `node rive/source/build.js` makes it from the parts with everything else, so it never drifts from the rig. Those screens don't load the Rive runtime. The still image is shown round, like the other interviewer avatars, with the lavender filling the circle. `npm run rig` regenerates `rive/meera.rml` from the parts, publishes `rive/meera.riv` and copies it to `public/rive/`. `npm run rig:sheet` renders every state against the reference poses. The component:
 
 - copies InterviewVM into the rig's view model whenever a value changes, and passes triggers straight through
-- sets the rig's `reducedMotion` from the phone's setting, which turns off breathing, nod and lean. Expressions and blinks stay
+- sets the rig's `reducedMotion` from the phone's setting, which turns off the talking motion, eye darts, hair follow-through, breathing, and the nod's and lean's movement. Expressions, blinks, arm poses and visemes stay
+- `fill`: covers its parent, for the call tile. Otherwise the whole tile at the given height, with rounded corners
 - offline: she rests on idle, greyed out
 - a `still` preview sets the mood, mouthOpen and trigger once, and she stays in that moment, still breathing and blinking
 - below 160 px, shows her head only, in a round avatar
 
-Until the Rive plan is upgraded, every published file carries the Rive splash screen for about 2.5 s after it loads. Rebuild with `npm run rig` after the upgrade.
+What the rig does (rive/RIG.md v2): parallax head turns from one turn value, hair locks with follow-through, three arm poses (rest, writing along `writingPath`, hold and watch as pose swaps), a 2 s talking loop (head bobs and tilts, a turn sway, brow bounces), snappy eye darts, an overshooting nod, a blink at the start of every reaction, and the thinking mood. The talking motion is tuned to 5.9% of pixels changing per frame, against 6.1% for the Alex reference character. Published on the Rive Cadet plan, with no splash screen.
 
 **V2 placeholder, retired 11 Nov: Meera's blob.** v1 shipped an orb to build and test fast. v2 replaces it with Meera's blob from `design/DESIGN.md`: a pink blob with a sun dot and ink eyes, built in `components/meera/Meera.tsx`. She reads the same InterviewVM values the rig will use (mood, mouthOpen and every trigger) through one avatar component, so the Rive rig drops into the same slot later and nothing else in the app changes. The mapping lives in `lib/avatar/meeraFace.ts` and is unit tested. The call screen uses the blob from v2 part 4. The reading mood is retired with the mid call upload (8 Nov).
 
@@ -410,13 +411,17 @@ Until the Rive plan is upgraded, every published file carries the Rive splash sc
 
 | Property | Type | Values |
 | --- | --- | --- |
-| mood | enum | idle, intake, listening, skeptical, writing, talking |
+| mood | enum | idle, intake, listening, skeptical, writing, talking, thinking |
 | viseme | enum | rest, closed, teeth, open, wide, round, pucker, fv, lth |
 | mouthOpen | number | 0 to 100 |
 | lipSync | boolean | True while her audio playing has letter timing, so viseme follows the letters. False, the rig picks the mouth from mouthOpen: rest, teeth or open |
-| nod, smile, browRaise, glanceDown, handUp, checkWatch, sitUp, leanIn, expectant (brows up slightly, head tilted) | trigger | Fire once, then hand back |
+| nod, smile, browRaise, glanceDown, handUp, checkWatch, sitUp, leanIn, expectant (brows up slightly, head tilted), think, impressed, laugh, reassure, surprised | trigger | Fire once, then hand back |
 
-**State machine layers, running at once.** Mood (breathing, posture, head drift), reactions, blink on its own timer, mouth, jaw.
+**State machine layers, running at once** (rive/RIG.md v2's seven behaviours, in nine Rive layers): 1 Mood, with the face of every reaction so it hands back to the current mood without a snap; 2 Talking motion; 3 Reactions (movement, arm swaps and the opening blink) and 3b Posture (sitUp, which stays for the call, so it needs its own layer); 4 Blink; 5 Eye darts; 6 Mouth and 6b Viseme; 7 Breathing and follow-through.
+
+**Who fires the new triggers.** The agent fires impressed, laugh and reassure through the react tool. The app fires the other two:
+- **think:** when my turn has ended (my final transcript arrived) and her reply hasn't started 600 ms after my voice stopped. The app holds the thinking mood until she speaks, or 2.5 s at most, and only during the interview. A pause in the middle of an answer never fires it. Thresholds in `lib/live/config.ts` (thinkAfterMs, thinkHoldMs), logic in `lib/call/thinking.ts`.
+- **surprised:** when I cut in while she's talking (the ElevenLabs interruption event).
 
 **Lip sync.** `lib/lipsync`, timings in `lib/lipsync/config.ts`. `onAudioAlignmentPlayback` gives each audio chunk's character timing as that chunk starts playing (`onAudioAlignment` arrives seconds early), and each chunk starts a fresh timeline. Letters map to visemes with simple spelling rules: p b m closed, d s t teeth, e i wide, l n th lth, a open, o round, u w pucker. Letters are grouped until each shape lasts at least 60 ms, and a group shows its most visible letter (vowels, then closed lips), so quick letters never collapse into one shape. Each shape is shown about 40 ms early. Gaps between words under 220 ms close the lips, and longer gaps or punctuation rest the mouth. A chunk with no letters sets lipSync false, and the rig picks the mouth from mouthOpen until letters return. No shape holds longer than 250 ms while she speaks: past that, mouthOpen takes over until the next letter. The mouth rests at once when her audio stops: end of turn, an interruption, the last chunk running out, the call ending, or the tab hiding. A gap of more than 150 ms between frames drops the timeline until the next chunk, so a stall never leaves an old shape on screen. In a real call on 11 Nov, every chunk had alignment, and the mouth matched the letters best 20 to 50 ms after each chunk started playing, about where the sound reaches the speaker.
 

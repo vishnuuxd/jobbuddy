@@ -31,6 +31,7 @@ import { clearPendingCall, readPendingCall, setPendingCall, type PendingCall } f
 import { answeredQuestions, createCallSession, toCallRecord, totalQuestions } from "@/lib/call/session";
 import { useSelfView } from "@/lib/call/useSelfView";
 import { useVoiceVolume } from "@/lib/call/useVoiceVolume";
+import { createThinkWatch } from "@/lib/call/thinking";
 import { createLipSync } from "@/lib/lipsync/player";
 import { liveConfig } from "@/lib/live/config";
 import { createLiveRules } from "@/lib/live/rules";
@@ -58,7 +59,7 @@ function createCall() {
   const session = createCallSession(vm, liveConfig);
   const sendRef: { current: (text: string) => void } = { current: () => {} };
   const rules = createLiveRules(session, (text) => sendRef.current(text), liveConfig);
-  return { vm, session, rules, sendRef, lips: createLipSync(vm), clientTools: createClientTools(session) };
+  return { vm, session, rules, sendRef, lips: createLipSync(vm), think: createThinkWatch(session, liveConfig), clientTools: createClientTools(session) };
 }
 
 const formatTime = (ms: number) => {
@@ -68,7 +69,7 @@ const formatTime = (ms: number) => {
 
 export function CallScreen() {
   const router = useRouter();
-  const [{ vm, session, rules, sendRef, lips, clientTools }] = useState(createCall);
+  const [{ vm, session, rules, sendRef, lips, think, clientTools }] = useState(createCall);
   const call = useSyncExternalStore(session.subscribe, session.get, session.get);
   const [stage, setStage] = useState<CallStage>("connecting");
   const [problem, setProblem] = useState<Problem>(null);
@@ -122,6 +123,7 @@ export function CallScreen() {
     onDisconnect: (details) => {
       rules.finish();
       lips.stop();
+      session.setThinking(false);
       const state = session.get();
       const answered = answeredQuestions(state);
       setEndedAfterMs(Date.now() - state.startedAtMs);
@@ -146,6 +148,7 @@ export function CallScreen() {
     onModeChange: ({ mode }) => {
       if (mode === "speaking") {
         herTurnStartedAt.current = Date.now();
+        think.herTurn();
         rules.herTurn();
       } else {
         herVoiceStoppedAt.current = Date.now(); // Her audio finished playing.
@@ -153,9 +156,13 @@ export function CallScreen() {
       }
       session.setSpeaking(mode === "speaking");
     },
-    onVadScore: ({ vadScore }) => rules.vad(vadScore),
+    onVadScore: ({ vadScore }) => {
+      rules.vad(vadScore);
+      think.vad(vadScore);
+    },
     onInterruption: () => {
       lips.stop();
+      session.react("surprised"); // I cut in while she was talking
       rules.interruption();
     },
     // Lip sync: each chunk's letter timing, as that chunk starts playing.
@@ -165,6 +172,7 @@ export function CallScreen() {
         session.noteUserMessage();
         session.addTranscript("user", message, Date.now());
         rules.userMessage(message);
+        think.userTurnEnded();
       } else {
         herLastLineAt.current = Date.now();
         // Voice tags like "[calm]" never reach the caption, the transcript or the scorecard.
@@ -265,14 +273,16 @@ export function CallScreen() {
   useEffect(() => {
     if (!inCall) return;
     const rulesTimer = setInterval(rules.tick, 200);
+    const thinkTimer = setInterval(think.tick, 50);
     const saveTimer = setInterval(() => {
       if (!session.get().retryOf) void saveCall(toCallRecord(session.get()));
     }, saveEveryMs);
     return () => {
       clearInterval(rulesTimer);
+      clearInterval(thinkTimer);
       clearInterval(saveTimer);
     };
-  }, [inCall, rules, session]);
+  }, [inCall, rules, session, think]);
 
   // The app owns the time limit. Two minutes left: no new main question. At the chosen
   // length: close now. 60 s after that, if she still hasn't called setPhase("done"),
@@ -473,18 +483,16 @@ export function CallScreen() {
         <CallPill>{stage === "writing" ? `Call ended · ${formatTime(endedAfterMs)}` : copy.pill}</CallPill>
       </div>
 
-      <SelfView stream={selfView.stream} className={styles.selfView} />
-
-      <div className={styles.middle}>
-        <div className={styles.stage}>
-          <Meera vm={vm} size={240} />
-          {reaction && stage === "live" && (
-            <Tag tone={reaction.tone} className={styles.reaction}>
-              {reaction.text}
-            </Tag>
-          )}
-        </div>
-        <div className={styles.words} aria-live="polite">
+      {/* Meera fills the tile, like the other person on a video call. My camera sits in its corner. */}
+      <div className={styles.tile}>
+        <Meera vm={vm} fill />
+        <SelfView stream={selfView.stream} className={styles.selfView} />
+        {reaction && stage === "live" && (
+          <Tag tone={reaction.tone} className={styles.reaction}>
+            {reaction.text}
+          </Tag>
+        )}
+        <div className={styles.caption} aria-live="polite">
           <h1 className={styles.title}>{copy.title}</h1>
           <p className={styles.sub}>{copy.sub}</p>
         </div>

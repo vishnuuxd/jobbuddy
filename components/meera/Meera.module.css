@@ -3,6 +3,8 @@
 .canvas { position: absolute; }
 /* Head only, at small sizes: a round avatar, the halo filling the circle. */
 .head { border-radius: 50%; }
+/* The call tile: rounded like a video call participant. */
+.tile { border-radius: var(--r-card); }
 /* Offline: the connection dropped. She rests, greyed out. */
 .offline .canvas { filter: grayscale(1); opacity: 0.55; }
 /* The still image outside the call: round, the lavender filling the circle. */

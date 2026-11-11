@@ -57,6 +57,12 @@ export const triggerMs: Record<Trigger, number> = {
   sitUp: 500,
   leanIn: 1700,
   expectant: 2500,
+  // Added with the v2 rig. The orb is retired, so these only keep the table complete.
+  think: 2500,
+  impressed: 1200,
+  laugh: 1400,
+  reassure: 1500,
+  surprised: 800,
 };
 
 // Rises, holds, falls.

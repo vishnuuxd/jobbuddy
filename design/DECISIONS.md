@@ -356,3 +356,15 @@ Plum replaces Tropical. The entries above describe the Tropical build and stay a
 - Screen showed: Meera's animated rig on Home's card and the scorecard's "Meera says"
 - Built instead: a still image of her neutral pose (public/meera.svg, made by rive/source/build.js from the parts), square crop at viewBox 50 20 300 300, lavender filling the frame. Shown round, like the other interviewer avatars. The animated rig stays on the call, writing and retry screens only
 - Why: Vishnu's phone test. The animation belongs to the call; elsewhere it's decoration, and those screens no longer load the Rive runtime. Checked at 40, 64 and 160 px
+
+## Call screen: Meera in a video call tile (v2 rig, 11 Nov)
+- Screen showed: Meera's avatar centred on plum, the self view in the screen's top corner, and "Meera's talking" as a large title under her
+- Built instead: Meera fills a large rounded tile (24 px radius) between the top bar and the question card, cropped to cover it, like the other person on a video call. My self view sits small in the tile's top right corner with a thin white border. The status ("Meera's talking · Question 1 of 2") is a caption over the bottom of the tile on a dark fade, like a name label, so the tile gets the height. Reaction stickers sit on the tile's right. The question card and controls are unchanged below
+- Why: Vishnu asked for a video call tile with the self view in its corner. The problem screens (dropped, cut short, scorecard failed) show her greyed or still tile at 240 px tall with rounded corners
+
+## Meera rig v2: details the spec left open (11 Nov)
+- Jaw: mouthOpen scales the talking mouth (the visemes), 0.94 to 1.10, not the whole mouth group. Scaling the whole group would squash her expression mouths to 0.94 whenever she's silent
+- browRaise: the right brow lifts 8 px and tilts 5°, the left drops 1 px
+- Seven behaviours, nine Rive layers: sitUp stays for the call while other reactions come and go, so it has its own layer; the mouth set and the viseme are separate layers, as in v1
+- Hair follow-through is baked: a spring that lags 120 ms, overshoots about 40% and settles in about 300 ms is run against each head rotation curve (breathing, talking, thinking, laugh, leanIn) and saved as keys on the locks. Mood cross-fades don't add follow-through
+- public/meera.svg is build.js's output; rive/static/meera.svg keeps Vishnu's copy with its provenance data

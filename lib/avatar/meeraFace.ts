@@ -33,6 +33,12 @@ export const triggerMs: Record<Trigger, number> = {
   sitUp: 600,
   leanIn: 1700,
   expectant: 2500,
+  // Added with the v2 rig. The blob is retired, so these only keep the table complete.
+  think: 2500,
+  impressed: 1200,
+  laugh: 1400,
+  reassure: 1500,
+  surprised: 800,
 };
 
 const moodFaces: Record<Mood, Pick<Face, "eyes" | "mouth" | "notepad">> = {
@@ -42,6 +48,7 @@ const moodFaces: Record<Mood, Pick<Face, "eyes" | "mouth" | "notepad">> = {
   talking: { eyes: "tall", mouth: "talk", notepad: false },
   skeptical: { eyes: "worried", mouth: "wavy", notepad: false },
   writing: { eyes: "down", mouth: "none", notepad: true },
+  thinking: { eyes: "flat", mouth: "flat", notepad: false },
 };
 
 const postureScale: Record<Posture, number> = { soft: 0.97, neutral: 1, firm: 1.02 };

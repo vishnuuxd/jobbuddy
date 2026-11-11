@@ -1,10 +1,10 @@
 // Meera concept generator. Every expression is a set of rig values,
 // the same controls the Rive file will expose.
 const C = {
-  halo: '#AA89F2', hair: '#3A2230', hairHi: '#5E3A4E', skin: '#C98463', skinShade: '#AE6C4D',
+  halo: '#AA89F2', hair: '#5A3226', hairHi: '#8A5440', skin: '#C98463', skinShade: '#AE6C4D',
   blush: '#E8796B', line: '#2A1622', white: '#FFFFFF', iris: '#3B1F2E', mouth: '#4A1622',
   tongue: '#E7727F', lip: '#8E3F4A', blazer: '#FFA8CD', blazerShade: '#F089B5', shirt: '#FFFFFF',
-  shirtShade: '#E9E4EE', lime: '#E6FFA9', limeDark: '#B9D96A', note: '#FFFFFF', noteLine: '#D9D5E6', plum: '#0B051D'
+  shirtShade: '#E9E4EE', hairDark: '#47261C', blazerFold: '#EE86B3', lime: '#E6FFA9', limeDark: '#B9D96A', note: '#FFFFFF', noteLine: '#D9D5E6', plum: '#0B051D'
 };
 
 const EYE = { L: { cx: 165, cy: 198 }, R: { cx: 235, cy: 198 }, rx: 20, ry: 23 };
@@ -19,6 +19,8 @@ const defaults = {
   eyeL: 'open', eyeR: 'open', // open | happy | closed
   look: { x: 0, y: 0 }, pupil: 1,
   mouth: 'half', blush: 0.35,
+  turn: 0,              // head turn -1..1 (about ±4°), faked with parallax
+  sway: 0,              // hair lock swing in degrees (follow-through)
 };
 
 function merge(p) {
@@ -124,32 +126,37 @@ const MOUTHS = {
 };
 
 function head(p) {
-  const tilt = p.tilt;
-  return `<g transform="rotate(${tilt} 200 300)">
-  <!-- hair back + bun -->
-  <circle cx="200" cy="80" r="33" fill="${C.hair}"/>
-  <path d="M188 58 Q204 52 218 62" stroke="${C.hairHi}" stroke-width="5" stroke-linecap="round" fill="none"/>
-  <path d="M108 200 C100 128 146 94 200 94 C256 94 300 128 292 200 C290 232 282 252 268 262 L132 262 C118 252 110 232 108 200 Z" fill="${C.hair}"/>
-  <!-- ears -->
-  <ellipse cx="121" cy="202" rx="11" ry="15" fill="${C.skinShade}"/>
-  <ellipse cx="279" cy="202" rx="11" ry="15" fill="${C.skinShade}"/>
-  <circle cx="120" cy="222" r="5.5" fill="${C.lime}"/>
-  <circle cx="280" cy="222" r="5.5" fill="${C.lime}"/>
-  <!-- face -->
-  <path d="M200 104 C252 104 280 140 280 192 C280 246 246 284 200 284 C154 284 120 246 120 192 C120 140 148 104 200 104 Z" fill="${C.skin}"/>
-  <!-- blush -->
-  <ellipse cx="146" cy="232" rx="14" ry="8.5" fill="${C.blush}" opacity="${p.blush}"/>
-  <ellipse cx="254" cy="232" rx="14" ry="8.5" fill="${C.blush}" opacity="${p.blush}"/>
-  <!-- hair front: side swept fringe -->
-  <path d="M114 204 C106 136 148 100 204 100 C260 100 296 136 286 204 C282 176 274 156 262 142 C242 136 218 126 198 108 C186 126 166 134 146 138 C132 154 120 176 114 204 Z" fill="${C.hair}"/>
-  <path d="M226 108 C244 112 260 122 270 136" stroke="${C.hairHi}" stroke-width="5" stroke-linecap="round" fill="none"/>
-  ${brow('L', p.browL)}${brow('R', p.browR)}
-  ${eye('L', p.lidL, p.lowL, p.eyeL, p.look, p.pupil)}
-  ${eye('R', p.lidR, p.lowR, p.eyeR, p.look, p.pupil)}
-  <!-- nose -->
-  <path d="M203 206 Q206 220 204 226" stroke="${C.skinShade}" stroke-width="3" stroke-linecap="round" fill="none"/>
-  <path d="M193 228 Q200 233 207 228" stroke="${C.skinShade}" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-  ${MOUTHS[p.mouth]()}
+  const t = p.turn, sw = p.sway;
+  // parallax: parts nearer the viewer slide further
+  const fx = 5 * t, nx = 6.5 * t, hfx = 2 * t, hbx = -1.5 * t;
+  const farL = t > 0 ? 1 - 0.24 * t : 1, farR = t < 0 ? 1 + 0.24 * t : 1;
+  return `<g id="head" transform="rotate(${p.tilt} 200 300)">
+  <g id="hair_back" transform="translate(${hbx} 0)">
+    <g id="lock_L" transform="rotate(${sw} 128 236)"><path d="M108 210 C106 250 104 292 96 336 Q116 350 144 338 C148 300 150 280 156 262 L150 230 Z" fill="${C.hair}"/><path d="M118 262 C116 290 114 312 110 330" stroke="${C.hairDark}" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6"/></g>
+    <g id="lock_R" transform="rotate(${sw} 272 236)"><path d="M292 210 C294 250 296 292 304 336 Q284 350 256 338 C252 300 250 280 244 262 L250 230 Z" fill="${C.hair}"/><path d="M282 262 C284 290 286 312 290 330" stroke="${C.hairDark}" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6"/></g>
+    <path id="hair_crown" d="M106 214 C98 120 146 92 200 92 C254 92 302 120 294 214 L276 252 L124 252 Z" fill="${C.hair}"/>
+  </g>
+  <g id="ear_L" transform="translate(${-0.3 * t * 4} 0) translate(110 202) scale(${farL} 1) translate(-110 -202)"><ellipse cx="121" cy="202" rx="11" ry="15" fill="${C.skinShade}"/><path d="M118 196 Q124 202 119 210" stroke="#9A5B40" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="120" cy="222" r="5.5" fill="${C.lime}"/></g>
+  <g id="ear_R" transform="translate(${-0.3 * t * 4} 0) translate(290 202) scale(${farR} 1) translate(-290 -202)"><ellipse cx="279" cy="202" rx="11" ry="15" fill="${C.skinShade}"/><path d="M282 196 Q276 202 281 210" stroke="#9A5B40" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="280" cy="222" r="5.5" fill="${C.lime}"/></g>
+  <path id="face" transform="translate(${t} 0)" d="M200 104 C252 104 280 140 280 192 C280 246 246 284 200 284 C154 284 120 246 120 192 C120 140 148 104 200 104 Z" fill="${C.skin}"/>
+  <g id="hair_front" transform="translate(${hfx} 0)">
+    <defs><clipPath id="faceclip"><path d="M200 104 C252 104 280 140 280 192 C280 246 246 284 200 284 C154 284 120 246 120 192 C120 140 148 104 200 104 Z"/></clipPath></defs><g clip-path="url(#faceclip)"><path id="fringe_shadow" transform="translate(0 6)" d="M114 204 C106 136 148 100 204 100 C260 100 296 136 286 204 C282 176 274 156 262 142 C242 136 218 126 198 108 C186 126 166 134 146 138 C132 154 120 176 114 204 Z" fill="${C.skinShade}" opacity="0.45"/></g>
+    <path d="M114 204 C106 136 148 100 204 100 C260 100 296 136 286 204 C282 176 274 156 262 142 C242 136 218 126 198 108 C186 126 166 134 146 138 C132 154 120 176 114 204 Z" fill="${C.hair}"/>
+    <path d="M198 108 C186 126 168 132 150 136" stroke="${C.hairDark}" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.55"/>
+    <path d="M214 112 C232 126 250 134 266 140" stroke="${C.hairDark}" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.55"/>
+  </g>
+  <g id="features" transform="translate(${fx} 0)">
+    <ellipse cx="146" cy="232" rx="14" ry="8.5" fill="${C.blush}" opacity="${p.blush}"/>
+    <ellipse cx="254" cy="232" rx="14" ry="8.5" fill="${C.blush}" opacity="${p.blush}"/>
+    ${brow('L', p.browL)}${brow('R', p.browR)}
+    ${eye('L', p.lidL, p.lowL, p.eyeL, p.look, p.pupil)}
+    ${eye('R', p.lidR, p.lowR, p.eyeR, p.look, p.pupil)}
+    <g id="mouth">${MOUTHS[p.mouth]()}</g>
+  </g>
+  <g id="nose" transform="translate(${nx} 0)">
+    <path d="M203 206 Q206 220 204 226" stroke="${C.skinShade}" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M193 228 Q200 233 207 228" stroke="${C.skinShade}" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  </g>
 </g>`;
 }
 
@@ -159,46 +166,103 @@ function body() {
   <path d="M180 262 L220 262 L224 318 L176 318 Z" fill="${C.skin}"/>
   <path d="M180 270 Q200 286 220 270 L220 262 L180 262 Z" fill="${C.skinShade}"/>
   <!-- blazer -->
-  <path d="M56 440 C60 360 92 330 150 314 L200 330 L250 314 C308 330 340 360 344 440 Z" fill="${C.blazer}"/>
+  <path d="M40 500 C46 372 90 330 150 314 L200 330 L250 314 C310 330 354 372 360 500 Z" fill="${C.blazer}"/>
+  <path d="M70 420 C80 392 96 372 116 360" stroke="${C.blazerFold}" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M330 420 C320 392 304 372 284 360" stroke="${C.blazerFold}" stroke-width="4" stroke-linecap="round" fill="none"/>
   <!-- shirt -->
-  <path d="M164 312 L200 336 L236 312 L232 440 L168 440 Z" fill="${C.shirt}"/>
+  <path d="M164 312 L200 336 L236 312 L232 500 L168 500 Z" fill="${C.shirt}"/>
   <path d="M164 312 L200 336 L184 352 L156 322 Z" fill="${C.shirtShade}"/>
   <path d="M236 312 L200 336 L216 352 L244 322 Z" fill="${C.shirtShade}"/>
   <!-- lapels -->
-  <path d="M150 314 L182 360 L170 372 L176 440 L136 440 L128 360 Z" fill="${C.blazerShade}"/>
-  <path d="M250 314 L218 360 L230 372 L224 440 L264 440 L272 360 Z" fill="${C.blazerShade}"/>
+  <path d="M150 314 L182 360 L170 372 L178 500 L132 500 L128 360 Z" fill="${C.blazerShade}"/>
+  <path d="M250 314 L218 360 L230 372 L222 500 L268 500 L272 360 Z" fill="${C.blazerShade}"/>
 </g>`;
 }
 
-function props() {
+// Clipboard held tilted toward her, so we see its back. The pen hand works
+// behind the board: only the knuckles and the top of the pen show over the edge.
+// Writing slides the right arm along the board's top edge; the sleeve runs off-frame.
+const ARM_PIVOT = [390, 540];
+const PEN_TIP = [212, 412];
+const KRAFT = '#C9955E', KRAFT_DARK = '#A9763F', CLIP = '#3B2433';
+function props(w = {}) {
+  const rot = w.rot ?? 0, dx = w.dx ?? 0, dy = w.dy ?? 0;
   return `<g>
-  <!-- notepad -->
-  <g transform="rotate(-8 130 400)">
-    <rect x="84" y="366" width="96" height="74" rx="8" fill="${C.note}" stroke="#EEE9FF"/>
-    <rect x="84" y="366" width="96" height="12" rx="6" fill="${C.limeDark}"/>
-    <path d="M98 394 H164 M98 408 H156 M98 422 H140" stroke="${C.noteLine}" stroke-width="4" stroke-linecap="round"/>
+  <!-- right arm, behind the board -->
+  <g id="arm_R" opacity="${w.pose ? 0 : 1}" transform="translate(${dx} ${dy}) rotate(${rot} ${ARM_PIVOT[0]} ${ARM_PIVOT[1]})">
+    <path id="sleeve_R" d="M470 560 C430 500 334 438 290 418 L270 446 C300 466 350 516 390 560 Z" fill="${C.blazerShade}"/>
+    <path id="wrist_R" d="M270 446 L290 418 L258 380 L244 404 Z" fill="${C.skin}"/>
+    <g id="watch"><path d="M262 438 L280 410 L290 416 L272 444 Z" fill="${C.plum}"/><circle cx="276" cy="427" r="7" fill="${C.lime}" stroke="${C.plum}" stroke-width="2.5"/></g>
+    <g id="hand_R" transform="translate(6 -16)">
+      <path id="pen_body" d="M${PEN_TIP[0]} ${PEN_TIP[1]} L258 344" stroke="${C.lime}" stroke-width="7" stroke-linecap="round" fill="none"/>
+      <path id="pen_cap" d="M258 344 L252 353" stroke="${C.plum}" stroke-width="7" stroke-linecap="round" fill="none"/>
+      <path id="fist_R" d="M214 392 C214 376 228 370 242 374 C254 378 258 392 252 402 C246 410 232 412 222 408 C217 404 214 399 214 392 Z" fill="${C.skin}"/>
+      <path d="M221 386 C227 380 237 380 243 384" stroke="${C.skinShade}" stroke-width="3" stroke-linecap="round" fill="none"/>
+    </g>
   </g>
-  <!-- sleeve, watch, hand, pen -->
-  <path d="M344 440 C340 420 330 404 312 396 L286 416 C296 424 304 432 306 440 Z" fill="${C.blazerShade}"/>
-  <path d="M286 416 L312 396 L304 388 L280 408 Z" fill="${C.skin}"/>
-  <path d="M282 402 L304 384 L312 394 L290 412 Z" fill="${C.plum}"/>
-  <circle cx="297" cy="398" r="7.5" fill="${C.lime}" stroke="${C.plum}" stroke-width="2.5"/>
-  <path d="M300 336 L262 404" stroke="${C.lime}" stroke-width="7" stroke-linecap="round"/>
-  <path d="M300 336 L295 345" stroke="${C.plum}" stroke-width="7" stroke-linecap="round"/>
-  <path d="M262 372 C262 356 276 348 290 352 C302 356 306 370 300 382 C294 392 280 394 270 390 C264 386 262 380 262 372 Z" fill="${C.skin}"/>
-  <path d="M268 366 C274 360 284 360 290 364" stroke="${C.skinShade}" stroke-width="3" stroke-linecap="round" fill="none"/>
-  <path d="M266 378 C272 374 282 374 288 378" stroke="${C.skinShade}" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- clipboard, back facing us -->
+  <g id="clipboard" transform="rotate(-3 200 440)">
+    <rect id="board" x="116" y="384" width="170" height="132" rx="10" fill="${KRAFT}"/>
+    <rect x="116" y="384" width="170" height="132" rx="10" fill="none" stroke="${KRAFT_DARK}" stroke-width="3"/>
+    <path d="M130 398 H272" stroke="#DDB07C" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+    <rect id="clip" x="176" y="374" width="50" height="16" rx="5" fill="${CLIP}"/>
+    <circle cx="201" cy="380" r="3.5" fill="${C.lime}"/>
+  </g>
+  <!-- left hand holding the board's edge: palm beside it, fingers on the back -->
+  <path id="palm_L" d="M120 422 C102 424 92 444 96 462 C100 476 114 480 124 472 Z" fill="${C.skin}"/>
+  <g id="fingers_L" fill="${C.skin}">
+    <rect x="114" y="428" width="28" height="11" rx="5.5"/>
+    <rect x="114" y="441" width="30" height="11" rx="5.5"/>
+    <rect x="114" y="454" width="28" height="11" rx="5.5"/>
+    <rect x="114" y="467" width="24" height="10" rx="5"/>
+  </g>
+  <path d="M134 439 V441 M136 452 V454 M134 465 V467" stroke="${C.skinShade}" stroke-width="2" stroke-linecap="round"/>
+  ${w.pose === 'watch' ? armWatch() : ''}${w.pose === 'hold' ? armHold() : ''}
 </g>`;
 }
 
+// Watch check: forearm raised across the body above the board, watch face turned to the viewer.
+function armWatch() {
+  return `<g id="arm_watch" transform="translate(2 -22) rotate(-9 340 390)">
+    <path id="sleeve_watch" d="M440 320 L440 452 L334 404 C320 396 316 368 326 354 Z" fill="${C.blazerShade}"/>
+    <path d="M326 354 C316 368 320 396 334 404" stroke="${C.blazerFold}" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path id="forearm_watch" d="M328 360 L246 350 C236 352 236 380 246 382 L330 398 Z" fill="${C.skin}"/>
+    <path d="M300 392 L250 382" stroke="${C.skinShade}" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6"/>
+    <path id="pen_watch" d="M226 372 L198 410" stroke="${C.lime}" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <path id="fist_watch" d="M222 366 C222 352 236 346 248 350 C258 354 260 370 254 380 C248 388 234 390 228 384 C223 380 222 373 222 366 Z" fill="${C.skin}"/>
+    <path d="M230 360 C236 356 244 356 250 360 M229 372 C235 368 243 368 249 372" stroke="${C.skinShade}" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path id="strap_watch" d="M272 352 L290 355 L288 396 L270 392 Z" fill="${C.plum}"/>
+    <circle id="watchface" cx="280" cy="373" r="13" fill="${C.lime}" stroke="${C.plum}" stroke-width="3.5"/>
+    <path d="M280 373 V365 M280 373 L286 376" stroke="${C.plum}" stroke-width="2.5" stroke-linecap="round"/>
+  </g>`;
+}
+
+// Hold on: forearm up beside the board, index finger raised, pen tucked in the fist.
+function armHold() {
+  return `<g id="arm_hold">
+    <path id="sleeve_hold" d="M420 520 L330 520 L296 420 C300 404 326 398 340 410 Z" fill="${C.blazerShade}"/>
+    <path id="forearm_hold" d="M300 418 L286 344 C296 336 314 338 318 346 L338 410 Z" fill="${C.skin}"/>
+    <path id="pen_hold" d="M300 330 L338 300" stroke="${C.lime}" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <path id="pen_hold_cap" d="M338 300 L330 306" stroke="${C.plum}" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <path id="fist_hold" d="M280 330 C280 314 294 308 308 312 C320 316 322 332 316 342 C310 350 296 352 288 348 C283 344 280 338 280 330 Z" fill="${C.skin}"/>
+    <rect id="index_hold" x="285" y="270" width="13" height="50" rx="6.5" fill="${C.skin}"/>
+    <path d="M288 284 Q291 286 295 284" stroke="${C.skinShade}" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <path d="M288 330 C294 326 304 326 310 330" stroke="${C.skinShade}" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path id="strap_hold" d="M290 362 L314 358 L318 376 L294 380 Z" fill="${C.plum}"/>
+  </g>`;
+}
+
+const TILE = '36 30 328 430';
 function full(p, opts = {}) {
   p = merge(p);
-  const halo = opts.halo ?? true;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 440" width="${opts.w ?? 400}" height="${opts.h ?? 440}">
-  ${halo ? `<circle cx="200" cy="214" r="168" fill="${C.halo}"/>` : ''}
+  const vb = opts.viewBox ?? TILE;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" width="${opts.w ?? 328}" height="${opts.h ?? 430}">
+  <defs><radialGradient id="glow" cx="50%" cy="42%" r="55%"><stop offset="0" stop-color="#AA89F2" stop-opacity="0.42"/><stop offset="1" stop-color="#AA89F2" stop-opacity="0"/></radialGradient></defs>
+  <rect x="0" y="0" width="400" height="520" fill="#140C2A"/>
+  <ellipse cx="200" cy="220" rx="230" ry="240" fill="url(#glow)"/>
   ${body()}
   ${head(p)}
-  ${opts.props === false ? '' : props()}
+  ${opts.props === false ? '' : props(opts.write)}
 </svg>`;
 }
 
@@ -237,4 +301,4 @@ const EXPRESSIONS = [
 const VISEMES = ['rest', 'closed', 'teeth', 'open', 'wide', 'round', 'pucker', 'fv', 'lth'];
 const VISEME_HINT = { rest: 'silence', closed: 'm b p', teeth: 's z t d', open: 'a', wide: 'e i', round: 'o', pucker: 'u w oo', fv: 'f v', lth: 'l th' };
 
-module.exports = { C, full, portrait, mouthOnly, EXPRESSIONS, VISEMES, VISEME_HINT, merge };
+module.exports = { C, full, ARM_PIVOT, PEN_TIP, TILE, portrait, mouthOnly, EXPRESSIONS, VISEMES, VISEME_HINT, merge };

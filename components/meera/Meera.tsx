@@ -12,8 +12,10 @@ export type MeeraStill = { mood: Mood; trigger?: Trigger; mouthOpen?: number; po
 type Props = {
   vm?: InterviewVM;
   still?: MeeraStill;
-  /** Rendered width and height in px. */
+  /** Height in px. Large sizes show the whole call tile (328 × 430), small sizes her head in a square. */
   size?: number;
+  /** Fill the parent, cropping the tile to cover it: the call screen's video tile. */
+  fill?: boolean;
   /** Not connected: she rests, greyed out. A display state, not an InterviewVM value. */
   offline?: boolean;
   className?: string;
@@ -21,20 +23,20 @@ type Props = {
 
 // The rig: rive/meera.riv, built by `npm run rig` and served from public/.
 const SRC = "/rive/meera.riv";
-const ARTBOARD = { width: 400, height: 440 };
-// Below this size, show her head (the reference tiles' 240 px square from 80, 40), not the whole bust.
+const ARTBOARD = { width: 328, height: 430 }; // the video call tile (rive/RIG.md)
+// Below this size, show her head (the reference sheet's 288 px square from 20, 44), not the whole tile.
 const HEAD_ONLY_BELOW = 160;
-const HEAD = { x: 80, y: 40, size: 240 };
+const HEAD = { x: 20, y: 44, size: 288 };
 
 /** Meera's Rive rig. Reads InterviewVM only: the app never animates her, it sets values. */
-export function Meera({ vm, still, size = 240, offline = false, className }: Props) {
+export function Meera({ vm, still, size = 240, fill = false, offline = false, className }: Props) {
   const { rive, RiveComponent } = useRive({
     src: SRC,
     artboard: "Meera",
     stateMachine: "InterviewVM",
     autoplay: true,
     autoBind: true,
-    layout: new Layout({ fit: Fit.Contain, alignment: Alignment.Center }),
+    layout: new Layout({ fit: fill ? Fit.Cover : Fit.Contain, alignment: fill ? Alignment.TopCenter : Alignment.Center }),
   });
   const stillKey = still ? JSON.stringify(still) : "";
 
@@ -85,17 +87,18 @@ export function Meera({ vm, still, size = 240, offline = false, className }: Pro
     return () => cleanups.forEach((done) => done());
   }, [rive, vm, stillKey, offline]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Large: the whole bust, fitted into the square. Small: the canvas is scaled so her head fills it.
-  const headOnly = size < HEAD_ONLY_BELOW;
+  // Fill: cover the parent. Large: the whole tile at this height. Small: the canvas is scaled so her head fills a square.
+  const headOnly = !fill && size < HEAD_ONLY_BELOW;
   const k = size / HEAD.size;
+  const box = fill ? { position: "absolute" as const, inset: 0 } : headOnly ? { width: size, height: size } : { width: (size * ARTBOARD.width) / ARTBOARD.height, height: size };
   const canvas = headOnly
     ? { width: ARTBOARD.width * k, height: ARTBOARD.height * k, left: -HEAD.x * k, top: -HEAD.y * k }
-    : { width: size, height: size, left: 0, top: 0 };
+    : { width: "100%", height: "100%", left: 0, top: 0 };
 
   return (
     <div
-      className={`${styles.meera} ${headOnly ? styles.head : ""} ${offline ? styles.offline : ""} ${className ?? ""}`}
-      style={{ width: size, height: size }}
+      className={`${styles.meera} ${headOnly ? styles.head : styles.tile} ${offline ? styles.offline : ""} ${className ?? ""}`}
+      style={box}
       role="img"
       aria-label={offline ? "Meera, offline" : "Meera"}
     >
