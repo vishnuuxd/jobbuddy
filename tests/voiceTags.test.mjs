@@ -15,3 +15,9 @@ test("a line that was only tags becomes empty, and plain text is untouched", () 
   assert.equal(stripVoiceTags("[laughs]"), "");
   assert.equal(stripVoiceTags("How did that turn out?"), "How did that turn out?");
 });
+
+test("a turn I cut off before she said a word has no words, so it's never shown", async () => {
+  const { hasWords } = await import("../lib/call/voiceTags.ts");
+  for (const t of ["...", "…", " . . ", "", "—"]) assert.equal(hasWords(stripVoiceTags(t)), false, JSON.stringify(t));
+  for (const t of ["Okay.", "Tell me about it...", "8%"]) assert.equal(hasWords(t), true, t);
+});

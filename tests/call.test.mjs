@@ -118,3 +118,54 @@ test("a retry starts in the interview on its question and ignores nextQuestion",
   assert.equal(session.get().question, 2);
   assert.equal(vm.values().mood, "listening");
 });
+
+// Her question's text and nextQuestion can arrive in either order (PRD.md, Call behavior).
+function interview() {
+  const s = setup();
+  s.tools.setPhase({ name: "interview" });
+  return s;
+}
+const tags = (session) => session.get().transcript.map((l) => `${l.speaker}:${l.questionIndex ?? 0}`);
+
+test("her question 1 line is tagged 1 when it arrives before nextQuestion", async () => {
+  const { session, tools } = interview();
+  session.addTranscript("user", "Sure, let's start.", Date.now());
+  session.addTranscript("agent", "To kick things off, tell me about your background.", Date.now());
+  assert.deepEqual(tags(session), ["user:0", "agent:0"]);
+  tools.nextQuestion({ index: 1 });
+  assert.deepEqual(tags(session), ["user:0", "agent:1"]);
+  const { lastQuestionAsked } = await import("../lib/call/context.ts");
+  assert.equal(lastQuestionAsked(session.get().transcript).text, "To kick things off, tell me about your background.");
+});
+
+test("her question 1 line is tagged 1 when it arrives after nextQuestion", () => {
+  const { session, tools } = interview();
+  session.addTranscript("user", "Sure, let's start.", Date.now());
+  tools.nextQuestion({ index: 1 });
+  session.addTranscript("agent", "To kick things off, tell me about your background.", Date.now());
+  assert.deepEqual(tags(session), ["user:0", "agent:1"]);
+});
+
+test("only her current turn is retagged, and a cut-in takes the tag back", () => {
+  const { session, tools } = interview();
+  session.addTranscript("user", "Ready.", Date.now());
+  tools.nextQuestion({ index: 1 });
+  session.addTranscript("agent", "Tell me about your background.", Date.now());
+  session.noteUserMessage(); // as the call screen does with my transcript
+  session.addTranscript("user", "Five years in product design.", Date.now());
+  session.addTranscript("agent", "Thanks. Tell me about a disagreement.", Date.now());
+  tools.nextQuestion({ index: 2 });
+  assert.deepEqual(tags(session), ["user:0", "agent:1", "user:1", "agent:2"]);
+  session.dropQuestionFromThisTurn(); // I cut in: her question 2 didn't happen yet
+  assert.deepEqual(tags(session), ["user:0", "agent:1", "user:1", "agent:1"]);
+});
+
+test("the scorecard prompt labels her question 1 line Q1 in either order", async () => {
+  const { session, tools } = interview();
+  session.addTranscript("user", "Ready.", Date.now());
+  session.addTranscript("agent", "Tell me about your background.", Date.now());
+  tools.nextQuestion({ index: 1 });
+  const { scorecardPrompt } = await import("../lib/scorecard/prompt.ts");
+  const { toCallRecord } = await import("../lib/call/session.ts");
+  assert.match(scorecardPrompt(toCallRecord(session.get())), /\(Q1\) Meera: Tell me about your background\./);
+});

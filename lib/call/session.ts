@@ -70,6 +70,19 @@ function moodFor({ phase, speaking, thinking, held }: CallState): Mood {
   return "idle";
 }
 
+/**
+ * Tags her current turn (every line since my last one) with a question. Her question's text can
+ * arrive before or after nextQuestion, so the tag is set when the question changes, not only when
+ * the line lands. A cut-in that takes the question back retags it back.
+ */
+export function retagHerTurn(transcript: TranscriptLine[], question: number): TranscriptLine[] {
+  let lastMine = -1;
+  transcript.forEach((line, i) => {
+    if (line.speaker === "user") lastMine = i;
+  });
+  return transcript.map((line, i) => (i > lastMine && line.speaker === "agent" ? { ...line, questionIndex: question || undefined } : line));
+}
+
 export function toCallRecord(state: CallState, endedAt?: string): Call {
   return {
     id: state.id,
@@ -278,7 +291,7 @@ export function createCallSession(
       if (total !== null && state.question >= total) return false;
       answeredSinceLastQuestion = false;
       questionThisTurn = true;
-      update({ question: state.question + 1 });
+      update({ question: state.question + 1, transcript: retagHerTurn(state.transcript, state.question + 1) });
       return true;
     },
 
@@ -287,7 +300,7 @@ export function createCallSession(
       if (!questionThisTurn) return;
       questionThisTurn = false;
       answeredSinceLastQuestion = true;
-      update({ question: state.question - 1 });
+      update({ question: state.question - 1, transcript: retagHerTurn(state.transcript, state.question - 1) });
     },
   };
 }

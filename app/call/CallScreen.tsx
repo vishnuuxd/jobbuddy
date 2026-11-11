@@ -25,7 +25,7 @@ import {
   timeUpUpdate,
 } from "@/lib/call/context";
 import { timeLimitSteps } from "@/lib/call/timeLimit";
-import { stripVoiceTags } from "@/lib/call/voiceTags";
+import { hasWords, stripVoiceTags } from "@/lib/call/voiceTags";
 import { openingLine } from "@/lib/call/opening";
 import { clearPendingCall, readPendingCall, setPendingCall, type PendingCall } from "@/lib/call/pending";
 import { answeredQuestions, createCallSession, toCallRecord, totalQuestions } from "@/lib/call/session";
@@ -175,9 +175,10 @@ export function CallScreen() {
         think.userTurnEnded();
       } else {
         herLastLineAt.current = Date.now();
-        // Voice tags like "[calm]" never reach the caption, the transcript or the scorecard.
+        // Voice tags like "[calm]" never reach the caption, the transcript or the scorecard, and
+        // neither does a turn I cut off before she said a word ("...").
         const text = stripVoiceTags(message);
-        if (text) session.addTranscript("agent", text, herTurnStartedAt.current || Date.now());
+        if (hasWords(text)) session.addTranscript("agent", text, herTurnStartedAt.current || Date.now());
       }
     },
     onError: (message) => {
