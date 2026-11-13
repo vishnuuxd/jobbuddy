@@ -151,7 +151,7 @@ Built Nov 8, 2026. Check, not passed yet: the tabs work on Vishnu's phone, and t
 
 ## Installable app, 9 Nov 2026
 
-- [x] PWA: `app/manifest.ts` (standalone, plum background and theme), icons in `public/icons` made by `node scripts/make-icons.mjs` (192, 512, 512 maskable, 180 apple-touch-icon), and iPhone full screen metadata in `app/layout.tsx` with a translucent status bar over the plum headers
+- [x] PWA: `app/manifest.ts` (standalone, plum background and theme), icons in `public/icons` made from `design/app-icon.png` by `node scripts/make-icons.mjs` (192, 512, 512 maskable, 180 apple-touch-icon), and iPhone full screen metadata in `app/layout.tsx` with a translucent status bar over the plum headers
 - [x] Chrome reports no manifest errors. The mic works in standalone display mode (checked in Chrome with a fake device), and `npm run test:e2e` passes. No service worker: Chrome and Safari don't need one to install, and the app needs the network for calls anyway
 - [ ] Install from the home screen on Vishnu's iPhone and Android phone, then do one call from the icon
 

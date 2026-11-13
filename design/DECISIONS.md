@@ -339,8 +339,8 @@ Plum replaces Tropical. The entries above describe the Tropical build and stay a
 
 ## Plum · no reference: app icon
 - Screen showed: nothing, there's no icon reference
-- Built instead: Meera's lavender body, plum eyes and the lime dot on plum, drawn from the Meera component's paths by `scripts/make-icons.mjs`. No mouth, and her "wide" eyes (19 × 30) rather than the resting ones, so the eyes still read at home screen size. The maskable icon keeps her inside the 80% safe circle
-- Why: Vishnu asked for the blob, eyes and dot on plum. The iPhone status bar is translucent so the plum headers show through it, since "black" would be a pure black bar
+- Built instead: Vishnu's "J" mark (`design/app-icon.png`, white J with a lavender dot on near-black #0a051c), resized by `scripts/make-icons.mjs`. The 192 and 512 icons keep the mark's rounded corners. The apple-touch and maskable icons fill those corners with #0a051c, since iOS and Android cut their own shape. The maskable one shrinks the mark to 84% so the dot stays inside the 80% safe circle
+- Why: Vishnu supplied the J mark on 13 Nov to replace the earlier Meera icon (her lavender body, plum eyes and lime dot). The iPhone status bar is translucent so the plum headers show through it, since "black" would be a pure black bar
 
 ## History, scorecard and call screen: a scorecard that fails or times out
 - Screen showed: "Build scorecard" only, with no state for a request that never ends
